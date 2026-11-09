@@ -34,3 +34,11 @@ Puis ouvrir l'adresse affichée dans le navigateur.
 - JavaScript natif (modules ES) et `<canvas>`, sans framework.
 - Le record par mode est stocké dans `localStorage` (clé `dd-best-<mode>`).
 - `app/dist/` est ignoré par git.
+
+## Version Unity (en cours)
+
+Une refonte en Unity (build natif Linux) vit dans [`unity/`](unity/) ; la version web ci-dessus reste la référence de comportement.
+
+- `unity/DedaleDefense/Assets/_Project/Scripts/Core` : simulation en C# pur (port de `game.js`), testée avec `dotnet test unity/Core.Tests`.
+- `unity/DedaleDefense/Assets/_Project/Scripts/App` : rendu et entrées (IMGUI, sans asset externe).
+- Mise en place de l'environnement et build : voir [dev.md](dev.md). Plan complet : [todo.md](todo.md).
