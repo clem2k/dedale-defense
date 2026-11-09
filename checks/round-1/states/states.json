@@ -1,0 +1,16 @@
+{
+  "states": [
+    {
+      "changed": [
+        "section opened"
+      ],
+      "file": "state-1.png",
+      "index": 0,
+      "kind": "section",
+      "label": "FAQ",
+      "sha256": "b4dd0880d12673c2f262ecbbf964673c2a5658997ccd0ffbf82fa6f3b64daa7f"
+    }
+  ],
+  "url": "http://127.0.0.1:63112/",
+  "width": 1440
+}

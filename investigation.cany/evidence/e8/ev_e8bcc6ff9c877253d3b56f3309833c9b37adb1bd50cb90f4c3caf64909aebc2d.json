@@ -1,0 +1,69 @@
+{
+  "id": "ev_e8bcc6ff9c877253d3b56f3309833c9b37adb1bd50cb90f4c3caf64909aebc2d",
+  "subject": {
+    "kind": "website",
+    "name": "about:blank"
+  },
+  "operation": "core_evidence_browse",
+  "params": {
+    "show": {
+      "kind": "rows",
+      "limit": 20,
+      "list": "events"
+    },
+    "source": {
+      "evidence_id": "ev_7c611391818852d383001bf5d4b952b5b89ebca1047084d667e6715f756d545e",
+      "kind": "saved"
+    }
+  },
+  "result": {
+    "coverage": {
+      "at_end": true,
+      "examined": 1,
+      "next_offset": null,
+      "status": "page",
+      "total": 1
+    },
+    "from_evidence": "ev_7c611391818852d383001bf5d4b952b5b89ebca1047084d667e6715f756d545e",
+    "from_tool": "web_walkthrough_record",
+    "shown": {
+      "list": "events",
+      "value": {
+        "dropped": 0,
+        "families": [
+          "console",
+          "page_errors"
+        ],
+        "items": [
+          {
+            "kind": "console",
+            "level": "error",
+            "sequence": 1,
+            "step_index": 0,
+            "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+          }
+        ],
+        "unavailable": []
+      }
+    }
+  },
+  "summary": "Part of web_walkthrough_record evidence (page).",
+  "confidence": "observed",
+  "authority": "our-run",
+  "environment": {
+    "clean_room": false,
+    "engine": "builtin",
+    "engine_version": "0.5.0",
+    "host": "macos-aarch64"
+  },
+  "limitations": [],
+  "coverage": {
+    "status": "complete",
+    "examined": 1,
+    "total": 1
+  },
+  "locations": [],
+  "links": [
+    "ev_7c611391818852d383001bf5d4b952b5b89ebca1047084d667e6715f756d545e"
+  ]
+}

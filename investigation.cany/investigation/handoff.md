@@ -1,0 +1,3 @@
+# Handoff
+
+Built "Dédale Défense": an original maze-building tower defense in app/src (index.html, style.css, game.js). build.mjs copies it to dist/ and to the four locale paths plus /en/. Following the person's request, only the game was built; the portal page (menus, comments, ads) was left out on purpose. rebuild_check: every required claim holds, and the only gap is the low likeness to that portal page. There's a test hook, window.__game, with step(seconds). Balance was tested with a bot (scripts in /tmp/dtd-test2): Easy won, Normal reached wave 47, Hard reached wave 37. Ideas for next time: UI translations per locale path, sound, a challenge mode.

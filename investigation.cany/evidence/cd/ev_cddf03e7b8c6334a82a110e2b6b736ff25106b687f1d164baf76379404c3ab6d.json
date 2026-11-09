@@ -1,0 +1,61 @@
+{
+  "id": "ev_cddf03e7b8c6334a82a110e2b6b736ff25106b687f1d164baf76379404c3ab6d",
+  "subject": {
+    "kind": "website",
+    "name": "http://127.0.0.1:63305/es/games/preecep/desktop-tower-defense"
+  },
+  "operation": "web_site_open",
+  "params": {
+    "height": 900,
+    "url": "http://127.0.0.1:63305/es/games/preecep/desktop-tower-defense",
+    "width": 1440
+  },
+  "result": {
+    "browser": "Chrome/156.0.8078.81",
+    "facts": {
+      "elements": 135,
+      "forms": 0,
+      "height": 1002,
+      "images": 0,
+      "lang": "es",
+      "links": 2,
+      "ready": "complete",
+      "title": "Dédale Défense",
+      "url": "http://127.0.0.1:63305/es/games/preecep/desktop-tower-defense",
+      "width": 1440
+    },
+    "health": {
+      "errors": [],
+      "failed_requests": []
+    },
+    "title": "Dédale Défense",
+    "url": "http://127.0.0.1:63305/es/games/preecep/desktop-tower-defense"
+  },
+  "summary": "Opened http://127.0.0.1:63305/es/games/preecep/desktop-tower-defense: \"Dédale Défense\".",
+  "confidence": "observed",
+  "authority": "our-run",
+  "environment": {
+    "clean_room": false,
+    "engine": "cdp",
+    "engine_version": "1.3",
+    "host": "macos-aarch64"
+  },
+  "limitations": [
+    {
+      "code": "private_profile",
+      "message": "A fresh private browser: pages behind a login show their signed-out state."
+    }
+  ],
+  "coverage": {
+    "status": "complete",
+    "examined": 1,
+    "total": 1
+  },
+  "locations": [
+    {
+      "kind": "url",
+      "value": "http://127.0.0.1:63305/es/games/preecep/desktop-tower-defense"
+    }
+  ],
+  "links": []
+}

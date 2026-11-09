@@ -1,0 +1,61 @@
+{
+  "id": "ev_e8f089b169be4e1069df8eaa5c47bd7fe4ca7b16c2ea3d8763b4da0a81862179",
+  "subject": {
+    "kind": "comparison",
+    "name": "screenshots"
+  },
+  "operation": "web_pixels_compare",
+  "params": {
+    "after_sha256": "cf393f75f43336f65f61aa8dec1964f4a4c537e32b896921a0ed3873747e9ebd",
+    "before_sha256": "4c1a37379b0bb5f1e91482f9379a5f439d28a208a0c404e65560c95d21240a36",
+    "common_area": true,
+    "tolerance": 24
+  },
+  "result": {
+    "changed_bounding_box": {
+      "height": 890,
+      "width": 390,
+      "x": 0,
+      "y": 10
+    },
+    "comparable": true,
+    "difference_fraction": 0.8095270655270655,
+    "differing_pixels": 284144,
+    "height": 900,
+    "identical": false,
+    "ignored_tiles": 3471,
+    "layout_similarity": 0.32432432432432434,
+    "max_channel_delta": 242,
+    "perceptual_similarity": 0.3090658980914578,
+    "sizes": {
+      "after": {
+        "height": 900,
+        "width": 390
+      },
+      "before": {
+        "height": 6774,
+        "width": 390
+      }
+    },
+    "tolerance": 24,
+    "total_pixels": 351000,
+    "width": 390
+  },
+  "summary": "Over the shared 390×900 area the layout is 32% alike and the detail 31% (284144 pixel(s) differ exactly).",
+  "confidence": "derived",
+  "authority": "original-files",
+  "environment": {
+    "clean_room": false,
+    "engine": "builtin",
+    "engine_version": "0.5.0",
+    "host": "macos-aarch64"
+  },
+  "limitations": [],
+  "coverage": {
+    "status": "complete",
+    "examined": 1,
+    "total": 1
+  },
+  "locations": [],
+  "links": []
+}

@@ -1,0 +1,138 @@
+{
+  "id": "ev_a4f17b2a90cf6a8a5fc7b66127b03cee9518ae895364b1e9dbcb7aa4eadc3887",
+  "subject": {
+    "kind": "website",
+    "name": "https://www.kongregate.com/id/games/preecep/desktop-tower-defense"
+  },
+  "operation": "web_site_open",
+  "params": {
+    "height": 900,
+    "url": "https://www.kongregate.com/id/games/preecep/desktop-tower-defense",
+    "width": 1440
+  },
+  "result": {
+    "browser": "Chrome/156.0.8078.81",
+    "facts": {
+      "elements": 7175,
+      "forms": 5,
+      "height": 4050,
+      "images": 56,
+      "lang": "id",
+      "links": 759,
+      "ready": "complete",
+      "title": "Desktop Tower Defense on Kongregate – Play Now",
+      "url": "https://www.kongregate.com/id/games/preecep/desktop-tower-defense",
+      "width": 1440
+    },
+    "health": {
+      "errors": [
+        {
+          "kind": "console",
+          "text": "VIDEOJS: ERROR: (CODE:4 MEDIA_ERR_SRC_NOT_SUPPORTED) The media could not be loaded, either because the server or network failed or because the format is not supported. i",
+          "url": ""
+        },
+        {
+          "kind": "console",
+          "text": "Unexpected token '<'",
+          "url": ""
+        },
+        {
+          "kind": "console",
+          "text": "Cannot read properties of null (reading 'innerHTML')",
+          "url": ""
+        },
+        {
+          "kind": "console",
+          "text": "catchErrors caught unhandled exception TypeError: Cannot read properties of null (reading 'innerHTML')",
+          "url": ""
+        }
+      ],
+      "failed_requests": [
+        {
+          "error": "net::ERR_BLOCKED_BY_ORB",
+          "type": "Stylesheet",
+          "url": "https://drxfab1qw1oer.cloudfront.net/compiled-assets/tailwindcss/base"
+        },
+        {
+          "error": "net::ERR_BLOCKED_BY_ORB",
+          "type": "Stylesheet",
+          "url": "https://drxfab1qw1oer.cloudfront.net/compiled-assets/swiper/swiper"
+        },
+        {
+          "error": "net::ERR_BLOCKED_BY_ORB",
+          "type": "Stylesheet",
+          "url": "https://drxfab1qw1oer.cloudfront.net/compiled-assets/tailwindcss/utilities"
+        },
+        {
+          "error": "net::ERR_BLOCKED_BY_ORB",
+          "type": "Stylesheet",
+          "url": "https://drxfab1qw1oer.cloudfront.net/compiled-assets/tailwindcss/components"
+        },
+        {
+          "error": "net::ERR_BLOCKED_BY_ORB",
+          "type": "Stylesheet",
+          "url": "https://drxfab1qw1oer.cloudfront.net/compiled-assets/components/buttons"
+        },
+        {
+          "error": "net::ERR_BLOCKED_BY_ORB",
+          "type": "Stylesheet",
+          "url": "https://drxfab1qw1oer.cloudfront.net/compiled-assets/konstruct/forms"
+        },
+        {
+          "error": "net::ERR_BLOCKED_BY_ORB",
+          "type": "Stylesheet",
+          "url": "https://drxfab1qw1oer.cloudfront.net/compiled-assets/swiper/modules/autoplay"
+        },
+        {
+          "error": "net::ERR_BLOCKED_BY_ORB",
+          "type": "Stylesheet",
+          "url": "https://drxfab1qw1oer.cloudfront.net/compiled-assets/swiper/modules/keyboard"
+        },
+        {
+          "error": "net::ERR_BLOCKED_BY_ORB",
+          "type": "Stylesheet",
+          "url": "https://drxfab1qw1oer.cloudfront.net/compiled-assets/swiper/modules/mousewheel"
+        },
+        {
+          "error": "net::ERR_BLOCKED_BY_ORB",
+          "type": "Stylesheet",
+          "url": "https://drxfab1qw1oer.cloudfront.net/compiled-assets/swiper/modules/free-mode"
+        },
+        {
+          "error": "net::ERR_BLOCKED_BY_ORB",
+          "type": "Script",
+          "url": "https://server.cpmstar.com/tag.aspx"
+        }
+      ]
+    },
+    "title": "Desktop Tower Defense on Kongregate – Play Now",
+    "url": "https://www.kongregate.com/id/games/preecep/desktop-tower-defense"
+  },
+  "summary": "Opened https://www.kongregate.com/id/games/preecep/desktop-tower-defense: \"Desktop Tower Defense on Kongregate – Play Now\". While loading: 4 error(s), 11 failed request(s).",
+  "confidence": "observed",
+  "authority": "our-run",
+  "environment": {
+    "clean_room": false,
+    "engine": "cdp",
+    "engine_version": "1.3",
+    "host": "macos-aarch64"
+  },
+  "limitations": [
+    {
+      "code": "private_profile",
+      "message": "A fresh private browser: pages behind a login show their signed-out state."
+    }
+  ],
+  "coverage": {
+    "status": "complete",
+    "examined": 1,
+    "total": 1
+  },
+  "locations": [
+    {
+      "kind": "url",
+      "value": "https://www.kongregate.com/id/games/preecep/desktop-tower-defense"
+    }
+  ],
+  "links": []
+}

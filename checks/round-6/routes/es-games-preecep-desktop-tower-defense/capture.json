@@ -1,0 +1,1186 @@
+{
+  "a11y": {
+    "images_without_alt": 0,
+    "landmarks": {
+      "banner": 1,
+      "complementary": 1,
+      "contentinfo": 1,
+      "main": 1,
+      "navigation": 1
+    },
+    "lang": "es",
+    "unnamed_controls": 0,
+    "unnamed_examples": []
+  },
+  "assets": {
+    "background_images": [],
+    "fonts": [],
+    "images": [],
+    "inline_scripts": 0,
+    "requests": [
+      {
+        "bytes": 8410,
+        "type": "link",
+        "url": "http://127.0.0.1:63920/style.css"
+      },
+      {
+        "bytes": 42364,
+        "type": "script",
+        "url": "http://127.0.0.1:63920/game.js"
+      }
+    ],
+    "scripts": [
+      "http://127.0.0.1:63920/game.js"
+    ],
+    "stylesheets": [
+      "http://127.0.0.1:63920/style.css"
+    ]
+  },
+  "breakpoints": [],
+  "design": {
+    "backgrounds": [
+      {
+        "count": 18,
+        "value": "#182230"
+      },
+      {
+        "count": 4,
+        "value": "#344054"
+      },
+      {
+        "count": 3,
+        "value": "#a6ef67"
+      },
+      {
+        "count": 2,
+        "value": "#222222"
+      },
+      {
+        "count": 2,
+        "value": "#1d2939"
+      },
+      {
+        "count": 2,
+        "value": "#eaaa08"
+      },
+      {
+        "count": 1,
+        "value": "#0a101cb8"
+      },
+      {
+        "count": 1,
+        "value": "#fef08a"
+      },
+      {
+        "count": 1,
+        "value": "#7cd4fd"
+      },
+      {
+        "count": 1,
+        "value": "#fda29b"
+      },
+      {
+        "count": 1,
+        "value": "#bdb4fe"
+      },
+      {
+        "count": 1,
+        "value": "#333333"
+      }
+    ],
+    "css_variables": {
+      "--accent": "#eaaa08",
+      "--danger": "#eb3751",
+      "--frame": "#1d2939",
+      "--gold": "#fac515",
+      "--line": "#344054",
+      "--muted": "#98a2b3",
+      "--ok": "#3ccb7f",
+      "--page": "#222222",
+      "--panel": "#182230",
+      "--radius": "8px",
+      "--soft": "#d0d5dd",
+      "--text": "#ffffff"
+    },
+    "font_faces": [],
+    "font_sizes": [
+      {
+        "count": 25,
+        "value": "10px"
+      },
+      {
+        "count": 12,
+        "value": "16px"
+      },
+      {
+        "count": 8,
+        "value": "13px"
+      },
+      {
+        "count": 7,
+        "value": "10.5px"
+      },
+      {
+        "count": 7,
+        "value": "20px"
+      },
+      {
+        "count": 6,
+        "value": "9px"
+      },
+      {
+        "count": 5,
+        "value": "11px"
+      },
+      {
+        "count": 4,
+        "value": "14px"
+      },
+      {
+        "count": 2,
+        "value": "12px"
+      },
+      {
+        "count": 2,
+        "value": "22px"
+      },
+      {
+        "count": 2,
+        "value": "26px"
+      },
+      {
+        "count": 2,
+        "value": "18px"
+      }
+    ],
+    "font_weights": [
+      {
+        "count": 39,
+        "value": "400"
+      },
+      {
+        "count": 18,
+        "value": "600"
+      },
+      {
+        "count": 18,
+        "value": "700"
+      },
+      {
+        "count": 6,
+        "value": "800"
+      },
+      {
+        "count": 1,
+        "value": "500"
+      }
+    ],
+    "fonts": [
+      {
+        "count": 82,
+        "value": "ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+      }
+    ],
+    "max_widths": [
+      {
+        "count": 2,
+        "value": "1280px"
+      },
+      {
+        "count": 2,
+        "value": "640px"
+      },
+      {
+        "count": 1,
+        "value": "448px"
+      }
+    ],
+    "radii": [
+      {
+        "count": 26,
+        "value": "6px"
+      },
+      {
+        "count": 7,
+        "value": "9999px"
+      },
+      {
+        "count": 2,
+        "value": "14px"
+      }
+    ],
+    "shadows": [
+      {
+        "count": 1,
+        "value": "rgb(11, 18, 32) 0px 0px 0px 1px"
+      },
+      {
+        "count": 1,
+        "value": "rgba(0, 0, 0, 0.45) 0px 20px 40px 0px"
+      }
+    ],
+    "spacing": [
+      {
+        "count": 50,
+        "value": "6px"
+      },
+      {
+        "count": 29,
+        "value": "4px"
+      },
+      {
+        "count": 16,
+        "value": "12px"
+      },
+      {
+        "count": 15,
+        "value": "8px"
+      },
+      {
+        "count": 14,
+        "value": "1px"
+      },
+      {
+        "count": 11,
+        "value": "24px"
+      },
+      {
+        "count": 10,
+        "value": "16px"
+      },
+      {
+        "count": 10,
+        "value": "9px"
+      },
+      {
+        "count": 6,
+        "value": "2px"
+      },
+      {
+        "count": 5,
+        "value": "32px"
+      },
+      {
+        "count": 5,
+        "value": "20px"
+      },
+      {
+        "count": 4,
+        "value": "10px"
+      },
+      {
+        "count": 1,
+        "value": "14px"
+      }
+    ],
+    "text_colors": [
+      {
+        "count": 29,
+        "value": "#98a2b3"
+      },
+      {
+        "count": 27,
+        "value": "#ffffff"
+      },
+      {
+        "count": 11,
+        "value": "#d0d5dd"
+      },
+      {
+        "count": 7,
+        "value": "#fac515"
+      },
+      {
+        "count": 3,
+        "value": "#101828"
+      },
+      {
+        "count": 2,
+        "value": "#eaaa08"
+      },
+      {
+        "count": 2,
+        "value": "#eb3751"
+      },
+      {
+        "count": 1,
+        "value": "#101828b3"
+      }
+    ]
+  },
+  "forms": [],
+  "headings": [
+    {
+      "level": 1,
+      "text": "Dédale Défense"
+    },
+    {
+      "level": 2,
+      "text": "Dédale Défense"
+    },
+    {
+      "level": 3,
+      "text": "Comment jouer"
+    },
+    {
+      "level": 2,
+      "text": "Description"
+    },
+    {
+      "level": 2,
+      "text": "Comment jouer"
+    },
+    {
+      "level": 2,
+      "text": "Dédale Défense"
+    },
+    {
+      "level": 2,
+      "text": "Raccourcis"
+    }
+  ],
+  "health": {
+    "errors": [],
+    "failed_requests": []
+  },
+  "lang": "es",
+  "layouts": [
+    {
+      "blocks": [
+        {
+          "h": 873,
+          "heading": "Dédale Défense",
+          "pad": [
+            16,
+            0,
+            8,
+            0
+          ],
+          "per_row": 2,
+          "tag": "main",
+          "w": 1440,
+          "y": 23
+        },
+        {
+          "gap": 12,
+          "h": 46,
+          "heading": "Dédale Défense",
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "per_row": 1,
+          "tag": "header",
+          "w": 800,
+          "y": 58
+        },
+        {
+          "gap": 10,
+          "h": 819,
+          "heading": "Comment jouer",
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "per_row": 3,
+          "tag": "aside",
+          "w": 371,
+          "y": 58
+        },
+        {
+          "column": {
+            "max_w": 1280,
+            "pad": [
+              24,
+              24
+            ],
+            "w": 1280,
+            "x": 80
+          },
+          "h": 301,
+          "heading": "Description",
+          "pad": [
+            0,
+            24,
+            0,
+            24
+          ],
+          "per_row": 1,
+          "tag": "section",
+          "w": 1280,
+          "y": 920
+        },
+        {
+          "background": "#333333",
+          "column": {
+            "max_w": 1280,
+            "pad": [
+              24,
+              24
+            ],
+            "w": 1280,
+            "x": 80
+          },
+          "h": 135,
+          "heading": "Dédale Défense",
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "per_row": 1,
+          "tag": "footer",
+          "w": 1440,
+          "y": 1253
+        }
+      ],
+      "page_h": 1388,
+      "page_w": 1440,
+      "type": {
+        "body": 13,
+        "h1": 22,
+        "h2": 26,
+        "h3": 14
+      },
+      "width": 1440
+    },
+    {
+      "blocks": [
+        {
+          "h": 1172,
+          "heading": "Dédale Défense",
+          "pad": [
+            16,
+            0,
+            8,
+            0
+          ],
+          "per_row": 4,
+          "tag": "main",
+          "w": 768,
+          "y": 23
+        },
+        {
+          "gap": 12,
+          "h": 41,
+          "heading": "Dédale Défense",
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "per_row": 1,
+          "tag": "header",
+          "w": 719,
+          "y": 56
+        },
+        {
+          "gap": 10,
+          "h": 419,
+          "heading": "Comment jouer",
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "per_row": 6,
+          "tag": "aside",
+          "w": 719,
+          "y": 759
+        },
+        {
+          "column": {
+            "max_w": 1280,
+            "pad": [
+              24,
+              24
+            ],
+            "w": 768,
+            "x": 0
+          },
+          "h": 301,
+          "heading": "Description",
+          "pad": [
+            0,
+            24,
+            0,
+            24
+          ],
+          "per_row": 1,
+          "tag": "section",
+          "w": 768,
+          "y": 1219
+        },
+        {
+          "background": "#333333",
+          "column": {
+            "max_w": 1280,
+            "pad": [
+              24,
+              24
+            ],
+            "w": 768,
+            "x": 0
+          },
+          "h": 135,
+          "heading": "Dédale Défense",
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "per_row": 1,
+          "tag": "footer",
+          "w": 768,
+          "y": 1552
+        }
+      ],
+      "page_h": 1687,
+      "page_w": 768,
+      "type": {
+        "body": 13,
+        "h1": 22,
+        "h2": 26,
+        "h3": 14
+      },
+      "width": 768
+    },
+    {
+      "blocks": [
+        {
+          "h": 591,
+          "heading": "Dédale Défense",
+          "pad": [
+            16,
+            0,
+            8,
+            0
+          ],
+          "per_row": 4,
+          "tag": "main",
+          "w": 390,
+          "y": 23
+        },
+        {
+          "gap": 10,
+          "h": 209,
+          "heading": "Comment jouer",
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "per_row": 6,
+          "tag": "aside",
+          "w": 357,
+          "y": 397
+        },
+        {
+          "column": {
+            "max_w": 1280,
+            "pad": [
+              24,
+              24
+            ],
+            "w": 390,
+            "x": 0
+          },
+          "h": 421,
+          "heading": "Description",
+          "pad": [
+            0,
+            24,
+            0,
+            24
+          ],
+          "per_row": 1,
+          "tag": "section",
+          "w": 390,
+          "y": 638
+        },
+        {
+          "background": "#333333",
+          "column": {
+            "max_w": 1280,
+            "pad": [
+              24,
+              24
+            ],
+            "w": 390,
+            "x": 0
+          },
+          "h": 228,
+          "heading": "Dédale Défense",
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "per_row": 1,
+          "tag": "footer",
+          "w": 390,
+          "y": 1091
+        }
+      ],
+      "page_h": 1319,
+      "page_w": 390,
+      "type": {
+        "body": 13,
+        "h1": 22,
+        "h2": 26,
+        "h3": 14
+      },
+      "width": 390
+    }
+  ],
+  "links": [
+    {
+      "href": "http://127.0.0.1:63920/es/games/preecep/desktop-tower-defense#stage",
+      "text": "Jouer"
+    },
+    {
+      "href": "http://127.0.0.1:63920/es/games/preecep/desktop-tower-defense#aide",
+      "text": "Aide"
+    },
+    {
+      "href": "http://127.0.0.1:63920/es/games/preecep/desktop-tower-defense#stage",
+      "text": "Jouer"
+    },
+    {
+      "href": "http://127.0.0.1:63920/es/games/preecep/desktop-tower-defense#aide",
+      "text": "Aide et FAQ"
+    }
+  ],
+  "meta": {
+    "description": "Un jeu de tower defense : construisez un labyrinthe de tours pour arrêter les vagues d'ennemis.",
+    "icons": [
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d2939'/%3E%3Crect x='7' y='7' width='8' height='8' rx='2' fill='%23eaaa08'/%3E%3Crect x='17' y='17' width='8' height='8' rx='2' fill='%234ea1ff'/%3E%3C/svg%3E"
+    ],
+    "og_image": "",
+    "og_title": "",
+    "theme_color": ""
+  },
+  "outline": [
+    {
+      "box": {
+        "h": 23,
+        "w": 1440,
+        "x": 0,
+        "y": 0
+      },
+      "class": "topnav",
+      "color": "#ffffff",
+      "depth": 2,
+      "display": "flex",
+      "flex": "row",
+      "font": "12px 400",
+      "tag": "nav"
+    },
+    {
+      "box": {
+        "h": 15,
+        "w": 32,
+        "x": 683,
+        "y": 8
+      },
+      "color": "#98a2b3",
+      "depth": 3,
+      "font": "12px 400",
+      "href": "http://127.0.0.1:63920/es/games/preecep/desktop-tower-defense#stage",
+      "tag": "a",
+      "text": "Jouer"
+    },
+    {
+      "box": {
+        "h": 15,
+        "w": 25,
+        "x": 731,
+        "y": 8
+      },
+      "color": "#98a2b3",
+      "depth": 3,
+      "font": "12px 400",
+      "href": "http://127.0.0.1:63920/es/games/preecep/desktop-tower-defense#aide",
+      "tag": "a",
+      "text": "Aide"
+    },
+    {
+      "box": {
+        "h": 873,
+        "w": 1440,
+        "x": 0,
+        "y": 23
+      },
+      "color": "#ffffff",
+      "depth": 2,
+      "display": "block",
+      "font": "16px 400",
+      "id": "stage",
+      "tag": "main"
+    },
+    {
+      "box": {
+        "h": 46,
+        "w": 800,
+        "x": 126,
+        "y": 58
+      },
+      "class": "titlebar",
+      "color": "#ffffff",
+      "depth": 5,
+      "display": "flex",
+      "flex": "row",
+      "font": "16px 400",
+      "tag": "header"
+    },
+    {
+      "box": {
+        "h": 37,
+        "w": 246,
+        "x": 126,
+        "y": 58
+      },
+      "color": "#ffffff",
+      "depth": 6,
+      "font": "22px 800",
+      "tag": "h1",
+      "text": "Dédale Défense"
+    },
+    {
+      "box": {
+        "h": 43,
+        "w": 471,
+        "x": 290,
+        "y": 267
+      },
+      "color": "#ffffff",
+      "depth": 8,
+      "font": "26px 700",
+      "tag": "h2",
+      "text": "Dédale Défense"
+    },
+    {
+      "box": {
+        "h": 84,
+        "w": 471,
+        "x": 290,
+        "y": 319
+      },
+      "color": "#d0d5dd",
+      "depth": 8,
+      "font": "13px 400",
+      "tag": "p",
+      "text": "Bâtissez un labyrinthe de tours et empêchez les vagues d'ennemis de traverser le plateau. 50 vagues à tenir."
+    },
+    {
+      "background": "#344054",
+      "box": {
+        "h": 49,
+        "w": 471,
+        "x": 290,
+        "y": 422
+      },
+      "class": "btn",
+      "color": "#ffffff",
+      "depth": 9,
+      "font": "13px 600",
+      "tag": "button",
+      "text": "Facile · 30 vies · record 0"
+    },
+    {
+      "background": "#eaaa08",
+      "box": {
+        "h": 49,
+        "w": 471,
+        "x": 290,
+        "y": 482
+      },
+      "class": "btn primary",
+      "color": "#101828",
+      "depth": 9,
+      "font": "13px 600",
+      "tag": "button",
+      "text": "Normal · 20 vies · record 0"
+    },
+    {
+      "background": "#344054",
+      "box": {
+        "h": 49,
+        "w": 471,
+        "x": 290,
+        "y": 542
+      },
+      "class": "btn",
+      "color": "#ffffff",
+      "depth": 9,
+      "font": "13px 600",
+      "tag": "button",
+      "text": "Difficile · 10 vies · record 0"
+    },
+    {
+      "box": {
+        "h": 819,
+        "w": 371,
+        "x": 943,
+        "y": 58
+      },
+      "class": "panel",
+      "color": "#ffffff",
+      "depth": 4,
+      "display": "flex",
+      "flex": "column",
+      "font": "16px 400",
+      "tag": "aside"
+    },
+    {
+      "background": "#182230",
+      "box": {
+        "h": 89,
+        "w": 118,
+        "x": 943,
+        "y": 220
+      },
+      "class": "tbtn",
+      "color": "#ffffff",
+      "depth": 6,
+      "font": "16px 400",
+      "tag": "button",
+      "text": "1 Caillou 5 or"
+    },
+    {
+      "background": "#182230",
+      "box": {
+        "h": 89,
+        "w": 118,
+        "x": 1069,
+        "y": 220
+      },
+      "class": "tbtn",
+      "color": "#ffffff",
+      "depth": 6,
+      "font": "16px 400",
+      "tag": "button",
+      "text": "2 Éclat 15 or"
+    },
+    {
+      "background": "#182230",
+      "box": {
+        "h": 89,
+        "w": 118,
+        "x": 1196,
+        "y": 220
+      },
+      "class": "tbtn",
+      "color": "#ffffff",
+      "depth": 6,
+      "font": "16px 400",
+      "tag": "button",
+      "text": "3 Aiguille 25 or"
+    },
+    {
+      "background": "#182230",
+      "box": {
+        "h": 89,
+        "w": 118,
+        "x": 943,
+        "y": 318
+      },
+      "class": "tbtn",
+      "color": "#ffffff",
+      "depth": 6,
+      "font": "16px 400",
+      "tag": "button",
+      "text": "4 Volée 30 or"
+    },
+    {
+      "background": "#182230",
+      "box": {
+        "h": 89,
+        "w": 118,
+        "x": 1069,
+        "y": 318
+      },
+      "class": "tbtn",
+      "color": "#ffffff",
+      "depth": 6,
+      "font": "16px 400",
+      "tag": "button",
+      "text": "5 Givre 20 or"
+    },
+    {
+      "background": "#182230",
+      "box": {
+        "h": 89,
+        "w": 118,
+        "x": 1196,
+        "y": 318
+      },
+      "class": "tbtn",
+      "color": "#ffffff",
+      "depth": 6,
+      "font": "16px 400",
+      "tag": "button",
+      "text": "6 Onde 40 or"
+    },
+    {
+      "box": {
+        "h": 29,
+        "w": 340,
+        "x": 959,
+        "y": 435
+      },
+      "color": "#ffffff",
+      "depth": 6,
+      "font": "14px 700",
+      "tag": "h3",
+      "text": "Comment jouer"
+    },
+    {
+      "background": "#eaaa08",
+      "box": {
+        "h": 49,
+        "w": 371,
+        "x": 943,
+        "y": 714
+      },
+      "class": "btn primary",
+      "color": "#101828",
+      "depth": 6,
+      "font": "13px 600",
+      "id": "b-next",
+      "tag": "button",
+      "text": "Vague suivante N"
+    },
+    {
+      "background": "#344054",
+      "box": {
+        "h": 49,
+        "w": 181,
+        "x": 943,
+        "y": 771
+      },
+      "class": "btn",
+      "color": "#ffffff",
+      "depth": 7,
+      "font": "13px 600",
+      "id": "b-pause",
+      "tag": "button",
+      "text": "Pause"
+    },
+    {
+      "background": "#344054",
+      "box": {
+        "h": 49,
+        "w": 181,
+        "x": 1133,
+        "y": 771
+      },
+      "class": "btn",
+      "color": "#ffffff",
+      "depth": 7,
+      "font": "13px 600",
+      "id": "b-speed",
+      "tag": "button",
+      "text": "Vitesse ×1"
+    },
+    {
+      "box": {
+        "h": 49,
+        "w": 371,
+        "x": 943,
+        "y": 828
+      },
+      "class": "btn ghost",
+      "color": "#d0d5dd",
+      "depth": 6,
+      "font": "13px 600",
+      "id": "b-menu",
+      "tag": "button",
+      "text": "Nouvelle partie"
+    },
+    {
+      "box": {
+        "h": 301,
+        "w": 1280,
+        "x": 80,
+        "y": 920
+      },
+      "class": "help",
+      "color": "#ffffff",
+      "depth": 2,
+      "display": "block",
+      "font": "16px 400",
+      "id": "aide",
+      "tag": "section"
+    },
+    {
+      "box": {
+        "h": 23,
+        "w": 1232,
+        "x": 104,
+        "y": 920
+      },
+      "color": "#ffffff",
+      "depth": 3,
+      "font": "20px 600",
+      "tag": "h2",
+      "text": "Description"
+    },
+    {
+      "box": {
+        "h": 72,
+        "w": 640,
+        "x": 104,
+        "y": 955
+      },
+      "color": "#d0d5dd",
+      "depth": 3,
+      "font": "16px 400",
+      "tag": "p",
+      "text": "Un jeu de réflexion en temps réel : des vagues d'ennemis traversent le plateau, et vos tours doivent les arrêter avant qu'ils n'atteignent l'autre côté. Achetez des tours, placez-les sur le plateau et"
+    },
+    {
+      "box": {
+        "h": 23,
+        "w": 1232,
+        "x": 104,
+        "y": 1059
+      },
+      "color": "#ffffff",
+      "depth": 3,
+      "font": "20px 600",
+      "tag": "h2",
+      "text": "Comment jouer"
+    },
+    {
+      "box": {
+        "h": 72,
+        "w": 640,
+        "x": 104,
+        "y": 1094
+      },
+      "color": "#d0d5dd",
+      "depth": 3,
+      "font": "16px 400",
+      "tag": "p",
+      "text": "Les touches 1 à 6 choisissent une tour et 0 annule. U améliore la tour sélectionnée et S la vend. Gardez Maj enfoncée pour poser plusieurs tours d'affilée. Espace met le jeu en pause."
+    },
+    {
+      "background": "#333333",
+      "box": {
+        "h": 135,
+        "w": 1440,
+        "x": 0,
+        "y": 1253
+      },
+      "class": "foot",
+      "color": "#d0d5dd",
+      "depth": 2,
+      "display": "block",
+      "font": "14px 400",
+      "tag": "footer"
+    },
+    {
+      "box": {
+        "h": 21,
+        "w": 448,
+        "x": 104,
+        "y": 1285
+      },
+      "color": "#ffffff",
+      "depth": 5,
+      "font": "18px 700",
+      "tag": "h2",
+      "text": "Dédale Défense"
+    },
+    {
+      "box": {
+        "h": 42,
+        "w": 448,
+        "x": 104,
+        "y": 1314
+      },
+      "color": "#d0d5dd",
+      "depth": 5,
+      "font": "14px 400",
+      "tag": "p",
+      "text": "Un jeu de tower defense en labyrinthe. Votre record est gardé dans ce navigateur."
+    },
+    {
+      "box": {
+        "h": 21,
+        "w": 95,
+        "x": 1241,
+        "y": 1285
+      },
+      "color": "#ffffff",
+      "depth": 5,
+      "font": "18px 700",
+      "tag": "h2",
+      "text": "Raccourcis"
+    },
+    {
+      "box": {
+        "h": 40,
+        "w": 95,
+        "x": 1241,
+        "y": 1314
+      },
+      "color": "#d0d5dd",
+      "depth": 5,
+      "display": "block",
+      "font": "14px 400",
+      "tag": "ul"
+    },
+    {
+      "box": {
+        "h": 17,
+        "w": 37,
+        "x": 1299,
+        "y": 1314
+      },
+      "color": "#eb3751",
+      "depth": 7,
+      "font": "14px 400",
+      "href": "http://127.0.0.1:63920/es/games/preecep/desktop-tower-defense#stage",
+      "tag": "a",
+      "text": "Jouer"
+    },
+    {
+      "box": {
+        "h": 17,
+        "w": 76,
+        "x": 1260,
+        "y": 1337
+      },
+      "color": "#eb3751",
+      "depth": 7,
+      "font": "14px 400",
+      "href": "http://127.0.0.1:63920/es/games/preecep/desktop-tower-defense#aide",
+      "tag": "a",
+      "text": "Aide et FAQ"
+    }
+  ],
+  "page": {
+    "h": 1388,
+    "w": 1440
+  },
+  "text": "Jouer Aide Dédale Défense 1-6 tour · 0 annuler · U améliorer · S vendre · Maj placer plusieurs · Espace pause · N vague Dédale Défense Bâtissez un labyrinthe de tours et empêchez les vagues d'ennemis de traverser le plateau. 50 vagues à tenir. Facile · 30 vies · record 0 Normal · 20 vies · record 0 Difficile · 10 vies · record 0 1. Marcheurs ← 10 · 16 PV 2. Coureurs ↑ 10 · 15 PV 3. Marcheurs ← 10 · 27 PV 4. Volants ↑ 8 · 28 PV 5. Essaim ← 22 · 15 PV 6. Blindés ↑ 8 · 67 PV 7. Marcheurs ← 10 · 51 PV VAGUE 0/50 VIES 20 OR 60 SCORE 0 1 Caillou 5 or 2 Éclat 15 or 3 Aiguille 25 or 4 Volée 30 or 5 Givre 20 or 6 Onde 40 or Comment jouer Les ennemis traversent le plateau de gauche à droite et de haut en bas. Posez des tours pour leur barrer la route et allonger leur chemin : ils contournent toujours vos tours, mais vous ne pouvez jamais fermer complètement le passage. Les volants passent au-dessus de tout. Cliquez sur une tour posée pour l'améliorer ou la vendre. Vague suivante N Pause Vitesse ×1 Nouvelle partie Description Un jeu de réflexion en temps réel : des vagues d'ennemis traversent le plateau, et vos tours doivent les arrêter avant qu'ils n'atteignent l'autre côté. Achetez des tours, placez-les sur le plateau et obligez les ennemis à faire de longs détours. Comment jouer Les touches 1 à 6 choisissent une tour et 0 annule. U améliore la tour sélectionnée et S la vend. Gardez Maj enfoncée pour poser plusieurs tours d'affilée. Espace met le jeu en pause. FAQ Dédale Défense Un jeu de tower defense en labyrinthe. Votre record est gardé dans ce navigateur. Raccourcis Jouer Aide et FAQ",
+  "title": "Dédale Défense",
+  "unreadable_stylesheets": 0,
+  "url": "http://127.0.0.1:63920/es/games/preecep/desktop-tower-defense",
+  "viewport": {
+    "h": 900,
+    "w": 1440
+  }
+}

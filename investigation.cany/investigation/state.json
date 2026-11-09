@@ -1,0 +1,20 @@
+{
+  "revision": 2,
+  "brief": {
+    "question": "Build only the tower-defense game embedded on the page (not the portal around it), as a playable web game.",
+    "purpose": "The person wants to play the mazing tower-defense game on its own.",
+    "targets": [
+      "https://www.kongregate.com/en/games/preecep/desktop-tower-defense"
+    ],
+    "constraints": [
+      "Original game in the same genre with the same kind of mechanics and controls; no copied name, art, levels or look of the existing game",
+      "Static site in app/dist, no sideways scroll on phones"
+    ],
+    "done_when": "A playable mazing tower defense: grid placement with path checks, 6 tower kinds with upgrades/sell, waves of varied creeps from two entrances, lives/gold/score, keys 1-6/0/U/S/Shift/Space, served at / and the four locale paths."
+  },
+  "plan": [],
+  "hypotheses": [],
+  "findings": [],
+  "handoff": "Built \"Dédale Défense\": an original maze-building tower defense in app/src (index.html, style.css, game.js). build.mjs copies it to dist/ and to the four locale paths plus /en/. Following the person's request, only the game was built; the portal page (menus, comments, ads) was left out on purpose. rebuild_check: every required claim holds, and the only gap is the low likeness to that portal page. There's a test hook, window.__game, with step(seconds). Balance was tested with a bot (scripts in /tmp/dtd-test2): Easy won, Normal reached wave 47, Hard reached wave 37. Ideas for next time: UI translations per locale path, sound, a challenge mode.",
+  "updated": "2026-11-09T11:40:57Z"
+}

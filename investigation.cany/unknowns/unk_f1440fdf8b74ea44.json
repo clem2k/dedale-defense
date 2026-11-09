@@ -1,0 +1,14 @@
+{
+  "id": "unk_f1440fdf8b74ea44",
+  "revision": 2,
+  "question": "Exact numbers of the original game (tower costs, damage, creep health per wave, wave list) — the game is an old Flash file not inspected here.",
+  "severity": "low",
+  "domain": "game",
+  "status": "blocked",
+  "probes": [
+    "Extract the SWF and read its ActionScript"
+  ],
+  "evidence_for": [],
+  "evidence_against": [],
+  "resolution": "Not pursued on purpose: the build is an original game in the same genre, so it doesn't copy the original's exact numbers. I tuned my own numbers instead. A bot test won on Easy, reached wave 47 on Normal and wave 37 on Hard."
+}

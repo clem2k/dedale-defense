@@ -1,0 +1,16 @@
+{
+  "states": [
+    {
+      "changed": [
+        "section opened"
+      ],
+      "file": "state-1.png",
+      "index": 0,
+      "kind": "section",
+      "label": "FAQ",
+      "sha256": "6ebeb56a004ff64bd3d4109ecd29c9e8b8bdbaacbeb3fc35925e00501947a82d"
+    }
+  ],
+  "url": "https://www.kongregate.com/en/games/preecep/desktop-tower-defense",
+  "width": 390
+}

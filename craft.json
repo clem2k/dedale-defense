@@ -1,0 +1,1159 @@
+{
+  "version": 2,
+  "name": "kongregate.com",
+  "request": "Dans ce site il y a un jeu tower defense dans la fenetre qui se charge. Je ne veux que le jeu \"desktop tower defense\", le reste ne m'interresse pas. Il faudrait reproduire le jeu a l'identique mais juste le jeu",
+  "target": {
+    "kind": "website",
+    "url": "https://www.kongregate.com/en/games/preecep/desktop-tower-defense"
+  },
+  "stack": "Builder's choice",
+  "status": "ready",
+  "note": "Ready: about 31% like the original, 27 of 27 claims hold. 1 question about the original is still open.",
+  "created_ms": 1794223655217,
+  "updated_ms": 1794225586884,
+  "checks": [
+    {
+      "round": 1,
+      "check": "web-visual",
+      "passed": true,
+      "similarity": 27.547795960254597,
+      "note": "start page: 28% (1440 px: 23% alike (layout 16%, detail 30%; page height 4050 vs 1007 px); 768 px: 29% alike (layout 26%, detail 33%; page height 5913 vs 1306 px); 390 px: 31% alike (layout 32%, detail 31%; page height 6750 vs 900 px); text 4% alike; missing headings: \"Search Games\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags for Desktop Tower Defense\", \"Description\", \"How to Play\", \"Comments\", \"Resources\"; missing words: the, top, plays, to, and, of, for, your, game, desktop, in, it; structure 32% alike; missing parts: 31 images, 28 buttons, 9 subheadings, 3 lists, 2 forms, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #222222 (background), #eb3751 (text); text sizes the original uses that the build doesn't: 27.2px, 18px, 24px; spacing the original uses that the build doesn't: 32px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 64; the \"Resources\" footer: padding 20 16 24 16 vs the original's 0 0 0 64, 1 per row vs 2, no content column (the original's is 1280 px); at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 3; the \"Resources\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, 1 per row vs 2, no content column (the original's is 1280 px); at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 2; the \"Resources\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, no content column (the original's is 1280 px)) | /es/games/preecep/desktop-tower-defense: 28% (1440 px: 22% alike (layout 14%, detail 30%; page height 4050 vs 1007 px); 768 px: 31% alike (layout 29%, detail 33%; page height 5913 vs 1306 px); 390 px: 31% alike (layout 32%, detail 31%; page height 6850 vs 900 px); text 5% alike; missing headings: \"Buscar juegos\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Etiquetas para Desktop Tower Defense\", \"Descripción\", \"Cómo jugar\", \"Comentarios\", \"Recursos\"; missing words: the, partidas, top, to, and, of, your, for, desktop, game, it, kongregate; structure 32% alike; missing parts: 31 images, 28 buttons, 9 subheadings, 3 lists, 2 forms, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #222222 (background), #eb3751 (text); text sizes the original uses that the build doesn't: 27.2px, 18px, 24px; spacing the original uses that the build doesn't: 32px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 64; the \"Recursos\" footer: padding 20 16 24 16 vs the original's 0 0 0 64, 1 per row vs 2, no content column (the original's is 1280 px); at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 3; the \"Recursos\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, 1 per row vs 2, no content column (the original's is 1280 px); at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 2; the \"Recursos\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, no content column (the original's is 1280 px)) | /de/games/preecep/desktop-tower-defense: 27% (1440 px: 22% alike (layout 14%, detail 29%; page height 4050 vs 1007 px); 768 px: 28% alike (layout 25%, detail 31%; page height 5913 vs 1306 px); 390 px: 31% alike (layout 31%, detail 30%; page height 6774 vs 900 px); text 4% alike; missing headings: \"Spiele durchsuchen\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags für Desktop Tower Defense\", \"Beschreibung\", \"Spielanleitung\", \"Kommentare\", \"Ressourcen\"; missing words: the, spiele, top, to, and, of, your, for, desktop, game, it, kongregate; structure 32% alike; missing parts: 31 images, 28 buttons, 9 subheadings, 3 lists, 2 forms, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #222222 (background), #eb3751 (text); text sizes the original uses that the build doesn't: 27.2px, 18px, 24px; spacing the original uses that the build doesn't: 32px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 64; the \"Ressourcen\" footer: padding 20 16 24 16 vs the original's 0 0 0 64, 1 per row vs 2, no content column (the original's is 1280 px); at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 3; the \"Ressourcen\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, 1 per row vs 2, no content column (the original's is 1280 px); at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 2; the \"Ressourcen\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, no content column (the original's is 1280 px)) | /fr/games/preecep/desktop-tower-defense: 28% (1440 px: 22% alike (layout 15%, detail 30%; page height 4050 vs 1007 px); 768 px: 29% alike (layout 26%, detail 33%; page height 5913 vs 1306 px); 390 px: 31% alike (layout 32%, detail 31%; page height 6774 vs 900 px); text 9% alike; missing headings: \"Rechercher des jeux\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags pour Desktop Tower Defense\", \"Description\", \"Commentaires\", \"Ressources\", \"Content de te revoir…! Rejoins Kongregate\"; missing words: the, parties, top, to, and, of, your, for, desktop, game, it, kongregate; structure 32% alike; missing parts: 31 images, 28 buttons, 9 subheadings, 3 lists, 2 forms, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #222222 (background), #eb3751 (text); text sizes the original uses that the build doesn't: 27.2px, 18px, 24px; spacing the original uses that the build doesn't: 32px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 64; the \"Ressources\" footer: padding 20 16 24 16 vs the original's 0 0 0 64, 1 per row vs 2, no content column (the original's is 1280 px); at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 3; the \"Ressources\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, 1 per row vs 2, no content column (the original's is 1280 px); at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 2; the \"Ressources\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, no content column (the original's is 1280 px)) | /id/games/preecep/desktop-tower-defense: 28% (1440 px: 22% alike (layout 15%, detail 30%; page height 4050 vs 1007 px); 768 px: 28% alike (layout 25%, detail 32%; page height 5913 vs 1306 px); 390 px: 32% alike (layout 32%, detail 31%; page height 6774 vs 900 px); text 3% alike; missing headings: \"Cari Game\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tag untuk Desktop Tower Defense\", \"Deskripsi\", \"Cara Bermain\", \"Komentar\", \"Sumber Daya\"; missing words: the, dimainkan, kali, teratas, to, and, of, game, your, for, desktop, it; structure 32% alike; missing parts: 31 images, 28 buttons, 9 subheadings, 3 lists, 2 forms, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #222222 (background), #eb3751 (text); text sizes the original uses that the build doesn't: 27.2px, 18px, 24px; spacing the original uses that the build doesn't: 32px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 64; the \"Sumber Daya\" footer: padding 20 16 24 16 vs the original's 0 0 0 64, 1 per row vs 2, no content column (the original's is 1280 px); at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 3; the \"Sumber Daya\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, 1 per row vs 2, no content column (the original's is 1280 px); at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 2; the \"Sumber Daya\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, no content column (the original's is 1280 px)) | opened menus and pop-ups at 1440 px: the \"FAQ\" section 26% alike | opened menus and pop-ups at 390 px: the \"FAQ\" section 19% alike",
+      "artifacts": [
+        "checks/round-1/screenshot-1440.png",
+        "checks/round-1/screenshot-768.png",
+        "checks/round-1/screenshot-390.png",
+        "checks/round-1/routes/es-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-1/routes/es-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-1/routes/es-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-1/routes/de-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-1/routes/de-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-1/routes/de-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-1/routes/fr-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-1/routes/fr-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-1/routes/fr-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-1/routes/id-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-1/routes/id-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-1/routes/id-games-preecep-desktop-tower-defense/screenshot-390.png"
+      ],
+      "at_ms": 1794224502339,
+      "pages": [
+        {
+          "name": "start page",
+          "dir": "",
+          "similarity": 27.821100324870354
+        },
+        {
+          "name": "/es/games/preecep/desktop-tower-defense",
+          "dir": "routes/es-games-preecep-desktop-tower-defense",
+          "similarity": 27.94107003760863
+        },
+        {
+          "name": "/de/games/preecep/desktop-tower-defense",
+          "dir": "routes/de-games-preecep-desktop-tower-defense",
+          "similarity": 26.86850895777918
+        },
+        {
+          "name": "/fr/games/preecep/desktop-tower-defense",
+          "dir": "routes/fr-games-preecep-desktop-tower-defense",
+          "similarity": 27.597859149648723
+        },
+        {
+          "name": "/id/games/preecep/desktop-tower-defense",
+          "dir": "routes/id-games-preecep-desktop-tower-defense",
+          "similarity": 27.5104413313661
+        }
+      ],
+      "claims": [
+        {
+          "title": "The start page doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "The start page doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "The start page logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "The start page loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "The start page has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 390 px",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "check": "web-visual",
+      "passed": true,
+      "similarity": 27.562258014022497,
+      "note": "start page: 28% (1440 px: 23% alike (layout 16%, detail 31%; page height 4050 vs 1002 px); 768 px: 29% alike (layout 26%, detail 33%; page height 5913 vs 1301 px); 390 px: 31% alike (layout 32%, detail 31%; page height 6750 vs 900 px); text 4% alike; missing headings: \"Search Games\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags for Desktop Tower Defense\", \"Description\", \"How to Play\", \"Comments\", \"Resources\"; missing words: the, top, plays, to, and, of, for, your, game, desktop, in, it; structure 32% alike; missing parts: 31 images, 28 buttons, 9 subheadings, 3 lists, 2 forms, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #222222 (background), #eb3751 (text); text sizes the original uses that the build doesn't: 27.2px, 18px, 24px; spacing the original uses that the build doesn't: 32px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 64; the \"Resources\" footer: padding 20 16 24 16 vs the original's 0 0 0 64, 1 per row vs 2, no content column (the original's is 1280 px); at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 3; the \"Resources\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, 1 per row vs 2, no content column (the original's is 1280 px); at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 2; the \"Resources\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, no content column (the original's is 1280 px)) | /es/games/preecep/desktop-tower-defense: 28% (1440 px: 22% alike (layout 14%, detail 30%; page height 4050 vs 1002 px); 768 px: 30% alike (layout 29%, detail 32%; page height 5913 vs 1301 px); 390 px: 31% alike (layout 32%, detail 31%; page height 6850 vs 900 px); text 5% alike; missing headings: \"Buscar juegos\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Etiquetas para Desktop Tower Defense\", \"Descripción\", \"Cómo jugar\", \"Comentarios\", \"Recursos\"; missing words: the, partidas, top, to, and, of, your, for, desktop, game, it, kongregate; structure 32% alike; missing parts: 31 images, 28 buttons, 9 subheadings, 3 lists, 2 forms, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #222222 (background), #eb3751 (text); text sizes the original uses that the build doesn't: 27.2px, 18px, 24px; spacing the original uses that the build doesn't: 32px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 64; the \"Recursos\" footer: padding 20 16 24 16 vs the original's 0 0 0 64, 1 per row vs 2, no content column (the original's is 1280 px); at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 3; the \"Recursos\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, 1 per row vs 2, no content column (the original's is 1280 px); at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 2; the \"Recursos\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, no content column (the original's is 1280 px)) | /de/games/preecep/desktop-tower-defense: 27% (1440 px: 22% alike (layout 14%, detail 29%; page height 4050 vs 1002 px); 768 px: 28% alike (layout 25%, detail 31%; page height 5913 vs 1301 px); 390 px: 31% alike (layout 31%, detail 30%; page height 6774 vs 900 px); text 4% alike; missing headings: \"Spiele durchsuchen\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags für Desktop Tower Defense\", \"Beschreibung\", \"Spielanleitung\", \"Kommentare\", \"Ressourcen\"; missing words: the, spiele, top, to, and, of, your, for, desktop, game, it, kongregate; structure 32% alike; missing parts: 31 images, 28 buttons, 9 subheadings, 3 lists, 2 forms, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #222222 (background), #eb3751 (text); text sizes the original uses that the build doesn't: 27.2px, 18px, 24px; spacing the original uses that the build doesn't: 32px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 64; the \"Ressourcen\" footer: padding 20 16 24 16 vs the original's 0 0 0 64, 1 per row vs 2, no content column (the original's is 1280 px); at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 3; the \"Ressourcen\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, 1 per row vs 2, no content column (the original's is 1280 px); at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 2; the \"Ressourcen\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, no content column (the original's is 1280 px)) | /fr/games/preecep/desktop-tower-defense: 28% (1440 px: 22% alike (layout 15%, detail 30%; page height 4050 vs 1002 px); 768 px: 29% alike (layout 26%, detail 33%; page height 5913 vs 1301 px); 390 px: 31% alike (layout 32%, detail 31%; page height 6774 vs 900 px); text 9% alike; missing headings: \"Rechercher des jeux\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags pour Desktop Tower Defense\", \"Description\", \"Commentaires\", \"Ressources\", \"Content de te revoir…! Rejoins Kongregate\"; missing words: the, parties, top, to, and, of, your, for, desktop, game, it, kongregate; structure 32% alike; missing parts: 31 images, 28 buttons, 9 subheadings, 3 lists, 2 forms, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #222222 (background), #eb3751 (text); text sizes the original uses that the build doesn't: 27.2px, 18px, 24px; spacing the original uses that the build doesn't: 32px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 64; the \"Ressources\" footer: padding 20 16 24 16 vs the original's 0 0 0 64, 1 per row vs 2, no content column (the original's is 1280 px); at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 3; the \"Ressources\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, 1 per row vs 2, no content column (the original's is 1280 px); at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 2; the \"Ressources\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, no content column (the original's is 1280 px)) | /id/games/preecep/desktop-tower-defense: 28% (1440 px: 23% alike (layout 15%, detail 30%; page height 4050 vs 1002 px); 768 px: 28% alike (layout 25%, detail 32%; page height 5913 vs 1301 px); 390 px: 32% alike (layout 32%, detail 31%; page height 6774 vs 900 px); text 3% alike; missing headings: \"Cari Game\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tag untuk Desktop Tower Defense\", \"Deskripsi\", \"Cara Bermain\", \"Komentar\", \"Sumber Daya\"; missing words: the, dimainkan, kali, teratas, to, and, of, game, your, for, desktop, it; structure 32% alike; missing parts: 31 images, 28 buttons, 9 subheadings, 3 lists, 2 forms, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #222222 (background), #eb3751 (text); text sizes the original uses that the build doesn't: 27.2px, 18px, 24px; spacing the original uses that the build doesn't: 32px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 64; the \"Sumber Daya\" footer: padding 20 16 24 16 vs the original's 0 0 0 64, 1 per row vs 2, no content column (the original's is 1280 px); at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 3; the \"Sumber Daya\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, 1 per row vs 2, no content column (the original's is 1280 px); at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: padding 8 0 8 0 vs the original's 16 0 8 0, 4 per row vs 2; the \"Sumber Daya\" footer: padding 20 16 24 16 vs the original's 0 0 0 0, no content column (the original's is 1280 px)) | opened menus and pop-ups at 1440 px: the \"FAQ\" section 28% alike | opened menus and pop-ups at 390 px: the \"FAQ\" section 22% alike",
+      "artifacts": [
+        "checks/round-2/screenshot-1440.png",
+        "checks/round-2/screenshot-768.png",
+        "checks/round-2/screenshot-390.png",
+        "checks/round-2/routes/es-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-2/routes/es-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-2/routes/es-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-2/routes/de-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-2/routes/de-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-2/routes/de-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-2/routes/fr-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-2/routes/fr-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-2/routes/fr-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-2/routes/id-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-2/routes/id-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-2/routes/id-games-preecep-desktop-tower-defense/screenshot-390.png"
+      ],
+      "at_ms": 1794225234138,
+      "pages": [
+        {
+          "name": "start page",
+          "dir": "",
+          "similarity": 27.867963244549372
+        },
+        {
+          "name": "/es/games/preecep/desktop-tower-defense",
+          "dir": "routes/es-games-preecep-desktop-tower-defense",
+          "similarity": 27.880107409662646
+        },
+        {
+          "name": "/de/games/preecep/desktop-tower-defense",
+          "dir": "routes/de-games-preecep-desktop-tower-defense",
+          "similarity": 26.876379177705783
+        },
+        {
+          "name": "/fr/games/preecep/desktop-tower-defense",
+          "dir": "routes/fr-games-preecep-desktop-tower-defense",
+          "similarity": 27.622045368825912
+        },
+        {
+          "name": "/id/games/preecep/desktop-tower-defense",
+          "dir": "routes/id-games-preecep-desktop-tower-defense",
+          "similarity": 27.56479486936878
+        }
+      ],
+      "claims": [
+        {
+          "title": "The start page doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "The start page doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "The start page logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "The start page loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "The start page has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 390 px",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "check": "web-visual",
+      "passed": true,
+      "similarity": 30.722874594208577,
+      "note": "start page: 31% (1440 px: 29% alike (layout 27%, detail 30%; page height 4050 vs 1110 px); 768 px: 28% alike (layout 27%, detail 30%; page height 5913 vs 1409 px); 390 px: 36% alike (layout 37%, detail 34%; page height 6750 vs 921 px); text 4% alike; missing headings: \"Search Games\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags for Desktop Tower Defense\", \"Description\", \"How to Play\", \"Comments\", \"Resources\"; missing words: the, top, plays, to, and, of, for, your, game, desktop, in, it; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Resources\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Resources\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /es/games/preecep/desktop-tower-defense: 32% (1440 px: 28% alike (layout 25%, detail 30%; page height 4050 vs 1110 px); 768 px: 33% alike (layout 33%, detail 33%; page height 5913 vs 1409 px); 390 px: 36% alike (layout 37%, detail 34%; page height 6850 vs 921 px); text 5% alike; missing headings: \"Buscar juegos\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Etiquetas para Desktop Tower Defense\", \"Descripción\", \"Cómo jugar\", \"Comentarios\", \"Recursos\"; missing words: the, partidas, top, to, and, of, your, for, desktop, game, it, kongregate; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Recursos\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Recursos\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /de/games/preecep/desktop-tower-defense: 30% (1440 px: 28% alike (layout 26%, detail 30%; page height 4050 vs 1110 px); 768 px: 27% alike (layout 26%, detail 28%; page height 5913 vs 1409 px); 390 px: 35% alike (layout 36%, detail 34%; page height 6774 vs 921 px); text 3% alike; missing headings: \"Spiele durchsuchen\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags für Desktop Tower Defense\", \"Beschreibung\", \"Spielanleitung\", \"Kommentare\", \"Ressourcen\"; missing words: the, spiele, top, to, and, of, your, for, desktop, game, it, kongregate; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Ressourcen\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Ressourcen\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /fr/games/preecep/desktop-tower-defense: 31% (1440 px: 29% alike (layout 28%, detail 31%; page height 4050 vs 1110 px); 768 px: 27% alike (layout 25%, detail 28%; page height 5913 vs 1409 px); 390 px: 36% alike (layout 37%, detail 34%; page height 6774 vs 921 px); text 9% alike; missing headings: \"Rechercher des jeux\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags pour Desktop Tower Defense\", \"Description\", \"Commentaires\", \"Ressources\", \"Content de te revoir…! Rejoins Kongregate\"; missing words: the, parties, top, to, and, of, your, for, desktop, game, it, kongregate; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Ressources\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Ressources\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /id/games/preecep/desktop-tower-defense: 30% (1440 px: 28% alike (layout 26%, detail 29%; page height 4050 vs 1110 px); 768 px: 26% alike (layout 24%, detail 29%; page height 5913 vs 1409 px); 390 px: 36% alike (layout 38%, detail 35%; page height 6774 vs 921 px); text 3% alike; missing headings: \"Cari Game\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tag untuk Desktop Tower Defense\", \"Deskripsi\", \"Cara Bermain\", \"Komentar\", \"Sumber Daya\"; missing words: the, dimainkan, kali, teratas, to, and, of, game, your, for, desktop, it; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Sumber Daya\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Sumber Daya\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | opened menus and pop-ups at 1440 px: the \"FAQ\" section 34% alike | opened menus and pop-ups at 390 px: the \"FAQ\" section 29% alike",
+      "artifacts": [
+        "checks/round-3/screenshot-1440.png",
+        "checks/round-3/screenshot-768.png",
+        "checks/round-3/screenshot-390.png",
+        "checks/round-3/routes/es-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-3/routes/es-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-3/routes/es-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-3/routes/de-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-3/routes/de-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-3/routes/de-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-3/routes/fr-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-3/routes/fr-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-3/routes/fr-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-3/routes/id-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-3/routes/id-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-3/routes/id-games-preecep-desktop-tower-defense/screenshot-390.png"
+      ],
+      "at_ms": 1794225326826,
+      "pages": [
+        {
+          "name": "start page",
+          "dir": "",
+          "similarity": 30.968046488625472
+        },
+        {
+          "name": "/es/games/preecep/desktop-tower-defense",
+          "dir": "routes/es-games-preecep-desktop-tower-defense",
+          "similarity": 32.07711585788599
+        },
+        {
+          "name": "/de/games/preecep/desktop-tower-defense",
+          "dir": "routes/de-games-preecep-desktop-tower-defense",
+          "similarity": 29.939999629994674
+        },
+        {
+          "name": "/fr/games/preecep/desktop-tower-defense",
+          "dir": "routes/fr-games-preecep-desktop-tower-defense",
+          "similarity": 30.548713833421658
+        },
+        {
+          "name": "/id/games/preecep/desktop-tower-defense",
+          "dir": "routes/id-games-preecep-desktop-tower-defense",
+          "similarity": 30.08049716111508
+        }
+      ],
+      "claims": [
+        {
+          "title": "The start page doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "The start page doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "The start page logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "The start page loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "The start page has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 390 px",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "check": "web-visual",
+      "passed": true,
+      "similarity": 30.714732900757657,
+      "note": "start page: 31% (1440 px: 29% alike (layout 27%, detail 30%; page height 4050 vs 1110 px); 768 px: 28% alike (layout 27%, detail 30%; page height 5913 vs 1409 px); 390 px: 36% alike (layout 37%, detail 34%; page height 6750 vs 921 px); text 4% alike; missing headings: \"Search Games\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags for Desktop Tower Defense\", \"Description\", \"How to Play\", \"Comments\", \"Resources\"; missing words: the, top, plays, to, and, of, for, your, game, desktop, in, it; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Resources\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Resources\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /es/games/preecep/desktop-tower-defense: 32% (1440 px: 28% alike (layout 25%, detail 30%; page height 4050 vs 1110 px); 768 px: 33% alike (layout 33%, detail 33%; page height 5913 vs 1409 px); 390 px: 36% alike (layout 37%, detail 34%; page height 6850 vs 921 px); text 5% alike; missing headings: \"Buscar juegos\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Etiquetas para Desktop Tower Defense\", \"Descripción\", \"Cómo jugar\", \"Comentarios\", \"Recursos\"; missing words: the, partidas, top, to, and, of, your, for, desktop, game, it, kongregate; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Recursos\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Recursos\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /de/games/preecep/desktop-tower-defense: 30% (1440 px: 28% alike (layout 26%, detail 30%; page height 4050 vs 1110 px); 768 px: 27% alike (layout 26%, detail 28%; page height 5913 vs 1409 px); 390 px: 35% alike (layout 36%, detail 34%; page height 6774 vs 921 px); text 3% alike; missing headings: \"Spiele durchsuchen\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags für Desktop Tower Defense\", \"Beschreibung\", \"Spielanleitung\", \"Kommentare\", \"Ressourcen\"; missing words: the, spiele, top, to, and, of, your, for, desktop, game, it, kongregate; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Ressourcen\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Ressourcen\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /fr/games/preecep/desktop-tower-defense: 31% (1440 px: 29% alike (layout 28%, detail 31%; page height 4050 vs 1110 px); 768 px: 27% alike (layout 25%, detail 28%; page height 5913 vs 1409 px); 390 px: 36% alike (layout 37%, detail 34%; page height 6774 vs 921 px); text 9% alike; missing headings: \"Rechercher des jeux\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags pour Desktop Tower Defense\", \"Description\", \"Commentaires\", \"Ressources\", \"Content de te revoir…! Rejoins Kongregate\"; missing words: the, parties, top, to, and, of, your, for, desktop, game, it, kongregate; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Ressources\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Ressources\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /id/games/preecep/desktop-tower-defense: 30% (1440 px: 28% alike (layout 26%, detail 29%; page height 4050 vs 1110 px); 768 px: 26% alike (layout 24%, detail 29%; page height 5913 vs 1409 px); 390 px: 36% alike (layout 38%, detail 35%; page height 6774 vs 921 px); text 3% alike; missing headings: \"Cari Game\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tag untuk Desktop Tower Defense\", \"Deskripsi\", \"Cara Bermain\", \"Komentar\", \"Sumber Daya\"; missing words: the, dimainkan, kali, teratas, to, and, of, game, your, for, desktop, it; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Sumber Daya\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Sumber Daya\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | opened menus and pop-ups at 1440 px: the \"FAQ\" section 34% alike | opened menus and pop-ups at 390 px: the \"FAQ\" section 29% alike",
+      "artifacts": [
+        "checks/round-4/screenshot-1440.png",
+        "checks/round-4/screenshot-768.png",
+        "checks/round-4/screenshot-390.png",
+        "checks/round-4/routes/es-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-4/routes/es-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-4/routes/es-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-4/routes/de-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-4/routes/de-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-4/routes/de-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-4/routes/fr-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-4/routes/fr-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-4/routes/fr-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-4/routes/id-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-4/routes/id-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-4/routes/id-games-preecep-desktop-tower-defense/screenshot-390.png"
+      ],
+      "at_ms": 1794225415818,
+      "pages": [
+        {
+          "name": "start page",
+          "dir": "",
+          "similarity": 30.948281897776507
+        },
+        {
+          "name": "/es/games/preecep/desktop-tower-defense",
+          "dir": "routes/es-games-preecep-desktop-tower-defense",
+          "similarity": 32.072176989324994
+        },
+        {
+          "name": "/de/games/preecep/desktop-tower-defense",
+          "dir": "routes/de-games-preecep-desktop-tower-defense",
+          "similarity": 29.92451289644391
+        },
+        {
+          "name": "/fr/games/preecep/desktop-tower-defense",
+          "dir": "routes/fr-games-preecep-desktop-tower-defense",
+          "similarity": 30.555089620062237
+        },
+        {
+          "name": "/id/games/preecep/desktop-tower-defense",
+          "dir": "routes/id-games-preecep-desktop-tower-defense",
+          "similarity": 30.073603100180645
+        }
+      ],
+      "claims": [
+        {
+          "title": "The start page doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "The start page doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "The start page logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "The start page loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "The start page has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 390 px",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "check": "web-visual",
+      "passed": true,
+      "similarity": 30.714745331927077,
+      "note": "start page: 31% (1440 px: 29% alike (layout 27%, detail 30%; page height 4050 vs 1110 px); 768 px: 28% alike (layout 27%, detail 30%; page height 5913 vs 1409 px); 390 px: 36% alike (layout 37%, detail 34%; page height 6750 vs 921 px); text 4% alike; missing headings: \"Search Games\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags for Desktop Tower Defense\", \"Description\", \"How to Play\", \"Comments\", \"Resources\"; missing words: the, top, plays, to, and, of, for, your, game, desktop, in, it; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Resources\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Resources\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /es/games/preecep/desktop-tower-defense: 32% (1440 px: 28% alike (layout 25%, detail 30%; page height 4050 vs 1110 px); 768 px: 33% alike (layout 33%, detail 33%; page height 5913 vs 1409 px); 390 px: 36% alike (layout 37%, detail 34%; page height 6850 vs 921 px); text 5% alike; missing headings: \"Buscar juegos\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Etiquetas para Desktop Tower Defense\", \"Descripción\", \"Cómo jugar\", \"Comentarios\", \"Recursos\"; missing words: the, partidas, top, to, and, of, your, for, desktop, game, it, kongregate; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Recursos\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Recursos\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /de/games/preecep/desktop-tower-defense: 30% (1440 px: 28% alike (layout 26%, detail 30%; page height 4050 vs 1110 px); 768 px: 27% alike (layout 26%, detail 28%; page height 5913 vs 1409 px); 390 px: 35% alike (layout 36%, detail 34%; page height 6774 vs 921 px); text 3% alike; missing headings: \"Spiele durchsuchen\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags für Desktop Tower Defense\", \"Beschreibung\", \"Spielanleitung\", \"Kommentare\", \"Ressourcen\"; missing words: the, spiele, top, to, and, of, your, for, desktop, game, it, kongregate; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Ressourcen\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Ressourcen\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /fr/games/preecep/desktop-tower-defense: 31% (1440 px: 29% alike (layout 28%, detail 31%; page height 4050 vs 1110 px); 768 px: 27% alike (layout 25%, detail 28%; page height 5913 vs 1409 px); 390 px: 36% alike (layout 37%, detail 34%; page height 6774 vs 921 px); text 9% alike; missing headings: \"Rechercher des jeux\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags pour Desktop Tower Defense\", \"Description\", \"Commentaires\", \"Ressources\", \"Content de te revoir…! Rejoins Kongregate\"; missing words: the, parties, top, to, and, of, your, for, desktop, game, it, kongregate; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Ressources\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Ressources\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /id/games/preecep/desktop-tower-defense: 30% (1440 px: 28% alike (layout 26%, detail 29%; page height 4050 vs 1110 px); 768 px: 26% alike (layout 24%, detail 29%; page height 5913 vs 1409 px); 390 px: 36% alike (layout 38%, detail 35%; page height 6774 vs 921 px); text 3% alike; missing headings: \"Cari Game\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tag untuk Desktop Tower Defense\", \"Deskripsi\", \"Cara Bermain\", \"Komentar\", \"Sumber Daya\"; missing words: the, dimainkan, kali, teratas, to, and, of, game, your, for, desktop, it; structure 34% alike; missing parts: 31 images, 28 buttons, 7 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Sumber Daya\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Sumber Daya\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | opened menus and pop-ups at 1440 px: the \"FAQ\" section 34% alike | opened menus and pop-ups at 390 px: the \"FAQ\" section 29% alike",
+      "artifacts": [
+        "checks/round-5/screenshot-1440.png",
+        "checks/round-5/screenshot-768.png",
+        "checks/round-5/screenshot-390.png",
+        "checks/round-5/routes/es-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-5/routes/es-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-5/routes/es-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-5/routes/de-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-5/routes/de-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-5/routes/de-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-5/routes/fr-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-5/routes/fr-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-5/routes/fr-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-5/routes/id-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-5/routes/id-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-5/routes/id-games-preecep-desktop-tower-defense/screenshot-390.png"
+      ],
+      "at_ms": 1794225457515,
+      "pages": [
+        {
+          "name": "start page",
+          "dir": "",
+          "similarity": 30.948281897776507
+        },
+        {
+          "name": "/es/games/preecep/desktop-tower-defense",
+          "dir": "routes/es-games-preecep-desktop-tower-defense",
+          "similarity": 32.072176989324994
+        },
+        {
+          "name": "/de/games/preecep/desktop-tower-defense",
+          "dir": "routes/de-games-preecep-desktop-tower-defense",
+          "similarity": 29.924458739607818
+        },
+        {
+          "name": "/fr/games/preecep/desktop-tower-defense",
+          "dir": "routes/fr-games-preecep-desktop-tower-defense",
+          "similarity": 30.555151215164244
+        },
+        {
+          "name": "/id/games/preecep/desktop-tower-defense",
+          "dir": "routes/id-games-preecep-desktop-tower-defense",
+          "similarity": 30.07365781776184
+        }
+      ],
+      "claims": [
+        {
+          "title": "The start page doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "The start page doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "The start page logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "The start page loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "The start page has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 390 px",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "check": "web-visual",
+      "passed": true,
+      "similarity": 30.646721058639674,
+      "note": "start page: 31% (1440 px: 36% alike (layout 37%, detail 36%; page height 4050 vs 1388 px); 768 px: 25% alike (layout 27%, detail 23%; page height 5913 vs 1687 px); 390 px: 33% alike (layout 38%, detail 28%; page height 6750 vs 1319 px); text 4% alike; missing headings: \"Search Games\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags for Desktop Tower Defense\", \"How to Play\", \"Comments\", \"Resources\", \"Welcome Back! Join Kongregate\"; missing words: the, top, plays, to, and, of, for, your, game, desktop, in, it; structure 37% alike; missing parts: 31 images, 28 buttons, 5 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Resources\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Resources\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /es/games/preecep/desktop-tower-defense: 31% (1440 px: 34% alike (layout 34%, detail 34%; page height 4050 vs 1388 px); 768 px: 26% alike (layout 28%, detail 24%; page height 5913 vs 1687 px); 390 px: 33% alike (layout 37%, detail 28%; page height 6850 vs 1319 px); text 5% alike; missing headings: \"Buscar juegos\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Etiquetas para Desktop Tower Defense\", \"Descripción\", \"Cómo jugar\", \"Comentarios\", \"Recursos\"; missing words: the, partidas, top, to, and, of, your, for, desktop, game, it, kongregate; structure 37% alike; missing parts: 31 images, 28 buttons, 5 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Recursos\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Recursos\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /de/games/preecep/desktop-tower-defense: 30% (1440 px: 35% alike (layout 36%, detail 34%; page height 4050 vs 1388 px); 768 px: 22% alike (layout 23%, detail 21%; page height 5913 vs 1687 px); 390 px: 33% alike (layout 37%, detail 29%; page height 6774 vs 1319 px); text 3% alike; missing headings: \"Spiele durchsuchen\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags für Desktop Tower Defense\", \"Beschreibung\", \"Spielanleitung\", \"Kommentare\", \"Ressourcen\"; missing words: the, spiele, top, to, and, of, your, for, desktop, game, it, kongregate; structure 37% alike; missing parts: 31 images, 28 buttons, 5 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Ressourcen\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Ressourcen\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /fr/games/preecep/desktop-tower-defense: 30% (1440 px: 37% alike (layout 38%, detail 36%; page height 4050 vs 1388 px); 768 px: 22% alike (layout 24%, detail 21%; page height 5913 vs 1687 px); 390 px: 32% alike (layout 37%, detail 28%; page height 6774 vs 1319 px); text 9% alike; missing headings: \"Rechercher des jeux\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags pour Desktop Tower Defense\", \"Commentaires\", \"Ressources\", \"Content de te revoir…! Rejoins Kongregate\", \"Account Created!\"; missing words: the, parties, top, to, and, of, your, for, desktop, game, it, kongregate; structure 37% alike; missing parts: 31 images, 28 buttons, 5 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Ressources\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Ressources\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /id/games/preecep/desktop-tower-defense: 31% (1440 px: 35% alike (layout 36%, detail 34%; page height 4050 vs 1388 px); 768 px: 23% alike (layout 24%, detail 22%; page height 5913 vs 1687 px); 390 px: 34% alike (layout 38%, detail 29%; page height 6774 vs 1319 px); text 3% alike; missing headings: \"Cari Game\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tag untuk Desktop Tower Defense\", \"Deskripsi\", \"Cara Bermain\", \"Komentar\", \"Sumber Daya\"; missing words: the, dimainkan, kali, teratas, to, and, of, game, your, for, desktop, it; structure 37% alike; missing parts: 31 images, 28 buttons, 5 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Sumber Daya\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Sumber Daya\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | opened menus and pop-ups at 1440 px: the \"FAQ\" section 40% alike | opened menus and pop-ups at 390 px: the \"FAQ\" section 28% alike",
+      "artifacts": [
+        "checks/round-6/screenshot-1440.png",
+        "checks/round-6/screenshot-768.png",
+        "checks/round-6/screenshot-390.png",
+        "checks/round-6/routes/es-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-6/routes/es-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-6/routes/es-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-6/routes/de-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-6/routes/de-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-6/routes/de-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-6/routes/fr-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-6/routes/fr-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-6/routes/fr-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-6/routes/id-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-6/routes/id-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-6/routes/id-games-preecep-desktop-tower-defense/screenshot-390.png"
+      ],
+      "at_ms": 1794225543406,
+      "pages": [
+        {
+          "name": "start page",
+          "dir": "",
+          "similarity": 31.42768252048907
+        },
+        {
+          "name": "/es/games/preecep/desktop-tower-defense",
+          "dir": "routes/es-games-preecep-desktop-tower-defense",
+          "similarity": 31.05032832148971
+        },
+        {
+          "name": "/de/games/preecep/desktop-tower-defense",
+          "dir": "routes/de-games-preecep-desktop-tower-defense",
+          "similarity": 29.83663178213998
+        },
+        {
+          "name": "/fr/games/preecep/desktop-tower-defense",
+          "dir": "routes/fr-games-preecep-desktop-tower-defense",
+          "similarity": 30.372101827275277
+        },
+        {
+          "name": "/id/games/preecep/desktop-tower-defense",
+          "dir": "routes/id-games-preecep-desktop-tower-defense",
+          "similarity": 30.546860841804346
+        }
+      ],
+      "claims": [
+        {
+          "title": "The start page doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "The start page doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "The start page logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "The start page loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "The start page has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 390 px",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "check": "web-visual",
+      "passed": true,
+      "similarity": 30.646714109507013,
+      "note": "start page: 31% (1440 px: 36% alike (layout 37%, detail 36%; page height 4050 vs 1388 px); 768 px: 25% alike (layout 27%, detail 23%; page height 5913 vs 1687 px); 390 px: 33% alike (layout 38%, detail 28%; page height 6750 vs 1319 px); text 4% alike; missing headings: \"Search Games\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags for Desktop Tower Defense\", \"How to Play\", \"Comments\", \"Resources\", \"Welcome Back! Join Kongregate\"; missing words: the, top, plays, to, and, of, for, your, game, desktop, in, it; structure 37% alike; missing parts: 31 images, 28 buttons, 5 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Resources\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Resources\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /es/games/preecep/desktop-tower-defense: 31% (1440 px: 34% alike (layout 34%, detail 34%; page height 4050 vs 1388 px); 768 px: 26% alike (layout 28%, detail 24%; page height 5913 vs 1687 px); 390 px: 33% alike (layout 37%, detail 28%; page height 6850 vs 1319 px); text 5% alike; missing headings: \"Buscar juegos\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Etiquetas para Desktop Tower Defense\", \"Descripción\", \"Cómo jugar\", \"Comentarios\", \"Recursos\"; missing words: the, partidas, top, to, and, of, your, for, desktop, game, it, kongregate; structure 37% alike; missing parts: 31 images, 28 buttons, 5 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Recursos\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Recursos\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /de/games/preecep/desktop-tower-defense: 30% (1440 px: 35% alike (layout 36%, detail 34%; page height 4050 vs 1388 px); 768 px: 22% alike (layout 23%, detail 21%; page height 5913 vs 1687 px); 390 px: 33% alike (layout 37%, detail 29%; page height 6774 vs 1319 px); text 3% alike; missing headings: \"Spiele durchsuchen\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags für Desktop Tower Defense\", \"Beschreibung\", \"Spielanleitung\", \"Kommentare\", \"Ressourcen\"; missing words: the, spiele, top, to, and, of, your, for, desktop, game, it, kongregate; structure 37% alike; missing parts: 31 images, 28 buttons, 5 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Ressourcen\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Ressourcen\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /fr/games/preecep/desktop-tower-defense: 30% (1440 px: 37% alike (layout 38%, detail 36%; page height 4050 vs 1388 px); 768 px: 22% alike (layout 24%, detail 21%; page height 5913 vs 1687 px); 390 px: 32% alike (layout 37%, detail 28%; page height 6774 vs 1319 px); text 9% alike; missing headings: \"Rechercher des jeux\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tags pour Desktop Tower Defense\", \"Commentaires\", \"Ressources\", \"Content de te revoir…! Rejoins Kongregate\", \"Account Created!\"; missing words: the, parties, top, to, and, of, your, for, desktop, game, it, kongregate; structure 37% alike; missing parts: 31 images, 28 buttons, 5 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Ressources\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Ressources\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | /id/games/preecep/desktop-tower-defense: 31% (1440 px: 35% alike (layout 36%, detail 34%; page height 4050 vs 1388 px); 768 px: 23% alike (layout 24%, detail 22%; page height 5913 vs 1687 px); 390 px: 34% alike (layout 38%, detail 29%; page height 6774 vs 1319 px); text 3% alike; missing headings: \"Cari Game\", \"Desktop Tower Defense\", \"Desktop Tower Defense\", \"Tag untuk Desktop Tower Defense\", \"Deskripsi\", \"Cara Bermain\", \"Komentar\", \"Sumber Daya\"; missing words: the, dimainkan, kali, teratas, to, and, of, game, your, for, desktop, it; structure 37% alike; missing parts: 31 images, 28 buttons, 5 subheadings, 2 forms, 2 lists, 2 form fields; colours the original uses that the build doesn't: #262626 (background), #101828 (background); text sizes the original uses that the build doesn't: 27.2px, 24px; at 1440 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the aside: 3 per row vs 1; the \"Desktop Tower Defense\" main: padding 16 0 8 0 vs the original's 16 0 8 64; the \"Sumber Daya\" footer: padding 0 0 0 0 vs the original's 0 0 0 64, 1 per row vs 2; at 768 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 44 px; the header: no content column (the original's is 448 px); the \"Desktop Tower Defense\" main: 4 per row vs 3; the \"Sumber Daya\" footer: 1 per row vs 2; at 390 px: top heading 22 px, the original's 36 px; body text 13 px, the original's 34 px; the \"Desktop Tower Defense\" main: 4 per row vs 2) | opened menus and pop-ups at 1440 px: the \"FAQ\" section 40% alike | opened menus and pop-ups at 390 px: the \"FAQ\" section 28% alike",
+      "artifacts": [
+        "checks/round-7/screenshot-1440.png",
+        "checks/round-7/screenshot-768.png",
+        "checks/round-7/screenshot-390.png",
+        "checks/round-7/routes/es-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-7/routes/es-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-7/routes/es-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-7/routes/de-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-7/routes/de-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-7/routes/de-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-7/routes/fr-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-7/routes/fr-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-7/routes/fr-games-preecep-desktop-tower-defense/screenshot-390.png",
+        "checks/round-7/routes/id-games-preecep-desktop-tower-defense/screenshot-1440.png",
+        "checks/round-7/routes/id-games-preecep-desktop-tower-defense/screenshot-768.png",
+        "checks/round-7/routes/id-games-preecep-desktop-tower-defense/screenshot-390.png"
+      ],
+      "at_ms": 1794225586876,
+      "pages": [
+        {
+          "name": "start page",
+          "dir": "",
+          "similarity": 31.42768252048907
+        },
+        {
+          "name": "/es/games/preecep/desktop-tower-defense",
+          "dir": "routes/es-games-preecep-desktop-tower-defense",
+          "similarity": 31.05029357582639
+        },
+        {
+          "name": "/de/games/preecep/desktop-tower-defense",
+          "dir": "routes/de-games-preecep-desktop-tower-defense",
+          "similarity": 29.83663178213998
+        },
+        {
+          "name": "/fr/games/preecep/desktop-tower-defense",
+          "dir": "routes/fr-games-preecep-desktop-tower-defense",
+          "similarity": 30.372101827275277
+        },
+        {
+          "name": "/id/games/preecep/desktop-tower-defense",
+          "dir": "routes/id-games-preecep-desktop-tower-defense",
+          "similarity": 30.546860841804346
+        }
+      ],
+      "claims": [
+        {
+          "title": "The start page doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "The start page doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "The start page logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "The start page loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "The start page has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/es/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/de/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/fr/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense doesn't scroll sideways at 768 px",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense logs no errors the original doesn't",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense loads every file it asks for",
+          "passed": true
+        },
+        {
+          "title": "/id/games/preecep/desktop-tower-defense has the original's landmarks",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 1440 px",
+          "passed": true
+        },
+        {
+          "title": "the \"FAQ\" section opens in the build at 390 px",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "agent_session": "cf6e69b4-a657-434e-8d1d-a65524d28f75",
+  "agent_session_by": "claude-code",
+  "allowed_actions": [
+    "tool:web_walkthrough_record",
+    "tool:build_command_run"
+  ],
+  "last_reply": "I didn't change anything this round. At tablet width the game, the help text, the FAQ and the footer all show correctly with no sideways scrolling, and the slight drop in score there comes from the page being taller now that it has the description, not from anything broken. Everything the check still asks for is the rest of the site, which you didn't want, so the game is ready to play as it is.",
+  "asset_budget_usd": 5.0,
+  "generate_assets": false
+}

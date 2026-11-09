@@ -1,0 +1,73 @@
+{
+  "id": "ev_3a1809ad6ad1a3a5b916b95a5da557767b66eed36eaeb9055699640ed1165054",
+  "subject": {
+    "kind": "website",
+    "name": "about:blank"
+  },
+  "operation": "core_evidence_browse",
+  "params": {
+    "show": {
+      "kind": "summary"
+    },
+    "source": {
+      "evidence_id": "ev_7c611391818852d383001bf5d4b952b5b89ebca1047084d667e6715f756d545e",
+      "kind": "saved"
+    }
+  },
+  "result": {
+    "coverage": {
+      "at_end": true,
+      "examined": 1,
+      "next_offset": null,
+      "status": "all-in-view",
+      "total": 1
+    },
+    "from_evidence": "ev_7c611391818852d383001bf5d4b952b5b89ebca1047084d667e6715f756d545e",
+    "from_tool": "web_walkthrough_record",
+    "shown": {
+      "carries_target_content": false,
+      "confidence": "observed",
+      "coverage": {
+        "examined": 7,
+        "status": "complete",
+        "total": 7
+      },
+      "evidence_id": "ev_7c611391818852d383001bf5d4b952b5b89ebca1047084d667e6715f756d545e",
+      "limitations": [
+        {
+          "code": "controlled_run",
+          "message": "This is one controlled run of scripted steps; different steps or timing would show different behaviour."
+        },
+        {
+          "code": "values_not_kept",
+          "message": "Request/response bodies are reduced to outlines, cookies and auth headers are dropped, and declared secrets are redacted in every encoding."
+        }
+      ],
+      "operation": "web_walkthrough_record",
+      "subject": {
+        "kind": "website",
+        "name": "about:blank"
+      },
+      "summary": "Ran 7 of 7 scripted step(s) on about:blank."
+    }
+  },
+  "summary": "Part of web_walkthrough_record evidence (all-in-view).",
+  "confidence": "observed",
+  "authority": "our-run",
+  "environment": {
+    "clean_room": false,
+    "engine": "builtin",
+    "engine_version": "0.5.0",
+    "host": "macos-aarch64"
+  },
+  "limitations": [],
+  "coverage": {
+    "status": "complete",
+    "examined": 1,
+    "total": 1
+  },
+  "locations": [],
+  "links": [
+    "ev_7c611391818852d383001bf5d4b952b5b89ebca1047084d667e6715f756d545e"
+  ]
+}

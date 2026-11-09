@@ -1,0 +1,10 @@
+{
+  "name": "dedale-defense",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A mazing tower defense game for the browser",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  }
+}

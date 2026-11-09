@@ -1,0 +1,56 @@
+{
+  "id": "ev_5cb4d9546d634f0501e7f4570eb80aa9e2debebd60a3467e50fc78f799b39d9f",
+  "subject": {
+    "kind": "website",
+    "name": "http://127.0.0.1:63112/"
+  },
+  "operation": "web_page_states_capture",
+  "params": {
+    "max_states": 8,
+    "width": 390
+  },
+  "result": {
+    "folder": "/Users/clem2k/dev/desktop_tower_defense/checks/round-1/states-390",
+    "found": 1,
+    "states": [
+      {
+        "changed": [
+          "section opened"
+        ],
+        "file": "state-1.png",
+        "index": 0,
+        "kind": "section",
+        "label": "FAQ",
+        "sha256": "ad1d4dc2342999124aff57f48bb6017a87f444de4d8a9c083990eb0432ed32b7"
+      }
+    ],
+    "url": "http://127.0.0.1:63112/"
+  },
+  "summary": "Opened 1 of 1 control(s) on http://127.0.0.1:63112/; 1 pictured in /Users/clem2k/dev/desktop_tower_defense/checks/round-1/states-390.",
+  "confidence": "observed",
+  "authority": "our-run",
+  "environment": {
+    "clean_room": false,
+    "engine": "cdp",
+    "engine_version": "1.3",
+    "host": "macos-aarch64"
+  },
+  "limitations": [
+    {
+      "code": "first_controls",
+      "message": "Only the first controls found are opened, one at a time; menus inside menus and hover-only menus are not."
+    }
+  ],
+  "coverage": {
+    "status": "complete",
+    "examined": 1,
+    "total": 1
+  },
+  "locations": [
+    {
+      "kind": "url",
+      "value": "http://127.0.0.1:63112/"
+    }
+  ],
+  "links": []
+}

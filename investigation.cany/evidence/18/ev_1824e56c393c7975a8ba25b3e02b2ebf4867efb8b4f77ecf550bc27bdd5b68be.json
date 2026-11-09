@@ -1,0 +1,368 @@
+{
+  "id": "ev_1824e56c393c7975a8ba25b3e02b2ebf4867efb8b4f77ecf550bc27bdd5b68be",
+  "subject": {
+    "kind": "website",
+    "name": "http://127.0.0.1:63996/"
+  },
+  "operation": "web_site_capture",
+  "params": {
+    "include_html": false,
+    "max_height": 12000,
+    "noise_pass": false,
+    "visitor_view": false,
+    "widths": [
+      1440,
+      768,
+      390
+    ]
+  },
+  "result": {
+    "counts": {
+      "forms": 0,
+      "headings": 7,
+      "images": 0,
+      "links": 4,
+      "outline": 35
+    },
+    "design": {
+      "backgrounds": [
+        {
+          "count": 18,
+          "value": "#182230"
+        },
+        {
+          "count": 4,
+          "value": "#344054"
+        },
+        {
+          "count": 3,
+          "value": "#a6ef67"
+        },
+        {
+          "count": 2,
+          "value": "#222222"
+        },
+        {
+          "count": 2,
+          "value": "#1d2939"
+        },
+        {
+          "count": 2,
+          "value": "#eaaa08"
+        },
+        {
+          "count": 1,
+          "value": "#0a101cb8"
+        },
+        {
+          "count": 1,
+          "value": "#fef08a"
+        },
+        {
+          "count": 1,
+          "value": "#7cd4fd"
+        },
+        {
+          "count": 1,
+          "value": "#fda29b"
+        },
+        {
+          "count": 1,
+          "value": "#bdb4fe"
+        },
+        {
+          "count": 1,
+          "value": "#333333"
+        }
+      ],
+      "css_variables": {
+        "--accent": "#eaaa08",
+        "--danger": "#eb3751",
+        "--frame": "#1d2939",
+        "--gold": "#fac515",
+        "--line": "#344054",
+        "--muted": "#98a2b3",
+        "--ok": "#3ccb7f",
+        "--page": "#222222",
+        "--panel": "#182230",
+        "--radius": "8px",
+        "--soft": "#d0d5dd",
+        "--text": "#ffffff"
+      },
+      "font_faces": [],
+      "font_sizes": [
+        {
+          "count": 25,
+          "value": "10px"
+        },
+        {
+          "count": 12,
+          "value": "16px"
+        },
+        {
+          "count": 8,
+          "value": "13px"
+        },
+        {
+          "count": 7,
+          "value": "10.5px"
+        },
+        {
+          "count": 7,
+          "value": "20px"
+        },
+        {
+          "count": 6,
+          "value": "9px"
+        },
+        {
+          "count": 5,
+          "value": "11px"
+        },
+        {
+          "count": 4,
+          "value": "14px"
+        },
+        {
+          "count": 2,
+          "value": "12px"
+        },
+        {
+          "count": 2,
+          "value": "22px"
+        },
+        {
+          "count": 2,
+          "value": "26px"
+        },
+        {
+          "count": 2,
+          "value": "18px"
+        }
+      ],
+      "font_weights": [
+        {
+          "count": 39,
+          "value": "400"
+        },
+        {
+          "count": 18,
+          "value": "600"
+        },
+        {
+          "count": 18,
+          "value": "700"
+        },
+        {
+          "count": 6,
+          "value": "800"
+        },
+        {
+          "count": 1,
+          "value": "500"
+        }
+      ],
+      "fonts": [
+        {
+          "count": 82,
+          "value": "ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+        }
+      ],
+      "max_widths": [
+        {
+          "count": 2,
+          "value": "1280px"
+        },
+        {
+          "count": 2,
+          "value": "640px"
+        },
+        {
+          "count": 1,
+          "value": "448px"
+        }
+      ],
+      "radii": [
+        {
+          "count": 26,
+          "value": "6px"
+        },
+        {
+          "count": 7,
+          "value": "9999px"
+        },
+        {
+          "count": 2,
+          "value": "14px"
+        }
+      ],
+      "shadows": [
+        {
+          "count": 1,
+          "value": "rgb(11, 18, 32) 0px 0px 0px 1px"
+        },
+        {
+          "count": 1,
+          "value": "rgba(0, 0, 0, 0.45) 0px 20px 40px 0px"
+        }
+      ],
+      "spacing": [
+        {
+          "count": 50,
+          "value": "6px"
+        },
+        {
+          "count": 29,
+          "value": "4px"
+        },
+        {
+          "count": 16,
+          "value": "12px"
+        },
+        {
+          "count": 15,
+          "value": "8px"
+        },
+        {
+          "count": 14,
+          "value": "1px"
+        },
+        {
+          "count": 11,
+          "value": "24px"
+        },
+        {
+          "count": 10,
+          "value": "16px"
+        },
+        {
+          "count": 10,
+          "value": "9px"
+        },
+        {
+          "count": 6,
+          "value": "2px"
+        },
+        {
+          "count": 5,
+          "value": "32px"
+        },
+        {
+          "count": 5,
+          "value": "20px"
+        },
+        {
+          "count": 4,
+          "value": "10px"
+        },
+        {
+          "count": 1,
+          "value": "14px"
+        }
+      ],
+      "text_colors": [
+        {
+          "count": 29,
+          "value": "#98a2b3"
+        },
+        {
+          "count": 27,
+          "value": "#ffffff"
+        },
+        {
+          "count": 11,
+          "value": "#d0d5dd"
+        },
+        {
+          "count": 7,
+          "value": "#fac515"
+        },
+        {
+          "count": 3,
+          "value": "#101828"
+        },
+        {
+          "count": 2,
+          "value": "#eaaa08"
+        },
+        {
+          "count": 2,
+          "value": "#eb3751"
+        },
+        {
+          "count": 1,
+          "value": "#101828b3"
+        }
+      ]
+    },
+    "files": [
+      "README.md",
+      "capture.json"
+    ],
+    "html_bytes": 0,
+    "output_directory": "/Users/clem2k/dev/desktop_tower_defense/checks/round-7",
+    "screenshots": [
+      {
+        "css_width": 1440,
+        "cut": false,
+        "file": "screenshot-1440.png",
+        "height": 1388,
+        "sha256": "07413ee7f77270bce0a18d942741fdadc068df62cab1f0e55b7e82ed90f3736f",
+        "width": 1440
+      },
+      {
+        "css_width": 768,
+        "cut": false,
+        "file": "screenshot-768.png",
+        "height": 1687,
+        "sha256": "44528cf936a250ad4efaab9ba3c98a81dd046a1434fe53242ef824994e2d39ed",
+        "width": 768
+      },
+      {
+        "css_width": 390,
+        "cut": false,
+        "file": "screenshot-390.png",
+        "height": 1319,
+        "sha256": "6d4a5a8100c5d2da7dde206ed505919d3bad8de8e6ebb6351020eff9dc07e9b6",
+        "width": 390
+      }
+    ],
+    "title": "Dédale Défense",
+    "url": "http://127.0.0.1:63996/"
+  },
+  "summary": "Captured http://127.0.0.1:63996/: 3 screenshot(s), 35 outline items, 7 headings, 0 images, 4 links, 0 forms → /Users/clem2k/dev/desktop_tower_defense/checks/round-7.",
+  "confidence": "observed",
+  "authority": "our-run",
+  "environment": {
+    "clean_room": false,
+    "engine": "cdp",
+    "engine_version": "1.3",
+    "host": "macos-aarch64"
+  },
+  "limitations": [
+    {
+      "code": "one_state",
+      "message": "One state of the page: menus, dialogs and content behind interactions are not opened."
+    },
+    {
+      "code": "cross_origin_css",
+      "message": "CSS custom properties and breakpoints from cross-origin stylesheets can't be read."
+    }
+  ],
+  "coverage": {
+    "status": "complete",
+    "examined": 3,
+    "total": 3
+  },
+  "locations": [
+    {
+      "kind": "url",
+      "value": "http://127.0.0.1:63996/"
+    },
+    {
+      "kind": "path",
+      "value": "/Users/clem2k/dev/desktop_tower_defense/checks/round-7"
+    }
+  ],
+  "links": []
+}

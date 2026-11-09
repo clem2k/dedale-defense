@@ -1,0 +1,344 @@
+{
+  "id": "ev_46bcbb88d9384edb050cc06669d92edf16e06c96d913ca9b4476213483a2c95b",
+  "subject": {
+    "kind": "website",
+    "name": "http://127.0.0.1:63112/de/games/preecep/desktop-tower-defense"
+  },
+  "operation": "web_site_capture",
+  "params": {
+    "include_html": false,
+    "max_height": 12000,
+    "noise_pass": false,
+    "visitor_view": false,
+    "widths": [
+      1440,
+      768,
+      390
+    ]
+  },
+  "result": {
+    "counts": {
+      "forms": 0,
+      "headings": 3,
+      "images": 0,
+      "links": 2,
+      "outline": 25
+    },
+    "design": {
+      "backgrounds": [
+        {
+          "count": 18,
+          "value": "#182230"
+        },
+        {
+          "count": 4,
+          "value": "#344054"
+        },
+        {
+          "count": 3,
+          "value": "#1d2939"
+        },
+        {
+          "count": 3,
+          "value": "#a6ef67"
+        },
+        {
+          "count": 2,
+          "value": "#101828"
+        },
+        {
+          "count": 2,
+          "value": "#eaaa08"
+        },
+        {
+          "count": 1,
+          "value": "#0a101cb8"
+        },
+        {
+          "count": 1,
+          "value": "#fef08a"
+        },
+        {
+          "count": 1,
+          "value": "#7cd4fd"
+        },
+        {
+          "count": 1,
+          "value": "#fda29b"
+        },
+        {
+          "count": 1,
+          "value": "#bdb4fe"
+        }
+      ],
+      "css_variables": {
+        "--accent": "#eaaa08",
+        "--danger": "#eb3751",
+        "--frame": "#1d2939",
+        "--gold": "#fac515",
+        "--line": "#344054",
+        "--muted": "#98a2b3",
+        "--ok": "#3ccb7f",
+        "--page": "#101828",
+        "--panel": "#182230",
+        "--radius": "8px",
+        "--soft": "#d0d5dd",
+        "--text": "#ffffff"
+      },
+      "font_faces": [],
+      "font_sizes": [
+        {
+          "count": 25,
+          "value": "10px"
+        },
+        {
+          "count": 11,
+          "value": "14px"
+        },
+        {
+          "count": 8,
+          "value": "13px"
+        },
+        {
+          "count": 7,
+          "value": "10.5px"
+        },
+        {
+          "count": 6,
+          "value": "9px"
+        },
+        {
+          "count": 5,
+          "value": "11px"
+        },
+        {
+          "count": 4,
+          "value": "20px"
+        },
+        {
+          "count": 3,
+          "value": "12px"
+        },
+        {
+          "count": 2,
+          "value": "22px"
+        },
+        {
+          "count": 2,
+          "value": "26px"
+        },
+        {
+          "count": 1,
+          "value": "16px"
+        }
+      ],
+      "font_weights": [
+        {
+          "count": 35,
+          "value": "400"
+        },
+        {
+          "count": 17,
+          "value": "600"
+        },
+        {
+          "count": 16,
+          "value": "700"
+        },
+        {
+          "count": 6,
+          "value": "800"
+        }
+      ],
+      "fonts": [
+        {
+          "count": 74,
+          "value": "ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+        }
+      ],
+      "max_widths": [
+        {
+          "count": 1,
+          "value": "856px"
+        }
+      ],
+      "radii": [
+        {
+          "count": 26,
+          "value": "6px"
+        },
+        {
+          "count": 7,
+          "value": "9999px"
+        },
+        {
+          "count": 2,
+          "value": "14px"
+        },
+        {
+          "count": 1,
+          "value": "8px"
+        }
+      ],
+      "shadows": [
+        {
+          "count": 1,
+          "value": "rgb(11, 18, 32) 0px 0px 0px 1px"
+        },
+        {
+          "count": 1,
+          "value": "rgba(0, 0, 0, 0.45) 0px 20px 40px 0px"
+        }
+      ],
+      "spacing": [
+        {
+          "count": 46,
+          "value": "6px"
+        },
+        {
+          "count": 29,
+          "value": "4px"
+        },
+        {
+          "count": 15,
+          "value": "8px"
+        },
+        {
+          "count": 14,
+          "value": "1px"
+        },
+        {
+          "count": 11,
+          "value": "12px"
+        },
+        {
+          "count": 11,
+          "value": "2px"
+        },
+        {
+          "count": 10,
+          "value": "16px"
+        },
+        {
+          "count": 10,
+          "value": "9px"
+        },
+        {
+          "count": 9,
+          "value": "10px"
+        },
+        {
+          "count": 5,
+          "value": "24px"
+        },
+        {
+          "count": 1,
+          "value": "14px"
+        },
+        {
+          "count": 1,
+          "value": "20px"
+        }
+      ],
+      "text_colors": [
+        {
+          "count": 29,
+          "value": "#ffffff"
+        },
+        {
+          "count": 25,
+          "value": "#98a2b3"
+        },
+        {
+          "count": 7,
+          "value": "#d0d5dd"
+        },
+        {
+          "count": 7,
+          "value": "#fac515"
+        },
+        {
+          "count": 3,
+          "value": "#101828"
+        },
+        {
+          "count": 2,
+          "value": "#eaaa08"
+        },
+        {
+          "count": 1,
+          "value": "#101828b3"
+        }
+      ]
+    },
+    "files": [
+      "README.md",
+      "capture.json"
+    ],
+    "html_bytes": 0,
+    "output_directory": "/Users/clem2k/dev/desktop_tower_defense/checks/round-1/routes/de-games-preecep-desktop-tower-defense",
+    "screenshots": [
+      {
+        "css_width": 1440,
+        "cut": false,
+        "file": "screenshot-1440.png",
+        "height": 1007,
+        "sha256": "5aca8deeb4af68e2e6d59a2865eee9ff5cf8b981d1bc30d1f80962af22488cdf",
+        "width": 1440
+      },
+      {
+        "css_width": 768,
+        "cut": false,
+        "file": "screenshot-768.png",
+        "height": 1306,
+        "sha256": "a61282db8a6174116e9b9c097cb945c757f6eada3f5623dab903981d1c108aa6",
+        "width": 768
+      },
+      {
+        "css_width": 390,
+        "cut": false,
+        "file": "screenshot-390.png",
+        "height": 900,
+        "sha256": "cf393f75f43336f65f61aa8dec1964f4a4c537e32b896921a0ed3873747e9ebd",
+        "width": 390
+      }
+    ],
+    "title": "Dédale Défense",
+    "url": "http://127.0.0.1:63112/de/games/preecep/desktop-tower-defense"
+  },
+  "summary": "Captured http://127.0.0.1:63112/de/games/preecep/desktop-tower-defense: 3 screenshot(s), 25 outline items, 3 headings, 0 images, 2 links, 0 forms → /Users/clem2k/dev/desktop_tower_defense/checks/round-1/routes/de-games-preecep-desktop-tower-defense.",
+  "confidence": "observed",
+  "authority": "our-run",
+  "environment": {
+    "clean_room": false,
+    "engine": "cdp",
+    "engine_version": "1.3",
+    "host": "macos-aarch64"
+  },
+  "limitations": [
+    {
+      "code": "one_state",
+      "message": "One state of the page: menus, dialogs and content behind interactions are not opened."
+    },
+    {
+      "code": "cross_origin_css",
+      "message": "CSS custom properties and breakpoints from cross-origin stylesheets can't be read."
+    }
+  ],
+  "coverage": {
+    "status": "complete",
+    "examined": 3,
+    "total": 3
+  },
+  "locations": [
+    {
+      "kind": "url",
+      "value": "http://127.0.0.1:63112/de/games/preecep/desktop-tower-defense"
+    },
+    {
+      "kind": "path",
+      "value": "/Users/clem2k/dev/desktop_tower_defense/checks/round-1/routes/de-games-preecep-desktop-tower-defense"
+    }
+  ],
+  "links": []
+}
