@@ -1,0 +1,47 @@
+name: Unity
+
+on:
+  push:
+    paths: ["unity/**", ".github/workflows/unity.yml"]
+  pull_request:
+    paths: ["unity/**", ".github/workflows/unity.yml"]
+  workflow_dispatch:
+
+jobs:
+  core-tests:
+    name: Tests de la simulation (dotnet)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet test unity/Core.Tests
+
+  build-linux:
+    name: Build Linux (Unity)
+    # Nécessite les secrets UNITY_LICENSE / UNITY_EMAIL / UNITY_PASSWORD (voir dev.md §13)
+    # et la variable de dépôt UNITY_BUILD=true.
+    if: ${{ vars.UNITY_BUILD == 'true' }}
+    needs: core-tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: unity/DedaleDefense/Library
+          key: Library-${{ hashFiles('unity/DedaleDefense/Packages/manifest.json', 'unity/DedaleDefense/ProjectSettings/ProjectVersion.txt') }}
+      - uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: unity/DedaleDefense
+          targetPlatform: StandaloneLinux64
+          buildMethod: BuildScript.BuildLinux
+          customParameters: -output build/StandaloneLinux64/DedaleDefense.x86_64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DedaleDefense-Linux
+          path: unity/DedaleDefense/build/StandaloneLinux64

@@ -132,27 +132,27 @@ Réglages à vérifier (déjà versionnés dans `ProjectSettings/`) : *Asset Ser
 
 ## 10. Tests
 
-```sh
-# Tests EditMode (simulation) en ligne de commande
-"$UNITY_PATH" -batchmode -nographics -projectPath unity/DedaleDefense \
-  -runTests -testPlatform EditMode -testResults /tmp/editmode.xml -logFile -
+La simulation (`unity/DedaleDefense/Assets/_Project/Scripts/Core`) est du C# pur, sans UnityEngine. Les tests xUnit compilent ces mêmes sources, sans lancer Unity :
 
-# Tests PlayMode
-"$UNITY_PATH" -batchmode -nographics -projectPath unity/DedaleDefense \
-  -runTests -testPlatform PlayMode -testResults /tmp/playmode.xml -logFile -
+```sh
+dotnet test unity/Core.Tests
 ```
 
-La logique pure (`DedaleDefense.Core`) est aussi testable avec `dotnet test` (voir `unity/Core.Tests/`).
+Ils couvrent les données (modes, formule de vagues), le placement (jamais de blocage du dernier passage), la revente/amélioration, le déterminisme à graine fixe et une partie complète de 50 vagues.
 
 ## 11. Build natif Linux
 
 ```sh
-./unity/build-linux.sh          # produit unity/Build/Linux/DedaleDefense.x86_64
+export UNITY_PATH="$HOME/Unity/Hub/Editor/6000.0.XX/Editor/Unity"   # voir §6
+./unity/build-linux.sh              # backend Mono, build rapide
+./unity/build-linux.sh --il2cpp     # backend IL2CPP (release)
 ./unity/Build/Linux/DedaleDefense.x86_64
 ```
 
-Le script appelle Unity en `-batchmode -nographics -buildTarget Linux64 -executeMethod Build.Linux`.
-Sans écran (serveur/CI), préfixez avec `xvfb-run -a` après `sudo apt install -y xvfb`.
+Le script lance Unity en `-batchmode -nographics -buildTarget Linux64 -executeMethod BuildScript.BuildLinux`. Le journal est dans `unity/Build/build.log`. La scène de lancement est générée automatiquement (le jeu s'instancie via `RuntimeInitializeOnLoadMethod`).
+Sans écran pour **lancer** le jeu (serveur) : `sudo apt install -y xvfb` puis `xvfb-run -a ./unity/Build/Linux/DedaleDefense.x86_64`.
+
+Premier import : Unity génère les fichiers `.meta` ; committez-les (ils sont versionnés).
 
 ## 12. Dépannage
 
@@ -164,3 +164,9 @@ Sans écran (serveur/CI), préfixez avec `xvfb-run -a` après `sudo apt install 
 | Licence refusée en batchmode | activer d'abord la licence via le Hub (GUI), ou fournir `-serial/-username/-password` (licence Pro) |
 | Éditeur noir / crash Vulkan | lancer avec `-force-glcore` |
 | Fichiers `.meta` en conflit | ne jamais les supprimer ; résoudre le conflit en gardant le GUID existant |
+
+## 13. Intégration continue
+
+`.github/workflows/unity.yml` :
+- **core-tests** : `dotnet test` à chaque push/PR touchant `unity/` (aucun secret requis).
+- **build-linux** : build Unity via [GameCI](https://game.ci), désactivé par défaut. Pour l'activer : créer la variable de dépôt `UNITY_BUILD=true` et les secrets `UNITY_LICENSE` (fichier `.ulf` de licence personnelle, voir la doc GameCI « activation »), `UNITY_EMAIL`, `UNITY_PASSWORD`. L'exécutable est publié en artefact `DedaleDefense-Linux`.
