@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dédale Défense</title>
+  <meta name="description" content="Un jeu de tower defense : construisez un labyrinthe de tours pour arrêter les vagues d'ennemis." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d2939'/%3E%3Crect x='7' y='7' width='8' height='8' rx='2' fill='%23eaaa08'/%3E%3Crect x='17' y='17' width='8' height='8' rx='2' fill='%234ea1ff'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="{{BASE}}style.css" />
+</head>
+<body>
+  <nav class="topnav" aria-label="Navigation">
+    <a href="#stage">Jouer</a>
+    <a href="#aide">Aide</a>
+  </nav>
+  <main id="stage">
+    <div id="game" class="game">
+      <div class="left">
+        <header class="titlebar">
+          <h1>Dédale <span>Défense</span></h1>
+          <div class="hint">1-6 tour · 0 annuler · U améliorer · S vendre · Maj placer plusieurs · Espace pause · N vague</div>
+        </header>
+        <div class="board-wrap">
+          <canvas id="board" width="560" height="440" aria-label="Plateau de jeu"></canvas>
+          <div id="overlay" class="overlay"></div>
+        </div>
+        <div class="waves" id="waves" aria-label="Prochaines vagues"></div>
+      </div>
+      <aside class="panel">
+        <div class="stats">
+          <div class="stat"><span class="k">Vague</span><span class="v" id="s-wave">0/50</span></div>
+          <div class="stat"><span class="k">Vies</span><span class="v" id="s-lives">20</span></div>
+          <div class="stat"><span class="k">Or</span><span class="v gold" id="s-gold">60</span></div>
+          <div class="stat"><span class="k">Score</span><span class="v" id="s-score">0</span></div>
+        </div>
+        <div class="towers" id="towers"></div>
+        <div class="info" id="info"></div>
+        <div class="controls">
+          <button id="b-next" class="btn primary" title="N">Vague suivante <kbd>N</kbd></button>
+          <div class="row">
+            <button id="b-pause" class="btn" title="Espace">Pause</button>
+            <button id="b-speed" class="btn" title="F">Vitesse ×1</button>
+          </div>
+          <button id="b-menu" class="btn ghost">Nouvelle partie</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <section id="aide" class="help">
+    <h2>Description</h2>
+    <p>Un jeu de réflexion en temps réel : des vagues d'ennemis traversent le plateau, et vos tours doivent les arrêter avant qu'ils n'atteignent l'autre côté. Achetez des tours, placez-les sur le plateau et obligez les ennemis à faire de longs détours.</p>
+    <h2>Comment jouer</h2>
+    <p>Les touches 1 à 6 choisissent une tour et 0 annule. U améliore la tour sélectionnée et S la vend. Gardez Maj enfoncée pour poser plusieurs tours d'affilée. Espace met le jeu en pause.</p>
+    <details>
+      <summary>FAQ</summary>
+      <dl>
+        <dt>Comment gagner ?</dt>
+        <dd>Tenez les 50 vagues sans perdre toutes vos vies. Chaque ennemi qui atteint une sortie vous coûte une vie (deux pour un Colosse).</dd>
+        <dt>Pourquoi je ne peux pas poser une tour ici ?</dt>
+        <dd>Les ennemis doivent toujours pouvoir atteindre la sortie. Une tour qui fermerait le dernier passage est refusée : allongez le chemin au lieu de le fermer.</dd>
+        <dt>Quelles touches utiliser ?</dt>
+        <dd>1 à 6 choisissent une tour, 0 ou Échap annule, U améliore la tour choisie, S la vend, Maj permet d'en poser plusieurs d'affilée, Espace met en pause, N envoie la vague suivante et F change la vitesse.</dd>
+        <dt>À quoi sert « Vague suivante » ?</dt>
+        <dd>Elle envoie la vague tout de suite. Les secondes gagnées sont ajoutées à votre score.</dd>
+        <dt>Combien rapporte une tour vendue ?</dt>
+        <dd>Tout son prix avant la première vague, puis 75 % de ce que vous y avez dépensé.</dd>
+      </dl>
+    </details>
+  </section>
+  <footer class="foot">
+    <div class="in">
+      <div>
+        <h2>Dédale Défense</h2>
+        <p>Un jeu de tower defense en labyrinthe. Votre record est gardé dans ce navigateur.</p>
+      </div>
+      <div>
+        <h2>Raccourcis</h2>
+        <ul>
+          <li><a href="#stage">Jouer</a></li>
+          <li><a href="#aide">Aide et FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script type="module" src="{{BASE}}game.js"></script>
+</body>
+</html>
