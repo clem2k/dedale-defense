@@ -19,3 +19,16 @@ app/dist/
 
 # Logs
 *.log
+
+# Unity (unity/DedaleDefense)
+unity/DedaleDefense/[Ll]ibrary/
+unity/DedaleDefense/[Tt]emp/
+unity/DedaleDefense/[Oo]bj/
+unity/DedaleDefense/[Ll]ogs/
+unity/DedaleDefense/[Uu]serSettings/
+unity/DedaleDefense/*.csproj
+unity/DedaleDefense/*.sln
+unity/DedaleDefense/Assets/_Project/Scenes/
+unity/Build/
+unity/Core.Tests/bin/
+unity/Core.Tests/obj/
