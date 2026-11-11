@@ -16,6 +16,7 @@ Icon?
 # Dépendances et builds
 node_modules/
 app/dist/
+rust/target/
 
 # Logs
 *.log
