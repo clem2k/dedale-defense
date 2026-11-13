@@ -9,13 +9,15 @@ const W = COLS * CELL;
 const H = ROWS * CELL;
 const OPEN_R = [9, 10, 11, 12]; // rows open on the left and right edges
 const OPEN_C = [12, 13, 14, 15]; // columns open on the top and bottom edges
-const TOTAL_WAVES = 50;
 const WAVE_GAP = 24; // seconds between waves
 
 const MODES = {
-  easy: { name: "Facile", hp: 0.75, lives: 30, gold: 70, gap: 28 },
-  normal: { name: "Normal", hp: 1, lives: 20, gold: 60, gap: 24 },
-  hard: { name: "Difficile", hp: 1.35, lives: 10, gold: 50, gap: 20 },
+  easy: { name: "Facile", hp: 0.75, lives: 30, gold: 70, gap: 28, waves: 30 },
+  normal: { name: "Normal", hp: 1, lives: 20, gold: 60, gap: 24, waves: 50 },
+  hard: { name: "Difficile", hp: 1.35, lives: 10, gold: 50, gap: 20, waves: 60 },
+  uncle_scrooge: { name: "Oncle Picsou", hp: 1.3, lives: 20, gold: 10000, gap: 24, waves: 40 },
+  rush: { name: "Ruée", hp: 1.1, lives: 15, gold: 60, gap: 10, waves: 20, desc: "Les vagues s'enchaînent rapidement." },
+  marathon: { name: "Marathon", hp: 0.85, lives: 30, gold: 80, gap: 30, waves: 70, hpGrowth: 1.06, desc: "Longue partie, avec une progression des ennemis plus lente." },
 };
 
 // ---------- Towers ----------
@@ -71,10 +73,10 @@ const CREEPS = {
 };
 const CYCLE = ["walker", "runner", "walker", "flyer", "swarm", "armored", "walker", "splitter", "runner", "boss"];
 
-function waveDef(n) {
+function waveDef(n, modeKey = mode) {
   // n is 1-based
   const type = n === 1 ? "walker" : CYCLE[(n - 1) % CYCLE.length];
-  const base = 12 * Math.pow(1.115, n - 1) + 4 * n;
+  const base = 12 * Math.pow(MODES[modeKey].hpGrowth || 1.115, n - 1) + 4 * n;
   return { n, type, hp: base, count: CREEPS[type].count, bounty: CREEPS[type].bounty * (2 + Math.floor(n / 6)) };
 }
 
@@ -325,7 +327,8 @@ function sell(t) {
 
 // ---------- Waves ----------
 function sendWave() {
-  if (S.over || S.wave >= TOTAL_WAVES) return;
+  const totalWaves = MODES[S.mode].waves;
+  if (S.over || S.wave >= totalWaves) return;
   if (S.started && S.timer > 0) {
     const bonus = Math.ceil(S.timer) * (S.wave + 1);
     S.score += bonus;
@@ -504,7 +507,7 @@ function update(dt) {
   if (!S || S.over || S.paused || ui.overlayOpen) return;
   S.time += dt;
 
-  if (S.started && S.wave < TOTAL_WAVES) {
+  if (S.started && S.wave < MODES[S.mode].waves) {
     S.timer -= dt;
     if (S.timer <= 0) { S.timer = 0; sendWave(); }
   }
@@ -537,7 +540,7 @@ function update(dt) {
   for (const f of S.floats) { f.life -= dt; f.y -= 18 * dt; }
   S.floats = S.floats.filter((f) => f.life > 0);
 
-  if (S.wave >= TOTAL_WAVES && !S.spawners.length && !S.creeps.length) endGame(true);
+  if (S.wave >= MODES[S.mode].waves && !S.spawners.length && !S.creeps.length) endGame(true);
 }
 
 function endGame(won) {
@@ -902,7 +905,8 @@ const ui = {
   update(force) {
     if (!S) return;
     const set = (id, v) => { if (force || ui.last[id] !== v) { $(id).textContent = v; ui.last[id] = v; } };
-    set("s-wave", `${S.wave}/${TOTAL_WAVES}`);
+    const totalWaves = MODES[S.mode].waves;
+    set("s-wave", `${S.wave}/${totalWaves}`);
     set("s-lives", String(S.lives));
     set("s-gold", String(S.gold));
     set("s-score", String(S.score));
@@ -911,7 +915,7 @@ const ui = {
       b.classList.toggle("sel", i === buildType);
       b.classList.toggle("poor", S.gold < TOWERS[i].cost);
     });
-    $("b-next").disabled = S.over || S.wave >= TOTAL_WAVES;
+    $("b-next").disabled = S.over || S.wave >= totalWaves;
     $("b-pause").textContent = S.paused ? "Reprendre" : "Pause";
     $("b-speed").textContent = `Vitesse ×${speed}`;
     ui.waves(force);
@@ -923,8 +927,9 @@ const ui = {
     if (force || box.dataset.k !== key) {
       box.dataset.k = key;
       box.innerHTML = "";
-      for (let n = S.wave + 1; n <= Math.min(TOTAL_WAVES, S.wave + 7); n++) {
-        const w = waveDef(n);
+      const totalWaves = MODES[S.mode].waves;
+      for (let n = S.wave + 1; n <= Math.min(totalWaves, S.wave + 7); n++) {
+        const w = waveDef(n, S.mode);
         const c = CREEPS[w.type];
         const el = document.createElement("div");
         el.className = "wave" + (w.type === "boss" ? " boss" : "");
@@ -933,7 +938,7 @@ const ui = {
         el.title = c.desc || "";
         box.appendChild(el);
       }
-      if (S.wave >= TOTAL_WAVES) box.innerHTML = '<div class="wave"><b>Dernière vague envoyée !</b><i>Tenez bon jusqu\'au bout.</i></div>';
+      if (S.wave >= totalWaves) box.innerHTML = '<div class="wave"><b>Dernière vague envoyée !</b><i>Tenez bon jusqu\'au bout.</i></div>';
     }
     const bar = box.querySelector(".bar");
     if (bar) {
@@ -1004,9 +1009,9 @@ const ui = {
     const best = (m) => +(localStorage.getItem(`dd-best-${m}`) || 0);
     overlay.innerHTML = `<div class="card">
       <h2>Dédale <span>Défense</span></h2>
-      <p>Bâtissez un labyrinthe de tours et empêchez les vagues d'ennemis de traverser le plateau. ${TOTAL_WAVES} vagues à tenir.</p>
+      <p>Bâtissez un labyrinthe de tours et empêchez les vagues d'ennemis de traverser le plateau. Choisissez votre défi !</p>
       <div class="modes">
-        ${Object.entries(MODES).map(([k, m]) => `<button class="btn ${k === "normal" ? "primary" : ""}" data-mode="${k}">${m.name} <span class="best">· ${m.lives} vies · record ${best(k)}</span></button>`).join("")}
+        ${Object.entries(MODES).map(([k, m]) => `<button class="btn ${k === "normal" ? "primary" : ""}" data-mode="${k}" title="${m.desc || ""}">${m.name} <span class="best">· ${m.waves} vagues · ${m.gap}s entre vagues · ${m.lives} vies · record ${best(k)}</span></button>`).join("")}
       </div>
     </div>`;
     overlay.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => newGame(b.dataset.mode)));
@@ -1016,7 +1021,7 @@ const ui = {
     overlay.classList.add("show");
     overlay.innerHTML = `<div class="card">
       <h2>${S.won ? "Victoire !" : "Partie terminée"}</h2>
-      <p>${S.won ? `Les ${TOTAL_WAVES} vagues sont passées sans percer votre labyrinthe.` : `Vous avez tenu jusqu'à la vague ${S.wave}.`} ${S.kills} ennemis arrêtés.</p>
+      <p>${S.won ? `Les ${MODES[S.mode].waves} vagues sont passées sans percer votre labyrinthe.` : `Vous avez tenu jusqu'à la vague ${S.wave}.`} ${S.kills} ennemis arrêtés.</p>
       <div class="big">${S.score}</div>
       <p class="best">${S.newBest ? "Nouveau record !" : `Record : ${S.best}`} · mode ${MODES[S.mode].name}</p>
       <div class="modes">
