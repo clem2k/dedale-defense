@@ -2,15 +2,18 @@
 
 ## But du jeu
 
-Tenez **50 vagues** sans perdre toutes vos vies. Chaque ennemi qui atteint la sortie coûte une vie (deux pour un Colosse). Posez des tours pour les arrêter et allongez leur chemin avec un labyrinthe.
+Tenez toutes les vagues du mode choisi sans perdre toutes vos vies. Chaque ennemi qui atteint la sortie coûte une vie (deux pour un Colosse). Posez des tours pour les arrêter et allongez leur chemin avec un labyrinthe.
 
 ## Modes
 
-| Mode      | Vies | Or de départ | Ennemis |
-|-----------|------|--------------|---------|
-| Facile    | 30   | 70           | PV ×0,75 |
-| Normal    | 20   | 60           | PV ×1 |
-| Difficile | 10   | 50           | PV ×1,35 |
+| Mode         | Vagues | Entre vagues | Vies | Or de départ | Ennemis |
+|--------------|--------|--------------|------|--------------|---------|
+| Facile       | 30     | 28 s         | 30   | 70           | PV ×0,75 |
+| Normal       | 50     | 24 s         | 20   | 60           | PV ×1 |
+| Difficile    | 60     | 20 s         | 10   | 50           | PV ×1,35 |
+| Oncle Picsou | 40     | 24 s         | 20   | 10 000       | PV ×1,3 |
+| Ruée         | 20     | 10 s         | 15   | 60           | PV ×1,1 |
+| Marathon     | 70     | 30 s         | 30   | 80           | PV ×0,85, croissance plus lente |
 
 Votre record est enregistré par mode dans ce navigateur.
 

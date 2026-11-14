@@ -10,7 +10,6 @@ const BOARD_W: f32 = COLS as f32 * CELL;
 const BOARD_H: f32 = ROWS as f32 * CELL;
 const BOARD_X: f32 = 18.0;
 const BOARD_Y: f32 = 74.0;
-const TOTAL_WAVES: u32 = 50;
 
 const BG: Color = Color::new(0.055, 0.085, 0.13, 1.0);
 const PANEL: Color = Color::new(0.09, 0.13, 0.19, 1.0);
@@ -26,14 +25,29 @@ enum Mode {
     Easy,
     Normal,
     Hard,
+    UncleScrooge,
+    Rush,
+    Marathon,
 }
 
 impl Mode {
+    const ALL: [Mode; 6] = [
+        Mode::Easy,
+        Mode::Normal,
+        Mode::Hard,
+        Mode::UncleScrooge,
+        Mode::Rush,
+        Mode::Marathon,
+    ];
+
     fn name(self) -> &'static str {
         match self {
             Self::Easy => "Facile",
             Self::Normal => "Normal",
             Self::Hard => "Difficile",
+            Self::UncleScrooge => "Oncle Picsou",
+            Self::Rush => "Ruee",
+            Self::Marathon => "Marathon",
         }
     }
 
@@ -42,6 +56,9 @@ impl Mode {
             Self::Easy => 30,
             Self::Normal => 20,
             Self::Hard => 10,
+            Self::UncleScrooge => 20,
+            Self::Rush => 15,
+            Self::Marathon => 30,
         }
     }
 
@@ -50,6 +67,9 @@ impl Mode {
             Self::Easy => 70,
             Self::Normal => 60,
             Self::Hard => 50,
+            Self::UncleScrooge => 10000,
+            Self::Rush => 60,
+            Self::Marathon => 80,
         }
     }
 
@@ -58,6 +78,9 @@ impl Mode {
             Self::Easy => 0.75,
             Self::Normal => 1.0,
             Self::Hard => 1.35,
+            Self::UncleScrooge => 1.3,
+            Self::Rush => 1.1,
+            Self::Marathon => 0.85,
         }
     }
 
@@ -66,6 +89,27 @@ impl Mode {
             Self::Easy => 28.0,
             Self::Normal => 24.0,
             Self::Hard => 20.0,
+            Self::UncleScrooge => 24.0,
+            Self::Rush => 10.0,
+            Self::Marathon => 30.0,
+        }
+    }
+
+    fn waves(self) -> u32 {
+        match self {
+            Self::Easy => 30,
+            Self::Normal => 50,
+            Self::Hard => 60,
+            Self::UncleScrooge => 40,
+            Self::Rush => 20,
+            Self::Marathon => 70,
+        }
+    }
+
+    fn hp_growth(self) -> f32 {
+        match self {
+            Self::Marathon => 1.06,
+            _ => 1.115,
         }
     }
 }
@@ -686,7 +730,7 @@ impl Game {
         self.message_time = 1.6;
     }
 
-    fn wave_def(wave: u32) -> (EnemyKind, f32, usize, f32) {
+    fn wave_def(wave: u32, hp_growth: f32) -> (EnemyKind, f32, usize, f32) {
         const CYCLE: [EnemyKind; 10] = [
             EnemyKind::Walker,
             EnemyKind::Runner,
@@ -704,13 +748,13 @@ impl Game {
         } else {
             CYCLE[((wave - 1) as usize) % CYCLE.len()]
         };
-        let base_hp = 12.0 * 1.115_f32.powi((wave - 1) as i32) + 4.0 * wave as f32;
+        let base_hp = 12.0 * hp_growth.powi((wave - 1) as i32) + 4.0 * wave as f32;
         let bounty = kind.bounty() * (2 + (wave / 6)) as f32;
         (kind, base_hp, kind.count(), bounty)
     }
 
     fn send_wave(&mut self) {
-        if self.over || self.wave >= TOTAL_WAVES {
+        if self.over || self.wave >= self.mode.waves() {
             return;
         }
         if self.started && self.timer > 0.0 {
@@ -718,7 +762,7 @@ impl Game {
         }
         self.started = true;
         self.wave += 1;
-        let (kind, base_hp, count, bounty) = Self::wave_def(self.wave);
+        let (kind, base_hp, count, bounty) = Self::wave_def(self.wave, self.mode.hp_growth());
         let target = if self.wave >= 15 {
             if self.wave % 2 == 0 {
                 Target::Right
@@ -1155,7 +1199,7 @@ impl Game {
         if self.message_time > 0.0 {
             self.message_time -= dt;
         }
-        if self.started && self.wave < TOTAL_WAVES {
+        if self.started && self.wave < self.mode.waves() {
             self.timer -= dt;
             if self.timer <= 0.0 {
                 self.timer = 0.0;
@@ -1190,7 +1234,7 @@ impl Game {
         self.fire_towers(dt);
         self.update_shots(dt);
         self.creeps.retain(|creep| !creep.dead);
-        if self.wave >= TOTAL_WAVES && self.spawners.is_empty() && self.creeps.is_empty() {
+        if self.wave >= self.mode.waves() && self.spawners.is_empty() && self.creeps.is_empty() {
             self.finish(true);
         }
     }
@@ -1606,7 +1650,7 @@ fn draw_sidebar(game: &Game) {
     draw_rectangle_lines(x, 74.0, width, 540.0, 1.0, LINE);
     draw_text("STATISTIQUES", x + 12.0, 94.0, 14.0, MUTED);
     draw_text(
-        &format!("Vague  {}/{}", game.wave, TOTAL_WAVES),
+        &format!("Vague  {}/{}", game.wave, game.mode.waves()),
         x + 12.0,
         119.0,
         20.0,
@@ -1782,9 +1826,9 @@ fn draw_sidebar(game: &Game) {
         MUTED,
     );
 
-    let next_wave = (game.wave + 1).min(TOTAL_WAVES);
-    if next_wave <= TOTAL_WAVES {
-        let (kind, hp, count, _) = Game::wave_def(next_wave);
+    let next_wave = (game.wave + 1).min(game.mode.waves());
+    if next_wave <= game.mode.waves() {
+        let (kind, hp, count, _) = Game::wave_def(next_wave, game.mode.hp_growth());
         draw_text("PROCHAINE VAGUE", x + 12.0, y + 96.0, 14.0, MUTED);
         draw_text(
             &format!(
@@ -1847,12 +1891,18 @@ fn draw_start_screen() -> Option<Mode> {
         18.0,
         MUTED,
     );
-    for (i, mode) in [Mode::Easy, Mode::Normal, Mode::Hard].iter().enumerate() {
-        let bx = screen_width() / 2.0 - 155.0;
-        let rect = Rect::new(bx, 280.0 + i as f32 * 58.0, 310.0, 44.0);
+    for (i, mode) in Mode::ALL.iter().enumerate() {
+        let bx = screen_width() / 2.0 - 175.0;
+        let rect = Rect::new(bx, 268.0 + i as f32 * 46.0, 350.0, 38.0);
         if button(
             rect,
-            &format!("{}  -  {} vies", mode.name(), mode.lives()),
+            &format!(
+                "{} - {} vagues, {}s, {} vies",
+                mode.name(),
+                mode.waves(),
+                mode.wave_gap() as i32,
+                mode.lives()
+            ),
             *mode == Mode::Normal,
             true,
         ) {
@@ -2016,9 +2066,54 @@ mod tests {
 
     #[test]
     fn wave_progression_uses_expected_enemy_cycle() {
-        assert_eq!(Game::wave_def(1).0, EnemyKind::Walker);
-        assert_eq!(Game::wave_def(4).0, EnemyKind::Flyer);
-        assert_eq!(Game::wave_def(10).0, EnemyKind::Boss);
+        let growth = Mode::Normal.hp_growth();
+        assert_eq!(Game::wave_def(1, growth).0, EnemyKind::Walker);
+        assert_eq!(Game::wave_def(4, growth).0, EnemyKind::Flyer);
+        assert_eq!(Game::wave_def(10, growth).0, EnemyKind::Boss);
+    }
+
+    #[test]
+    fn every_mode_matches_the_browser_build() {
+        // Same table as MODES in app/src/game.js: lives, gold, hp, gap, waves.
+        let table = [
+            (Mode::Easy, 30, 70, 0.75, 28.0, 30),
+            (Mode::Normal, 20, 60, 1.0, 24.0, 50),
+            (Mode::Hard, 10, 50, 1.35, 20.0, 60),
+            (Mode::UncleScrooge, 20, 10000, 1.3, 24.0, 40),
+            (Mode::Rush, 15, 60, 1.1, 10.0, 20),
+            (Mode::Marathon, 30, 80, 0.85, 30.0, 70),
+        ];
+        assert_eq!(Mode::ALL.len(), table.len());
+        for (mode, lives, gold, hp, gap, waves) in table {
+            assert_eq!(mode.lives(), lives, "{} lives", mode.name());
+            assert_eq!(mode.gold(), gold, "{} gold", mode.name());
+            assert_eq!(mode.hp_factor(), hp, "{} hp factor", mode.name());
+            assert_eq!(mode.wave_gap(), gap, "{} gap", mode.name());
+            assert_eq!(mode.waves(), waves, "{} waves", mode.name());
+        }
+    }
+
+    #[test]
+    fn game_ends_after_its_mode_wave_count() {
+        let mut game = Game::new(Mode::Rush);
+        for _ in 0..Mode::Rush.waves() {
+            game.send_wave();
+        }
+        assert_eq!(game.wave, Mode::Rush.waves());
+        game.send_wave(); // one more is refused
+        assert_eq!(game.wave, Mode::Rush.waves());
+
+        let mut marathon = Game::new(Mode::Marathon);
+        marathon.send_wave();
+        assert_eq!(marathon.wave, 1);
+        assert!(!marathon.won);
+    }
+
+    #[test]
+    fn marathon_grows_enemy_health_more_slowly() {
+        let normal = Game::wave_def(20, Mode::Normal.hp_growth()).1;
+        let marathon = Game::wave_def(20, Mode::Marathon.hp_growth()).1;
+        assert!(marathon < normal);
     }
 
     #[test]
