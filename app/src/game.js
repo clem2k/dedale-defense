@@ -2,82 +2,27 @@
 // Enemies cross the board from the left to the right and from the top to the bottom.
 // Towers block their way, so the player builds a maze; a tower may never close the last path.
 
-const CELL = 20;
-const COLS = 28;
-const ROWS = 22;
+import { CONTENT } from "./content.js";
+
+const CELL = CONTENT.board.cell;
+const COLS = CONTENT.board.cols;
+const ROWS = CONTENT.board.rows;
 const W = COLS * CELL;
 const H = ROWS * CELL;
-const OPEN_R = [9, 10, 11, 12]; // rows open on the left and right edges
-const OPEN_C = [12, 13, 14, 15]; // columns open on the top and bottom edges
-const WAVE_GAP = 24; // seconds between waves
-
-const MODES = {
-  easy: { name: "Facile", hp: 0.75, lives: 30, gold: 70, gap: 28, waves: 30 },
-  normal: { name: "Normal", hp: 1, lives: 20, gold: 60, gap: 24, waves: 50 },
-  hard: { name: "Difficile", hp: 1.35, lives: 10, gold: 50, gap: 20, waves: 60 },
-  uncle_scrooge: { name: "Oncle Picsou", hp: 1.3, lives: 20, gold: 10000, gap: 24, waves: 40 },
-  rush: { name: "Ruée", hp: 1.1, lives: 15, gold: 60, gap: 10, waves: 20, desc: "Les vagues s'enchaînent rapidement." },
-  marathon: { name: "Marathon", hp: 0.85, lives: 30, gold: 80, gap: 30, waves: 70, hpGrowth: 1.06, desc: "Longue partie, avec une progression des ennemis plus lente." },
-};
-
-// ---------- Towers ----------
-const TOWERS = [
-  {
-    id: "stone", name: "Caillou", key: "1", color: "#9aa4b2", accent: "#e4e7ec",
-    desc: "Tir rapide et bon marché. Touche le sol et les airs.",
-    cost: 5, ups: [5, 10, 20, 40], dmg: [5, 10, 20, 40, 80], range: 70, rate: 0.5,
-    ground: true, air: true, shot: "pellet", speed: 340,
-  },
-  {
-    id: "burst", name: "Éclat", key: "2", color: "#4ea1ff", accent: "#b9dcff",
-    desc: "Obus qui explose et blesse les ennemis proches. Sol uniquement.",
-    cost: 15, ups: [15, 30, 60, 120], dmg: [8, 16, 32, 64, 128], range: 62, rate: 0.9,
-    ground: true, air: false, shot: "shell", speed: 240, splash: 30,
-  },
-  {
-    id: "needle", name: "Aiguille", key: "3", color: "#c084fc", accent: "#ead5ff",
-    desc: "Longue portée et gros dégâts, mais lente. Sol et airs.",
-    cost: 25, ups: [25, 50, 100, 200], dmg: [25, 50, 100, 200, 400], range: 130, rate: 1.4,
-    ground: true, air: true, shot: "dart", speed: 520,
-  },
-  {
-    id: "volley", name: "Volée", key: "4", color: "#f97066", accent: "#ffd1cc",
-    desc: "Lance jusqu'à quatre missiles à la fois. Airs uniquement.",
-    cost: 30, ups: [30, 60, 120, 240], dmg: [12, 24, 48, 96, 192], range: 105, rate: 0.85,
-    ground: false, air: true, shot: "missile", speed: 300, multi: 4,
-  },
-  {
-    id: "frost", name: "Givre", key: "5", color: "#5fe0e0", accent: "#d6fbfb",
-    desc: "Ralentit sa cible pendant deux secondes. Sol et airs.",
-    cost: 20, ups: [20, 40, 80, 160], dmg: [2, 4, 8, 16, 32], range: 72, rate: 0.6,
-    ground: true, air: true, shot: "ice", speed: 320, slow: [0.35, 0.4, 0.45, 0.5, 0.6],
-  },
-  {
-    id: "pulse", name: "Onde", key: "6", color: "#fdb022", accent: "#fff0c2",
-    desc: "Onde de choc autour d'elle, peut étourdir. Sol uniquement.",
-    cost: 40, ups: [40, 80, 160, 320], dmg: [20, 40, 80, 160, 320], range: 46, rate: 1.2,
-    ground: true, air: false, shot: "pulse", stun: 0.15,
-  },
-];
-
-// ---------- Enemies ----------
-const CREEPS = {
-  walker: { name: "Marcheurs", hp: 1, speed: 40, count: 10, gap: 0.65, bounty: 1, color: "#a6ef67", r: 6, shape: "circle", desc: "Ennemis ordinaires." },
-  runner: { name: "Coureurs", hp: 0.7, speed: 78, count: 10, gap: 0.55, bounty: 1, color: "#fef08a", r: 5, shape: "tri", desc: "Très rapides." },
-  swarm: { name: "Essaim", hp: 0.4, speed: 46, count: 22, gap: 0.3, bounty: 0.5, color: "#fda29b", r: 4, shape: "circle", desc: "Nombreux mais fragiles." },
-  flyer: { name: "Volants", hp: 0.85, speed: 46, count: 8, gap: 0.9, bounty: 1.5, color: "#7cd4fd", r: 6, shape: "wing", flying: true, desc: "Survolent les tours." },
-  armored: { name: "Blindés", hp: 1.5, speed: 34, count: 8, gap: 0.9, bounty: 1.5, color: "#bdb4fe", r: 7, shape: "square", immune: true, desc: "Insensibles au givre et au choc." },
-  splitter: { name: "Scindeurs", hp: 1.05, speed: 40, count: 8, gap: 0.85, bounty: 1, color: "#f9a8d4", r: 7, shape: "diamond", splits: true, desc: "Se divisent en deux en mourant." },
-  mini: { name: "Éclats", hp: 0.3, speed: 52, count: 0, gap: 0, bounty: 0.5, color: "#f9a8d4", r: 4, shape: "diamond" },
-  boss: { name: "Colosse", hp: 14, speed: 28, count: 1, gap: 1, bounty: 25, color: "#f04438", r: 11, shape: "boss", desc: "Un seul, mais énorme." },
-};
-const CYCLE = ["walker", "runner", "walker", "flyer", "swarm", "armored", "walker", "splitter", "runner", "boss"];
+const OPEN_R = CONTENT.board.openRows;
+const OPEN_C = CONTENT.board.openCols;
+const RULES = CONTENT.rules;
+const MODES = Object.fromEntries(CONTENT.levels.map((level) => [level.id, level]));
+const TOWERS = CONTENT.towers;
+const CREEPS = CONTENT.enemies;
 
 function waveDef(n, modeKey = mode) {
-  // n is 1-based
-  const type = n === 1 ? "walker" : CYCLE[(n - 1) % CYCLE.length];
-  const base = 12 * Math.pow(MODES[modeKey].hpGrowth || 1.115, n - 1) + 4 * n;
-  return { n, type, hp: base, count: CREEPS[type].count, bounty: CREEPS[type].bounty * (2 + Math.floor(n / 6)) };
+  const level = MODES[modeKey];
+  if (!level || !Number.isInteger(n) || n < 1 || n > level.waves)
+    throw new Error(`Invalid wave ${n} for level ${modeKey}`);
+  const wave = CONTENT.waveSets[level.waveSet][n - 1];
+  const enemy = CREEPS[wave.type];
+  return { ...wave, n, count: enemy.count, bounty: enemy.bounty * wave.bountyMultiplier };
 }
 
 // ---------- Game state ----------
@@ -288,16 +233,16 @@ function towerStats(t) {
   const L = t.level;
   return {
     dmg: d.dmg[L],
-    range: d.range * (1 + 0.08 * L),
-    rate: d.rate * (1 - 0.04 * L),
-    slow: d.slow ? d.slow[L] : 0,
+    range: d.range * (1 + RULES.rangeGrowth * L),
+    rate: d.rate * (1 - RULES.rateReduction * L),
+    slow: d.slow[L],
   };
 }
 
 function sellValue(t) {
   // Full refund if it was placed before the first wave, otherwise 75 %.
   if (!t.builtStarted) return t.spent;
-  return Math.floor(t.spent * 0.75);
+  return Math.floor(t.spent * RULES.sellRefund);
 }
 
 function upgrade(t) {
@@ -344,18 +289,18 @@ function sendWave() {
 
 function spawn(def, k) {
   const c = CREEPS[def.type];
-  let target;
-  if (def.n >= 15) target = k % 2 ? "B" : "R";
-  else target = def.n % 2 ? "R" : "B";
+  const target = def.targets[k % def.targets.length];
   makeCreep(def.type, def.hp * c.hp * MODES[S.mode].hp, def.bounty, target, null);
 }
 
 function makeCreep(type, hp, bounty, target, from) {
   const c = CREEPS[type];
-  const lane = (Math.random() * 4) | 0;
+  const lanes = target === "R" ? OPEN_R : OPEN_C;
+  const lane = (Math.random() * lanes.length) | 0;
   let x, y, wcell;
   if (from) {
-    x = from.x + (Math.random() - 0.5) * 6; y = from.y + (Math.random() - 0.5) * 6;
+    x = from.x + (Math.random() - 0.5) * RULES.splitJitter;
+    y = from.y + (Math.random() - 0.5) * RULES.splitJitter;
     wcell = from.wcell;
   } else if (target === "R") {
     x = -CELL * 0.6; y = (OPEN_R[lane] + 0.5) * CELL; wcell = ENTRY_L[lane];
@@ -422,7 +367,7 @@ function moveCreep(k, dt) {
 
 function leak(k) {
   k.dead = true;
-  const loss = k.type === "boss" ? 2 : 1;
+  const loss = CREEPS[k.type].lifeLoss;
   S.lives = Math.max(0, S.lives - loss);
   S.floats.push({ x: Math.min(W - 20, Math.max(20, k.x)), y: Math.min(H - 10, Math.max(14, k.y)), text: `-${loss} vie`, color: "#eb3751", life: 1.2, max: 1.2 });
   if (S.lives <= 0) endGame(false);
@@ -435,12 +380,13 @@ function hurt(k, dmg) {
     k.dead = true;
     const g = Math.max(1, Math.round(k.bounty));
     S.gold += g;
-    S.score += g * 10;
+    S.score += g * RULES.killScore;
     S.kills++;
     S.floats.push({ x: k.x, y: k.y - 6, text: `+${g}`, color: "#fac515", life: 0.8, max: 0.8 });
     S.fx.push({ kind: "pop", x: k.x, y: k.y, color: CREEPS[k.type].color, life: 0.35, maxLife: 0.35, r: k.r });
-    if (CREEPS[k.type].splits) {
-      for (let i = 0; i < 2; i++) makeCreep("mini", k.maxHp * 0.3, k.bounty * 0.5, k.target, k);
+    const split = CREEPS[k.type].split;
+    if (split) {
+      for (let i = 0; i < split.count; i++) makeCreep(split.type, k.maxHp * split.hp, k.bounty * split.bounty, k.target, k);
     }
   }
 }
@@ -459,7 +405,7 @@ function fire(t) {
     S.fx.push({ kind: "ring", x: t.x, y: t.y, r: 8, max: st.range, color: d.color, life: 0.35, maxLife: 0.35 });
     for (const k of inRange) {
       hurt(k, st.dmg);
-      if (!CREEPS[k.type].immune && Math.random() < d.stun) k.stunUntil = S.time + 0.6;
+      if (!CREEPS[k.type].immune && Math.random() < d.stun) k.stunUntil = S.time + RULES.stunDuration;
     }
     return true;
   }
@@ -491,7 +437,7 @@ function updateShots(dt) {
         const k = s.target;
         if (s.slow && !CREEPS[k.type].immune) {
           k.slowF = Math.max(s.slow, S.time < k.slowUntil ? k.slowF : 0);
-          k.slowUntil = S.time + 2;
+          k.slowUntil = S.time + RULES.slowDuration;
         }
         hurt(k, s.dmg);
       }
@@ -547,7 +493,7 @@ function endGame(won) {
   if (S.over) return;
   S.over = true;
   S.won = won;
-  if (won) S.score += S.lives * 100;
+  if (won) S.score += S.lives * RULES.winScore;
   const key = `dd-best-${S.mode}`;
   const best = +(localStorage.getItem(key) || 0);
   S.best = Math.max(best, S.score);
@@ -612,16 +558,24 @@ function drawBackground() {
     g.beginPath(); g.moveTo(7, 0); g.lineTo(-5, -7); g.lineTo(-2, 0); g.lineTo(-5, 7); g.closePath(); g.fill();
     g.restore();
   };
-  g.fillStyle = "rgba(60,203,127,0.16)";
-  g.fillRect(0, OPEN_R[0] * CELL, CELL, OPEN_R.length * CELL);
-  g.fillRect(OPEN_C[0] * CELL, 0, OPEN_C.length * CELL, CELL);
-  g.fillStyle = "rgba(235,55,81,0.16)";
-  g.fillRect(W - CELL, OPEN_R[0] * CELL, CELL, OPEN_R.length * CELL);
-  g.fillRect(OPEN_C[0] * CELL, H - CELL, OPEN_C.length * CELL, CELL);
-  arrow(CELL / 2, (OPEN_R[0] + 2) * CELL, 0, "rgba(60,203,127,0.7)");
-  arrow((OPEN_C[0] + 2) * CELL, CELL / 2, Math.PI / 2, "rgba(60,203,127,0.7)");
-  arrow(W - CELL / 2, (OPEN_R[0] + 2) * CELL, 0, "rgba(235,55,81,0.7)");
-  arrow((OPEN_C[0] + 2) * CELL, H - CELL / 2, Math.PI / 2, "rgba(235,55,81,0.7)");
+  for (const y of OPEN_R) {
+    g.fillStyle = "rgba(60,203,127,0.16)";
+    g.fillRect(0, y * CELL, CELL, CELL);
+    g.fillStyle = "rgba(235,55,81,0.16)";
+    g.fillRect(W - CELL, y * CELL, CELL, CELL);
+  }
+  for (const x of OPEN_C) {
+    g.fillStyle = "rgba(60,203,127,0.16)";
+    g.fillRect(x * CELL, 0, CELL, CELL);
+    g.fillStyle = "rgba(235,55,81,0.16)";
+    g.fillRect(x * CELL, H - CELL, CELL, CELL);
+  }
+  const middleR = OPEN_R[Math.floor(OPEN_R.length / 2)] * CELL;
+  const middleC = OPEN_C[Math.floor(OPEN_C.length / 2)] * CELL;
+  arrow(CELL / 2, middleR, 0, "rgba(60,203,127,0.7)");
+  arrow(middleC, CELL / 2, Math.PI / 2, "rgba(60,203,127,0.7)");
+  arrow(W - CELL / 2, middleR, 0, "rgba(235,55,81,0.7)");
+  arrow(middleC, H - CELL / 2, Math.PI / 2, "rgba(235,55,81,0.7)");
 }
 
 function drawTowerShape(g, type, level, x, y, angle, size = 1) {
@@ -637,24 +591,24 @@ function drawTowerShape(g, type, level, x, y, angle, size = 1) {
   roundRect(g, -14, -14, 28, 28, 5); g.fill();
   // body
   g.fillStyle = d.color;
-  switch (d.id) {
-    case "stone":
+  switch (d.shot) {
+    case "pellet":
       g.beginPath(); g.arc(0, 0, 9, 0, Math.PI * 2); g.fill();
       break;
-    case "burst":
+    case "shell":
       g.beginPath();
       for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; g.lineTo(Math.cos(a) * 11, Math.sin(a) * 11); }
       g.closePath(); g.fill();
       break;
-    case "needle":
+    case "dart":
       g.beginPath(); g.moveTo(0, -12); g.lineTo(11, 0); g.lineTo(0, 12); g.lineTo(-11, 0); g.closePath(); g.fill();
       break;
-    case "volley":
+    case "missile":
       roundRect(g, -10, -10, 20, 20, 4); g.fill();
       g.fillStyle = "#1a2638";
       for (const [a, b] of [[-5, -5], [5, -5], [-5, 5], [5, 5]]) { g.beginPath(); g.arc(a, b, 2.6, 0, Math.PI * 2); g.fill(); }
       break;
-    case "frost":
+    case "ice":
       g.strokeStyle = d.color; g.lineWidth = 3; g.lineCap = "round";
       for (let i = 0; i < 3; i++) {
         const a = (i / 3) * Math.PI;
@@ -670,10 +624,10 @@ function drawTowerShape(g, type, level, x, y, angle, size = 1) {
       break;
   }
   // barrel
-  if (d.id !== "pulse" && d.id !== "frost") {
+  if (d.shot !== "pulse" && d.shot !== "ice") {
     g.rotate(angle);
     g.fillStyle = d.accent;
-    g.fillRect(2, -2, d.id === "needle" ? 14 : 11, 4);
+    g.fillRect(2, -2, d.shot === "dart" ? 14 : 11, 4);
     g.rotate(-angle);
   }
   // level pips
@@ -933,7 +887,7 @@ const ui = {
         const c = CREEPS[w.type];
         const el = document.createElement("div");
         el.className = "wave" + (w.type === "boss" ? " boss" : "");
-        const from = n >= 15 ? "← ↑" : n % 2 ? "←" : "↑";
+        const from = [...new Set(w.targets)].map((target) => target === "R" ? "←" : "↑").join(" ");
         el.innerHTML = `<span class="dot" style="background:${c.color}"></span><b>${n}. ${c.name}</b><i>${from} ${w.count} · ${Math.round(w.hp * c.hp * MODES[S.mode].hp)} PV</i>${n === S.wave + 1 ? '<span class="bar"></span>' : ""}`;
         el.title = c.desc || "";
         box.appendChild(el);
@@ -965,7 +919,7 @@ const ui = {
         ${row("Dégâts", st.dmg, nx && nx.dmg)}
         ${row("Portée", Math.round(st.range), nx && Math.round(nx.range))}
         ${row("Cadence", st.rate.toFixed(2) + " s", nx && nx.rate.toFixed(2) + " s")}
-        ${d.slow ? row("Ralentit", Math.round(st.slow * 100) + " %", nx && Math.round(nx.slow * 100) + " %") : ""}
+        ${d.slow.some((value) => value > 0) ? row("Ralentit", Math.round(st.slow * 100) + " %", nx && Math.round(nx.slow * 100) + " %") : ""}
         ${row("Vise", [d.ground && "sol", d.air && "air"].filter(Boolean).join(" + "))}
         </table>
         <div class="acts">
@@ -1074,7 +1028,8 @@ window.addEventListener("keydown", (e) => {
   if (e.key === "Shift") shiftHeld = true;
   if (!S || ui.overlayOpen) return;
   const k = e.key.toLowerCase();
-  if (k >= "1" && k <= "6") { setBuild(+k - 1); e.preventDefault(); }
+  const towerIndex = TOWERS.findIndex((tower) => tower.key === k);
+  if (towerIndex >= 0) { setBuild(towerIndex); e.preventDefault(); }
   else if (k === "0" || k === "escape") { setBuild(-1); selected = null; ui.update(); }
   else if (k === "u") upgrade(selected);
   else if (k === "s") sell(selected);

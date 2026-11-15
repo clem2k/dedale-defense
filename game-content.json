@@ -1,0 +1,1606 @@
+{
+  "version": 1,
+  "board": {
+    "cell": 20,
+    "cols": 28,
+    "rows": 22,
+    "openRows": [
+      9,
+      10,
+      11,
+      12
+    ],
+    "openCols": [
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "rules": {
+    "rangeGrowth": 0.08,
+    "rateReduction": 0.04,
+    "sellRefund": 0.75,
+    "slowDuration": 2,
+    "stunDuration": 0.6,
+    "killScore": 10,
+    "winScore": 100,
+    "splitJitter": 6
+  },
+  "levels": [
+    {
+      "id": "easy",
+      "name": "Facile",
+      "hp": 0.75,
+      "lives": 30,
+      "gold": 70,
+      "gap": 28,
+      "waves": 30,
+      "waveSet": "standard"
+    },
+    {
+      "id": "normal",
+      "name": "Normal",
+      "hp": 1,
+      "lives": 20,
+      "gold": 60,
+      "gap": 24,
+      "waves": 50,
+      "waveSet": "standard"
+    },
+    {
+      "id": "hard",
+      "name": "Difficile",
+      "hp": 1.35,
+      "lives": 10,
+      "gold": 50,
+      "gap": 20,
+      "waves": 60,
+      "waveSet": "standard"
+    },
+    {
+      "id": "uncle_scrooge",
+      "name": "Oncle Picsou",
+      "hp": 1.3,
+      "lives": 20,
+      "gold": 10000,
+      "gap": 24,
+      "waves": 40,
+      "waveSet": "standard"
+    },
+    {
+      "id": "rush",
+      "name": "Ruée",
+      "hp": 1.1,
+      "lives": 15,
+      "gold": 60,
+      "gap": 10,
+      "waves": 20,
+      "desc": "Les vagues s'enchaînent rapidement.",
+      "waveSet": "standard"
+    },
+    {
+      "id": "marathon",
+      "name": "Marathon",
+      "hp": 0.85,
+      "lives": 30,
+      "gold": 80,
+      "gap": 30,
+      "waves": 70,
+      "desc": "Longue partie, avec une progression des ennemis plus lente.",
+      "waveSet": "marathon"
+    }
+  ],
+  "towers": [
+    {
+      "id": "stone",
+      "name": "Caillou",
+      "key": "1",
+      "color": "#9aa4b2",
+      "accent": "#e4e7ec",
+      "desc": "Tir rapide et bon marché. Touche le sol et les airs.",
+      "cost": 5,
+      "ups": [
+        5,
+        10,
+        20,
+        40
+      ],
+      "dmg": [
+        5,
+        10,
+        20,
+        40,
+        80
+      ],
+      "range": 70,
+      "rate": 0.5,
+      "ground": true,
+      "air": true,
+      "shot": "pellet",
+      "speed": 340,
+      "splash": 0,
+      "multi": 1,
+      "slow": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stun": 0
+    },
+    {
+      "id": "burst",
+      "name": "Éclat",
+      "key": "2",
+      "color": "#4ea1ff",
+      "accent": "#b9dcff",
+      "desc": "Obus qui explose et blesse les ennemis proches. Sol uniquement.",
+      "cost": 15,
+      "ups": [
+        15,
+        30,
+        60,
+        120
+      ],
+      "dmg": [
+        8,
+        16,
+        32,
+        64,
+        128
+      ],
+      "range": 62,
+      "rate": 0.9,
+      "ground": true,
+      "air": false,
+      "shot": "shell",
+      "speed": 240,
+      "splash": 30,
+      "multi": 1,
+      "slow": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stun": 0
+    },
+    {
+      "id": "needle",
+      "name": "Aiguille",
+      "key": "3",
+      "color": "#c084fc",
+      "accent": "#ead5ff",
+      "desc": "Longue portée et gros dégâts, mais lente. Sol et airs.",
+      "cost": 25,
+      "ups": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "dmg": [
+        25,
+        50,
+        100,
+        200,
+        400
+      ],
+      "range": 130,
+      "rate": 1.4,
+      "ground": true,
+      "air": true,
+      "shot": "dart",
+      "speed": 520,
+      "splash": 0,
+      "multi": 1,
+      "slow": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stun": 0
+    },
+    {
+      "id": "volley",
+      "name": "Volée",
+      "key": "4",
+      "color": "#f97066",
+      "accent": "#ffd1cc",
+      "desc": "Lance jusqu'à quatre missiles à la fois. Airs uniquement.",
+      "cost": 30,
+      "ups": [
+        30,
+        60,
+        120,
+        240
+      ],
+      "dmg": [
+        12,
+        24,
+        48,
+        96,
+        192
+      ],
+      "range": 105,
+      "rate": 0.85,
+      "ground": false,
+      "air": true,
+      "shot": "missile",
+      "speed": 300,
+      "multi": 4,
+      "splash": 0,
+      "slow": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stun": 0
+    },
+    {
+      "id": "frost",
+      "name": "Givre",
+      "key": "5",
+      "color": "#5fe0e0",
+      "accent": "#d6fbfb",
+      "desc": "Ralentit sa cible pendant deux secondes. Sol et airs.",
+      "cost": 20,
+      "ups": [
+        20,
+        40,
+        80,
+        160
+      ],
+      "dmg": [
+        2,
+        4,
+        8,
+        16,
+        32
+      ],
+      "range": 72,
+      "rate": 0.6,
+      "ground": true,
+      "air": true,
+      "shot": "ice",
+      "speed": 320,
+      "slow": [
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.6
+      ],
+      "splash": 0,
+      "multi": 1,
+      "stun": 0
+    },
+    {
+      "id": "pulse",
+      "name": "Onde",
+      "key": "6",
+      "color": "#fdb022",
+      "accent": "#fff0c2",
+      "desc": "Onde de choc autour d'elle, peut étourdir. Sol uniquement.",
+      "cost": 40,
+      "ups": [
+        40,
+        80,
+        160,
+        320
+      ],
+      "dmg": [
+        20,
+        40,
+        80,
+        160,
+        320
+      ],
+      "range": 46,
+      "rate": 1.2,
+      "ground": true,
+      "air": false,
+      "shot": "pulse",
+      "stun": 0.15,
+      "speed": 0,
+      "splash": 0,
+      "multi": 1,
+      "slow": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "enemies": {
+    "walker": {
+      "name": "Marcheurs",
+      "hp": 1,
+      "speed": 40,
+      "count": 10,
+      "gap": 0.65,
+      "bounty": 1,
+      "color": "#a6ef67",
+      "r": 6,
+      "shape": "circle",
+      "desc": "Ennemis ordinaires.",
+      "flying": false,
+      "immune": false,
+      "lifeLoss": 1,
+      "split": null
+    },
+    "runner": {
+      "name": "Coureurs",
+      "hp": 0.7,
+      "speed": 78,
+      "count": 10,
+      "gap": 0.55,
+      "bounty": 1,
+      "color": "#fef08a",
+      "r": 5,
+      "shape": "tri",
+      "desc": "Très rapides.",
+      "flying": false,
+      "immune": false,
+      "lifeLoss": 1,
+      "split": null
+    },
+    "swarm": {
+      "name": "Essaim",
+      "hp": 0.4,
+      "speed": 46,
+      "count": 22,
+      "gap": 0.3,
+      "bounty": 0.5,
+      "color": "#fda29b",
+      "r": 4,
+      "shape": "circle",
+      "desc": "Nombreux mais fragiles.",
+      "flying": false,
+      "immune": false,
+      "lifeLoss": 1,
+      "split": null
+    },
+    "flyer": {
+      "name": "Volants",
+      "hp": 0.85,
+      "speed": 46,
+      "count": 8,
+      "gap": 0.9,
+      "bounty": 1.5,
+      "color": "#7cd4fd",
+      "r": 6,
+      "shape": "wing",
+      "flying": true,
+      "desc": "Survolent les tours.",
+      "immune": false,
+      "lifeLoss": 1,
+      "split": null
+    },
+    "armored": {
+      "name": "Blindés",
+      "hp": 1.5,
+      "speed": 34,
+      "count": 8,
+      "gap": 0.9,
+      "bounty": 1.5,
+      "color": "#bdb4fe",
+      "r": 7,
+      "shape": "square",
+      "immune": true,
+      "desc": "Insensibles au givre et au choc.",
+      "flying": false,
+      "lifeLoss": 1,
+      "split": null
+    },
+    "splitter": {
+      "name": "Scindeurs",
+      "hp": 1.05,
+      "speed": 40,
+      "count": 8,
+      "gap": 0.85,
+      "bounty": 1,
+      "color": "#f9a8d4",
+      "r": 7,
+      "shape": "diamond",
+      "desc": "Se divisent en deux en mourant.",
+      "flying": false,
+      "immune": false,
+      "lifeLoss": 1,
+      "split": {
+        "type": "mini",
+        "count": 2,
+        "hp": 0.3,
+        "bounty": 0.5
+      }
+    },
+    "mini": {
+      "name": "Éclats",
+      "hp": 0.3,
+      "speed": 52,
+      "count": 0,
+      "gap": 0,
+      "bounty": 0.5,
+      "color": "#f9a8d4",
+      "r": 4,
+      "shape": "diamond",
+      "flying": false,
+      "immune": false,
+      "lifeLoss": 1,
+      "split": null
+    },
+    "boss": {
+      "name": "Colosse",
+      "hp": 14,
+      "speed": 28,
+      "count": 1,
+      "gap": 1,
+      "bounty": 25,
+      "color": "#f04438",
+      "r": 11,
+      "shape": "boss",
+      "desc": "Un seul, mais énorme.",
+      "flying": false,
+      "immune": false,
+      "lifeLoss": 2,
+      "split": null
+    }
+  },
+  "waveSets": {
+    "standard": [
+      {
+        "type": "walker",
+        "hp": 16,
+        "bountyMultiplier": 2,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 21.38,
+        "bountyMultiplier": 2,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 26.9187,
+        "bountyMultiplier": 2,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 32.6343505,
+        "bountyMultiplier": 2,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 38.5473008075,
+        "bountyMultiplier": 2,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 44.6802404003625,
+        "bountyMultiplier": 3,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 51.05846804640419,
+        "bountyMultiplier": 3,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 57.71019187174067,
+        "bountyMultiplier": 3,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 64.66686393699084,
+        "bountyMultiplier": 3,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 71.9635532897448,
+        "bountyMultiplier": 3,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 79.63936191806545,
+        "bountyMultiplier": 3,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 87.73788853864296,
+        "bountyMultiplier": 4,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 96.30774572058691,
+        "bountyMultiplier": 4,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 105.4031364784544,
+        "bountyMultiplier": 4,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 115.08449717347666,
+        "bountyMultiplier": 4,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 125.41921434842646,
+        "bountyMultiplier": 4,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 136.4824239984955,
+        "bountyMultiplier": 4,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 148.3579027583225,
+        "bountyMultiplier": 5,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 161.13906157552958,
+        "bountyMultiplier": 5,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 174.93005365671547,
+        "bountyMultiplier": 5,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 189.84700982723777,
+        "bountyMultiplier": 5,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 206.01941595737011,
+        "bountyMultiplier": 5,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 223.59164879246765,
+        "bountyMultiplier": 5,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 242.72468840360145,
+        "bountyMultiplier": 6,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 263.59802757001563,
+        "bountyMultiplier": 6,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 286.4118007405674,
+        "bountyMultiplier": 6,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 311.38915782573264,
+        "bountyMultiplier": 6,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 338.77891097569193,
+        "bountyMultiplier": 6,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 368.8584857378965,
+        "bountyMultiplier": 6,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 401.9372115977546,
+        "bountyMultiplier": 7,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 438.3599909314963,
+        "bountyMultiplier": 7,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 478.5113898886184,
+        "bountyMultiplier": 7,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 522.8201997258095,
+        "bountyMultiplier": 7,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 571.7645226942776,
+        "bountyMultiplier": 7,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 625.8774428041196,
+        "bountyMultiplier": 7,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 685.7533487265932,
+        "bountyMultiplier": 8,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 752.0549838301515,
+        "bountyMultiplier": 8,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 825.521306970619,
+        "bountyMultiplier": 8,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 906.9762572722402,
+        "bountyMultiplier": 8,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 997.3385268585478,
+        "bountyMultiplier": 8,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 1097.6324574472808,
+        "bountyMultiplier": 8,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 1209.0001900537181,
+        "bountyMultiplier": 9,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 1332.7152119098955,
+        "bountyMultiplier": 9,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 1470.1974612795336,
+        "bountyMultiplier": 9,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 1623.03016932668,
+        "bountyMultiplier": 9,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 1792.978638799248,
+        "bountyMultiplier": 9,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 1982.0111822611616,
+        "bountyMultiplier": 9,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 2192.3224682211953,
+        "bountyMultiplier": 10,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 2426.3595520666327,
+        "bountyMultiplier": 10,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 2686.850900554295,
+        "bountyMultiplier": 10,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 2976.838754118039,
+        "bountyMultiplier": 10,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 3299.7152108416135,
+        "bountyMultiplier": 10,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 3659.262460088399,
+        "bountyMultiplier": 10,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 4059.6976429985652,
+        "bountyMultiplier": 11,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 4505.722871943401,
+        "bountyMultiplier": 11,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 5002.581002216892,
+        "bountyMultiplier": 11,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 5556.117817471833,
+        "bountyMultiplier": 11,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 6172.851366481094,
+        "bountyMultiplier": 11,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 6860.0492736264205,
+        "bountyMultiplier": 11,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 7625.814940093458,
+        "bountyMultiplier": 12,
+        "targets": [
+          "R",
+          "B"
+        ]
+      }
+    ],
+    "marathon": [
+      {
+        "type": "walker",
+        "hp": 16,
+        "bountyMultiplier": 2,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 20.72,
+        "bountyMultiplier": 2,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 25.483200000000004,
+        "bountyMultiplier": 2,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 30.292192,
+        "bountyMultiplier": 2,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 35.14972352,
+        "bountyMultiplier": 2,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 40.05870693120001,
+        "bountyMultiplier": 3,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 45.022229347072006,
+        "bountyMultiplier": 3,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 50.043563107896325,
+        "bountyMultiplier": 3,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 55.126176894370104,
+        "bountyMultiplier": 3,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 60.273747508032315,
+        "bountyMultiplier": 3,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 65.49017235851426,
+        "bountyMultiplier": 3,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 70.77958270002512,
+        "bountyMultiplier": 4,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 76.14635766202662,
+        "bountyMultiplier": 4,
+        "targets": [
+          "R"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 81.59513912174822,
+        "bountyMultiplier": 4,
+        "targets": [
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 87.13084746905312,
+        "bountyMultiplier": 4,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 92.75869831719629,
+        "bountyMultiplier": 4,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 98.48422021622808,
+        "bountyMultiplier": 4,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 104.31327342920176,
+        "bountyMultiplier": 5,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 110.25206983495387,
+        "bountyMultiplier": 5,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 116.3071940250511,
+        "bountyMultiplier": 5,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 122.48562566655417,
+        "bountyMultiplier": 5,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 128.79476320654743,
+        "bountyMultiplier": 5,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 135.2424489989403,
+        "bountyMultiplier": 5,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 141.8369959388767,
+        "bountyMultiplier": 6,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 148.5872156952093,
+        "bountyMultiplier": 6,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 155.50244863692186,
+        "bountyMultiplier": 6,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 162.59259555513717,
+        "bountyMultiplier": 6,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 169.8681512884454,
+        "bountyMultiplier": 6,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 177.34024036575212,
+        "bountyMultiplier": 6,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 185.02065478769725,
+        "bountyMultiplier": 7,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 192.92189407495908,
+        "bountyMultiplier": 7,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 201.05720771945664,
+        "bountyMultiplier": 7,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 209.44064018262407,
+        "bountyMultiplier": 7,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 218.0870785935815,
+        "bountyMultiplier": 7,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 227.0123033091964,
+        "bountyMultiplier": 7,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 236.2330415077482,
+        "bountyMultiplier": 8,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 245.76702399821306,
+        "bountyMultiplier": 8,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 255.63304543810585,
+        "bountyMultiplier": 8,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 265.85102816439223,
+        "bountyMultiplier": 8,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 276.44208985425576,
+        "bountyMultiplier": 8,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 287.42861524551114,
+        "bountyMultiplier": 8,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 298.8343321602418,
+        "bountyMultiplier": 9,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 310.6843920898563,
+        "bountyMultiplier": 9,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 323.0054556152477,
+        "bountyMultiplier": 9,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 335.82578295216257,
+        "bountyMultiplier": 9,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 349.17532992929233,
+        "bountyMultiplier": 9,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 363.0858497250499,
+        "bountyMultiplier": 9,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 377.5910007085529,
+        "bountyMultiplier": 10,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 392.72646075106604,
+        "bountyMultiplier": 10,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 408.53004839613004,
+        "bountyMultiplier": 10,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 425.04185129989787,
+        "bountyMultiplier": 10,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 442.3043623778917,
+        "bountyMultiplier": 10,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 460.3626241205652,
+        "bountyMultiplier": 10,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 479.2643815677992,
+        "bountyMultiplier": 11,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 499.0602444618671,
+        "bountyMultiplier": 11,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 519.8038591295792,
+        "bountyMultiplier": 11,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 541.5520906773539,
+        "bountyMultiplier": 11,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 564.3652161179953,
+        "bountyMultiplier": 11,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 588.307129085075,
+        "bountyMultiplier": 11,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 613.4455568301794,
+        "bountyMultiplier": 12,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 639.8522902399902,
+        "bountyMultiplier": 12,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 667.6034276543897,
+        "bountyMultiplier": 12,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 696.7796333136531,
+        "bountyMultiplier": 12,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "flyer",
+        "hp": 727.4664113124724,
+        "bountyMultiplier": 12,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "swarm",
+        "hp": 759.7543959912207,
+        "bountyMultiplier": 12,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "armored",
+        "hp": 793.7396597506939,
+        "bountyMultiplier": 13,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "walker",
+        "hp": 829.5240393357356,
+        "bountyMultiplier": 13,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "splitter",
+        "hp": 867.2154816958797,
+        "bountyMultiplier": 13,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "runner",
+        "hp": 906.9284105976326,
+        "bountyMultiplier": 13,
+        "targets": [
+          "R",
+          "B"
+        ]
+      },
+      {
+        "type": "boss",
+        "hp": 948.7841152334906,
+        "bountyMultiplier": 13,
+        "targets": [
+          "R",
+          "B"
+        ]
+      }
+    ]
+  }
+}

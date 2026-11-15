@@ -14,14 +14,14 @@
     <a href="#aide">Aide</a>
   </nav>
   <main id="stage">
-    <div id="game" class="game">
+    <div id="game" class="game" style="--board-width: {{BOARD_WIDTH}}px; --board-height: {{BOARD_HEIGHT}}px">
       <div class="left">
         <header class="titlebar">
           <h1>Dédale <span>Défense</span></h1>
-          <div class="hint">1-6 tour · 0 annuler · U améliorer · S vendre · Maj placer plusieurs · Espace pause · N vague</div>
+          <div class="hint">{{TOWER_KEYS}} tour · 0 annuler · U améliorer · S vendre · Maj placer plusieurs · Espace pause · N vague</div>
         </header>
         <div class="board-wrap">
-          <canvas id="board" width="560" height="440" aria-label="Plateau de jeu"></canvas>
+          <canvas id="board" width="{{BOARD_WIDTH}}" height="{{BOARD_HEIGHT}}" aria-label="Plateau de jeu"></canvas>
           <div id="overlay" class="overlay"></div>
         </div>
         <div class="waves" id="waves" aria-label="Prochaines vagues"></div>
@@ -50,7 +50,7 @@
     <h2>Description</h2>
     <p>Un jeu de réflexion en temps réel : des vagues d'ennemis traversent le plateau, et vos tours doivent les arrêter avant qu'ils n'atteignent l'autre côté. Achetez des tours, placez-les sur le plateau et obligez les ennemis à faire de longs détours.</p>
     <h2>Comment jouer</h2>
-    <p>Les touches 1 à 6 choisissent une tour et 0 annule. U améliore la tour sélectionnée et S la vend. Gardez Maj enfoncée pour poser plusieurs tours d'affilée. Espace met le jeu en pause.</p>
+    <p>Les touches indiquées sur les tours permettent de les choisir, et 0 annule. U améliore la tour sélectionnée et S la vend. Gardez Maj enfoncée pour poser plusieurs tours d'affilée. Espace met le jeu en pause.</p>
     <details>
       <summary>FAQ</summary>
       <dl>

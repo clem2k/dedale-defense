@@ -2,9 +2,7 @@ use macroquad::prelude::*;
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 
-const CELL: f32 = 20.0;
-const COLS: usize = 28;
-const ROWS: usize = 22;
+include!(concat!(env!("OUT_DIR"), "/content.rs"));
 const COUNT: usize = COLS * ROWS;
 const BOARD_W: f32 = COLS as f32 * CELL;
 const BOARD_H: f32 = ROWS as f32 * CELL;
@@ -19,368 +17,6 @@ const MUTED: Color = Color::new(0.58, 0.64, 0.72, 1.0);
 const GOLD: Color = Color::new(0.98, 0.77, 0.08, 1.0);
 const GREEN: Color = Color::new(0.23, 0.80, 0.50, 1.0);
 const RED: Color = Color::new(0.92, 0.22, 0.32, 1.0);
-
-#[derive(Clone, Copy, PartialEq, Eq)]
-enum Mode {
-    Easy,
-    Normal,
-    Hard,
-    UncleScrooge,
-    Rush,
-    Marathon,
-}
-
-impl Mode {
-    const ALL: [Mode; 6] = [
-        Mode::Easy,
-        Mode::Normal,
-        Mode::Hard,
-        Mode::UncleScrooge,
-        Mode::Rush,
-        Mode::Marathon,
-    ];
-
-    fn name(self) -> &'static str {
-        match self {
-            Self::Easy => "Facile",
-            Self::Normal => "Normal",
-            Self::Hard => "Difficile",
-            Self::UncleScrooge => "Oncle Picsou",
-            Self::Rush => "Ruee",
-            Self::Marathon => "Marathon",
-        }
-    }
-
-    fn lives(self) -> i32 {
-        match self {
-            Self::Easy => 30,
-            Self::Normal => 20,
-            Self::Hard => 10,
-            Self::UncleScrooge => 20,
-            Self::Rush => 15,
-            Self::Marathon => 30,
-        }
-    }
-
-    fn gold(self) -> i32 {
-        match self {
-            Self::Easy => 70,
-            Self::Normal => 60,
-            Self::Hard => 50,
-            Self::UncleScrooge => 10000,
-            Self::Rush => 60,
-            Self::Marathon => 80,
-        }
-    }
-
-    fn hp_factor(self) -> f32 {
-        match self {
-            Self::Easy => 0.75,
-            Self::Normal => 1.0,
-            Self::Hard => 1.35,
-            Self::UncleScrooge => 1.3,
-            Self::Rush => 1.1,
-            Self::Marathon => 0.85,
-        }
-    }
-
-    fn wave_gap(self) -> f32 {
-        match self {
-            Self::Easy => 28.0,
-            Self::Normal => 24.0,
-            Self::Hard => 20.0,
-            Self::UncleScrooge => 24.0,
-            Self::Rush => 10.0,
-            Self::Marathon => 30.0,
-        }
-    }
-
-    fn waves(self) -> u32 {
-        match self {
-            Self::Easy => 30,
-            Self::Normal => 50,
-            Self::Hard => 60,
-            Self::UncleScrooge => 40,
-            Self::Rush => 20,
-            Self::Marathon => 70,
-        }
-    }
-
-    fn hp_growth(self) -> f32 {
-        match self {
-            Self::Marathon => 1.06,
-            _ => 1.115,
-        }
-    }
-}
-
-#[derive(Clone, Copy, PartialEq, Eq)]
-enum TowerKind {
-    Stone,
-    Burst,
-    Needle,
-    Volley,
-    Frost,
-    Pulse,
-}
-
-impl TowerKind {
-    const ALL: [Self; 6] = [
-        Self::Stone,
-        Self::Burst,
-        Self::Needle,
-        Self::Volley,
-        Self::Frost,
-        Self::Pulse,
-    ];
-
-    fn index(self) -> usize {
-        match self {
-            Self::Stone => 0,
-            Self::Burst => 1,
-            Self::Needle => 2,
-            Self::Volley => 3,
-            Self::Frost => 4,
-            Self::Pulse => 5,
-        }
-    }
-}
-
-#[derive(Clone, Copy)]
-struct TowerDef {
-    name: &'static str,
-    cost: i32,
-    upgrades: [i32; 4],
-    damage: [f32; 5],
-    range: f32,
-    rate: f32,
-    ground: bool,
-    air: bool,
-    speed: f32,
-    splash: f32,
-    multi: usize,
-    slow: [f32; 5],
-    color: Color,
-    accent: Color,
-}
-
-const TOWERS: [TowerDef; 6] = [
-    TowerDef {
-        name: "Caillou",
-        cost: 5,
-        upgrades: [5, 10, 20, 40],
-        damage: [5.0, 10.0, 20.0, 40.0, 80.0],
-        range: 70.0,
-        rate: 0.5,
-        ground: true,
-        air: true,
-        speed: 340.0,
-        splash: 0.0,
-        multi: 1,
-        slow: [0.0; 5],
-        color: Color::new(0.60, 0.64, 0.70, 1.0),
-        accent: Color::new(0.89, 0.91, 0.94, 1.0),
-    },
-    TowerDef {
-        name: "Eclat",
-        cost: 15,
-        upgrades: [15, 30, 60, 120],
-        damage: [8.0, 16.0, 32.0, 64.0, 128.0],
-        range: 62.0,
-        rate: 0.9,
-        ground: true,
-        air: false,
-        speed: 240.0,
-        splash: 30.0,
-        multi: 1,
-        slow: [0.0; 5],
-        color: Color::new(0.31, 0.63, 1.0, 1.0),
-        accent: Color::new(0.73, 0.86, 1.0, 1.0),
-    },
-    TowerDef {
-        name: "Aiguille",
-        cost: 25,
-        upgrades: [25, 50, 100, 200],
-        damage: [25.0, 50.0, 100.0, 200.0, 400.0],
-        range: 130.0,
-        rate: 1.4,
-        ground: true,
-        air: true,
-        speed: 520.0,
-        splash: 0.0,
-        multi: 1,
-        slow: [0.0; 5],
-        color: Color::new(0.75, 0.52, 0.98, 1.0),
-        accent: Color::new(0.91, 0.82, 1.0, 1.0),
-    },
-    TowerDef {
-        name: "Volee",
-        cost: 30,
-        upgrades: [30, 60, 120, 240],
-        damage: [12.0, 24.0, 48.0, 96.0, 192.0],
-        range: 105.0,
-        rate: 0.85,
-        ground: false,
-        air: true,
-        speed: 300.0,
-        splash: 0.0,
-        multi: 4,
-        slow: [0.0; 5],
-        color: Color::new(0.98, 0.44, 0.40, 1.0),
-        accent: Color::new(1.0, 0.81, 0.79, 1.0),
-    },
-    TowerDef {
-        name: "Givre",
-        cost: 20,
-        upgrades: [20, 40, 80, 160],
-        damage: [2.0, 4.0, 8.0, 16.0, 32.0],
-        range: 72.0,
-        rate: 0.6,
-        ground: true,
-        air: true,
-        speed: 320.0,
-        splash: 0.0,
-        multi: 1,
-        slow: [0.35, 0.40, 0.45, 0.50, 0.60],
-        color: Color::new(0.37, 0.88, 0.88, 1.0),
-        accent: Color::new(0.83, 0.98, 0.98, 1.0),
-    },
-    TowerDef {
-        name: "Onde",
-        cost: 40,
-        upgrades: [40, 80, 160, 320],
-        damage: [20.0, 40.0, 80.0, 160.0, 320.0],
-        range: 46.0,
-        rate: 1.2,
-        ground: true,
-        air: false,
-        speed: 0.0,
-        splash: 0.0,
-        multi: 1,
-        slow: [0.0; 5],
-        color: Color::new(0.99, 0.69, 0.13, 1.0),
-        accent: Color::new(1.0, 0.91, 0.64, 1.0),
-    },
-];
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum EnemyKind {
-    Walker,
-    Runner,
-    Swarm,
-    Flyer,
-    Armored,
-    Splitter,
-    Mini,
-    Boss,
-}
-
-impl EnemyKind {
-    fn name(self) -> &'static str {
-        match self {
-            Self::Walker => "Marcheurs",
-            Self::Runner => "Coureurs",
-            Self::Swarm => "Essaim",
-            Self::Flyer => "Volants",
-            Self::Armored => "Blindes",
-            Self::Splitter => "Scindeurs",
-            Self::Mini => "Eclats",
-            Self::Boss => "Colosse",
-        }
-    }
-
-    fn hp_factor(self) -> f32 {
-        match self {
-            Self::Walker => 1.0,
-            Self::Runner => 0.7,
-            Self::Swarm => 0.4,
-            Self::Flyer => 0.85,
-            Self::Armored => 1.5,
-            Self::Splitter => 1.05,
-            Self::Mini => 0.3,
-            Self::Boss => 14.0,
-        }
-    }
-
-    fn speed(self) -> f32 {
-        match self {
-            Self::Walker | Self::Splitter => 40.0,
-            Self::Runner => 78.0,
-            Self::Swarm => 46.0,
-            Self::Flyer => 46.0,
-            Self::Armored => 34.0,
-            Self::Mini => 52.0,
-            Self::Boss => 28.0,
-        }
-    }
-
-    fn radius(self) -> f32 {
-        match self {
-            Self::Walker | Self::Flyer => 6.0,
-            Self::Runner | Self::Mini => 5.0,
-            Self::Swarm => 4.0,
-            Self::Armored | Self::Splitter => 7.0,
-            Self::Boss => 11.0,
-        }
-    }
-
-    fn color(self) -> Color {
-        match self {
-            Self::Walker => Color::new(0.65, 0.94, 0.40, 1.0),
-            Self::Runner => Color::new(0.99, 0.94, 0.54, 1.0),
-            Self::Swarm => Color::new(0.98, 0.64, 0.60, 1.0),
-            Self::Flyer => Color::new(0.49, 0.83, 0.99, 1.0),
-            Self::Armored => Color::new(0.74, 0.70, 0.99, 1.0),
-            Self::Splitter | Self::Mini => Color::new(0.97, 0.66, 0.83, 1.0),
-            Self::Boss => Color::new(0.94, 0.27, 0.22, 1.0),
-        }
-    }
-
-    fn is_flying(self) -> bool {
-        self == Self::Flyer
-    }
-
-    fn is_immune(self) -> bool {
-        self == Self::Armored
-    }
-
-    fn splits(self) -> bool {
-        self == Self::Splitter
-    }
-
-    fn count(self) -> usize {
-        match self {
-            Self::Walker | Self::Runner => 10,
-            Self::Swarm => 22,
-            Self::Flyer | Self::Armored | Self::Splitter => 8,
-            Self::Mini => 0,
-            Self::Boss => 1,
-        }
-    }
-
-    fn spawn_gap(self) -> f32 {
-        match self {
-            Self::Walker => 0.65,
-            Self::Runner => 0.55,
-            Self::Swarm => 0.30,
-            Self::Flyer => 0.9,
-            Self::Armored => 0.9,
-            Self::Splitter => 0.85,
-            Self::Mini => 0.0,
-            Self::Boss => 1.0,
-        }
-    }
-
-    fn bounty(self) -> f32 {
-        match self {
-            Self::Walker | Self::Runner | Self::Splitter => 1.0,
-            Self::Swarm | Self::Mini => 0.5,
-            Self::Flyer | Self::Armored => 1.5,
-            Self::Boss => 25.0,
-        }
-    }
-}
-
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Target {
     Right,
@@ -400,6 +36,7 @@ struct Tower {
     built_started: bool,
 }
 
+#[derive(Clone)]
 struct Creep {
     id: u64,
     kind: EnemyKind,
@@ -422,11 +59,9 @@ struct Creep {
 }
 
 struct Spawner {
-    kind: EnemyKind,
-    base_hp: f32,
-    bounty: f32,
-    target: Target,
+    def: WaveDef,
     left: usize,
+    spawned: usize,
     next_in: f32,
 }
 
@@ -513,8 +148,8 @@ impl Game {
 
     fn is_wall(x: usize, y: usize) -> bool {
         let edge = x == 0 || y == 0 || x == COLS - 1 || y == ROWS - 1;
-        let open_lr = (x == 0 || x == COLS - 1) && (9..=12).contains(&y);
-        let open_tb = (y == 0 || y == ROWS - 1) && (12..=15).contains(&x);
+        let open_lr = (x == 0 || x == COLS - 1) && OPEN_R.contains(&y);
+        let open_tb = (y == 0 || y == ROWS - 1) && OPEN_C.contains(&x);
         edge && !open_lr && !open_tb
     }
 
@@ -576,8 +211,8 @@ impl Game {
     }
 
     fn refresh_fields(&mut self) {
-        let right: Vec<usize> = (9..=12).map(|y| index(COLS - 1, y)).collect();
-        let bottom: Vec<usize> = (12..=15).map(|x| index(x, ROWS - 1)).collect();
+        let right: Vec<usize> = OPEN_R.iter().map(|&y| index(COLS - 1, y)).collect();
+        let bottom: Vec<usize> = OPEN_C.iter().map(|&x| index(x, ROWS - 1)).collect();
         self.field_right = self.compute_field(&right, &[]);
         self.field_bottom = self.compute_field(&bottom, &[]);
     }
@@ -611,15 +246,21 @@ impl Game {
             return Err("Un ennemi est la");
         }
         let right = self.compute_field(
-            &(9..=12).map(|y| index(COLS - 1, y)).collect::<Vec<_>>(),
+            &OPEN_R
+                .iter()
+                .map(|&y| index(COLS - 1, y))
+                .collect::<Vec<_>>(),
             &cells,
         );
         let bottom = self.compute_field(
-            &(12..=15).map(|x| index(x, ROWS - 1)).collect::<Vec<_>>(),
+            &OPEN_C
+                .iter()
+                .map(|&x| index(x, ROWS - 1))
+                .collect::<Vec<_>>(),
             &cells,
         );
-        let entries_reachable = (9..=12).all(|y| right[index(0, y)] < u32::MAX / 4)
-            && (12..=15).all(|x| bottom[index(x, 0)] < u32::MAX / 4);
+        let entries_reachable = OPEN_R.iter().all(|&y| right[index(0, y)] < u32::MAX / 4)
+            && OPEN_C.iter().all(|&x| bottom[index(x, 0)] < u32::MAX / 4);
         let creeps_reachable = self.creeps.iter().all(|creep| {
             if creep.flying {
                 return true;
@@ -689,7 +330,7 @@ impl Game {
             return;
         };
         let tower = &self.towers[index];
-        if tower.level >= 4 {
+        if tower.level >= TOWERS[tower.kind.index()].upgrades.len() {
             return;
         }
         let cost = TOWERS[tower.kind.index()].upgrades[tower.level];
@@ -714,7 +355,7 @@ impl Game {
         };
         let tower = self.towers.remove(position);
         let refund = if tower.built_started {
-            (tower.spent as f32 * 0.75).floor() as i32
+            (tower.spent as f32 * SELL_REFUND).floor() as i32
         } else {
             tower.spent
         };
@@ -730,27 +371,9 @@ impl Game {
         self.message_time = 1.6;
     }
 
-    fn wave_def(wave: u32, hp_growth: f32) -> (EnemyKind, f32, usize, f32) {
-        const CYCLE: [EnemyKind; 10] = [
-            EnemyKind::Walker,
-            EnemyKind::Runner,
-            EnemyKind::Walker,
-            EnemyKind::Flyer,
-            EnemyKind::Swarm,
-            EnemyKind::Armored,
-            EnemyKind::Walker,
-            EnemyKind::Splitter,
-            EnemyKind::Runner,
-            EnemyKind::Boss,
-        ];
-        let kind = if wave == 1 {
-            EnemyKind::Walker
-        } else {
-            CYCLE[((wave - 1) as usize) % CYCLE.len()]
-        };
-        let base_hp = 12.0 * hp_growth.powi((wave - 1) as i32) + 4.0 * wave as f32;
-        let bounty = kind.bounty() * (2 + (wave / 6)) as f32;
-        (kind, base_hp, kind.count(), bounty)
+    fn wave_def(wave: u32, mode: Mode) -> WaveDef {
+        assert!(wave > 0 && wave <= mode.waves(), "invalid wave for level");
+        mode.def().wave_set[(wave - 1) as usize]
     }
 
     fn send_wave(&mut self) {
@@ -762,43 +385,27 @@ impl Game {
         }
         self.started = true;
         self.wave += 1;
-        let (kind, base_hp, count, bounty) = Self::wave_def(self.wave, self.mode.hp_growth());
-        let target = if self.wave >= 15 {
-            if self.wave % 2 == 0 {
-                Target::Right
-            } else {
-                Target::Bottom
-            }
-        } else if self.wave % 2 == 1 {
-            Target::Right
-        } else {
-            Target::Bottom
-        };
+        let def = Self::wave_def(self.wave, self.mode);
         self.spawners.push(Spawner {
-            kind,
-            base_hp,
-            bounty,
-            target,
-            left: count,
+            def,
+            left: def.count,
+            spawned: 0,
             next_in: 0.0,
         });
         self.timer = self.mode.wave_gap();
     }
 
     fn spawn(&mut self, kind: EnemyKind, base_hp: f32, bounty: f32, target: Target) {
-        let lane = macroquad::rand::gen_range(0, 4) as usize;
-        let (x, y, cell) = if target == Target::Right {
-            (
-                -CELL * 0.6,
-                (9 + lane) as f32 * CELL + CELL * 0.5,
-                index(0, 9 + lane),
-            )
+        let lanes = if target == Target::Right {
+            &OPEN_R[..]
         } else {
-            (
-                (12 + lane) as f32 * CELL + CELL * 0.5,
-                -CELL * 0.6,
-                index(12 + lane, 0),
-            )
+            &OPEN_C[..]
+        };
+        let lane = lanes[macroquad::rand::gen_range(0, lanes.len())];
+        let (x, y, cell) = if target == Target::Right {
+            (-CELL * 0.6, lane as f32 * CELL + CELL * 0.5, index(0, lane))
+        } else {
+            (lane as f32 * CELL + CELL * 0.5, -CELL * 0.6, index(lane, 0))
         };
         let flying = kind.is_flying();
         let id = self.next_id;
@@ -955,11 +562,7 @@ impl Game {
     }
 
     fn leak(&mut self, index: usize) {
-        let loss = if self.creeps[index].kind == EnemyKind::Boss {
-            2
-        } else {
-            1
-        };
+        let loss = self.creeps[index].kind.def().life_loss;
         self.creeps[index].dead = true;
         self.lives = (self.lives - loss).max(0);
         if self.lives == 0 {
@@ -979,47 +582,27 @@ impl Game {
         if self.creeps[index].hp > 0.0 {
             return;
         }
-        let creep = &self.creeps[index];
+        let creep = self.creeps[index].clone();
         let bounty = creep.bounty;
         let kind = creep.kind;
-        let max_hp = creep.max_hp;
-        let target = creep.target;
-        let x = creep.x;
-        let y = creep.y;
         self.creeps[index].dead = true;
         let reward = (bounty.round() as i32).max(1);
         self.gold += reward;
-        self.score += reward * 10;
+        self.score += reward * KILL_SCORE;
         self.kills += 1;
-        if kind.splits() {
-            for _ in 0..2 {
-                self.spawn_at(
-                    kind,
-                    EnemyKind::Mini,
-                    max_hp * 0.3,
-                    bounty * 0.5,
-                    target,
-                    x,
-                    y,
-                );
+        if let Some(split) = kind.def().split {
+            for _ in 0..split.count {
+                self.spawn_child(split, &creep);
             }
         }
     }
 
-    fn spawn_at(
-        &mut self,
-        _parent: EnemyKind,
-        kind: EnemyKind,
-        hp: f32,
-        bounty: f32,
-        target: Target,
-        x: f32,
-        y: f32,
-    ) {
-        let cell = index(
-            ((x / CELL).floor() as usize).min(COLS - 1),
-            ((y / CELL).floor() as usize).min(ROWS - 1),
-        );
+    fn spawn_child(&mut self, split: SplitDef, parent: &Creep) {
+        let kind = split.kind;
+        let hp = parent.max_hp * split.hp;
+        let x = parent.x + macroquad::rand::gen_range(-0.5, 0.5) * SPLIT_JITTER;
+        let y = parent.y + macroquad::rand::gen_range(-0.5, 0.5) * SPLIT_JITTER;
+        let flying = kind.is_flying();
         let id = self.next_id;
         self.next_id += 1;
         self.creeps.push(Creep {
@@ -1029,14 +612,30 @@ impl Game {
             y,
             hp,
             max_hp: hp,
-            bounty,
-            target,
-            flying: false,
-            cell: Some(cell),
-            next_cell: Some(cell),
-            wx: (cell % COLS) as f32 * CELL + CELL * 0.5,
-            wy: (cell / COLS) as f32 * CELL + CELL * 0.5,
-            exiting: false,
+            bounty: parent.bounty * split.bounty,
+            target: parent.target,
+            flying,
+            cell: None,
+            next_cell: if flying { None } else { parent.next_cell },
+            wx: if flying {
+                if parent.target == Target::Right {
+                    BOARD_W + CELL
+                } else {
+                    x
+                }
+            } else {
+                parent.wx
+            },
+            wy: if flying {
+                if parent.target == Target::Bottom {
+                    BOARD_H + CELL
+                } else {
+                    y
+                }
+            } else {
+                parent.wy
+            },
+            exiting: !flying && parent.exiting,
             slow_until: 0.0,
             slow_factor: 0.0,
             stun_until: 0.0,
@@ -1048,8 +647,8 @@ impl Game {
         let def = TOWERS[tower.kind.index()];
         (
             def.damage[tower.level],
-            def.range * (1.0 + 0.08 * tower.level as f32),
-            def.rate * (1.0 - 0.04 * tower.level as f32),
+            def.range * (1.0 + RANGE_GROWTH * tower.level as f32),
+            def.rate * (1.0 - RATE_REDUCTION * tower.level as f32),
             def.slow[tower.level],
         )
     }
@@ -1093,9 +692,9 @@ impl Game {
             if targets.is_empty() {
                 continue;
             }
-            if tower.kind == TowerKind::Pulse {
+            if def.shot == "pulse" {
                 for (_, id, _, _) in targets {
-                    hits.push((id, damage));
+                    hits.push((id, damage, def.stun));
                 }
                 tower.cooldown = rate;
                 continue;
@@ -1115,15 +714,15 @@ impl Game {
             }
             tower.cooldown = rate;
         }
-        for (id, damage) in hits {
+        for (id, damage, stun) in hits {
             self.hurt(id, damage);
             if let Some(creep) = self
                 .creeps
                 .iter_mut()
                 .find(|creep| creep.id == id && !creep.dead)
             {
-                if !creep.kind.is_immune() && macroquad::rand::gen_range(0.0, 1.0) < 0.15 {
-                    creep.stun_until = self.game_time + 0.6;
+                if !creep.kind.is_immune() && macroquad::rand::gen_range(0.0, 1.0) < stun {
+                    creep.stun_until = self.game_time + STUN_DURATION;
                 }
             }
         }
@@ -1182,8 +781,12 @@ impl Game {
                     .find(|creep| creep.id == id && !creep.dead)
                 {
                     if slow > 0.0 && !creep.kind.is_immune() {
-                        creep.slow_until = self.game_time + 2.0;
-                        creep.slow_factor = creep.slow_factor.max(slow);
+                        creep.slow_factor = if self.game_time < creep.slow_until {
+                            creep.slow_factor.max(slow)
+                        } else {
+                            slow
+                        };
+                        creep.slow_until = self.game_time + SLOW_DURATION;
                     }
                 }
                 self.hurt(id, damage);
@@ -1211,13 +814,14 @@ impl Game {
             spawner.next_in -= dt;
             while spawner.left > 0 && spawner.next_in <= 0.0 {
                 spawns.push((
-                    spawner.kind,
-                    spawner.base_hp,
-                    spawner.bounty,
-                    spawner.target,
+                    spawner.def.kind,
+                    spawner.def.hp,
+                    spawner.def.bounty,
+                    spawner.def.targets[spawner.spawned % spawner.def.targets.len()],
                 ));
                 spawner.left -= 1;
-                spawner.next_in += spawner.kind.spawn_gap();
+                spawner.spawned += 1;
+                spawner.next_in += spawner.def.gap;
             }
         }
         self.spawners.retain(|spawner| spawner.left > 0);
@@ -1246,7 +850,7 @@ impl Game {
         self.over = true;
         self.won = won;
         if won {
-            self.score += self.lives * 100;
+            self.score += self.lives * WIN_SCORE;
         }
     }
 
@@ -1254,31 +858,27 @@ impl Game {
         if self.over {
             return;
         }
+        let shortcut = match key {
+            KeyCode::Key1 => Some('1'),
+            KeyCode::Key2 => Some('2'),
+            KeyCode::Key3 => Some('3'),
+            KeyCode::Key4 => Some('4'),
+            KeyCode::Key5 => Some('5'),
+            KeyCode::Key6 => Some('6'),
+            KeyCode::Key7 => Some('7'),
+            KeyCode::Key8 => Some('8'),
+            KeyCode::Key9 => Some('9'),
+            _ => None,
+        };
+        if let Some(kind) = TowerKind::ALL
+            .iter()
+            .find(|kind| Some(TOWERS[kind.index()].key) == shortcut)
+        {
+            self.build_kind = Some(*kind);
+            self.selected_id = None;
+            return;
+        }
         match key {
-            KeyCode::Key1 => {
-                self.build_kind = Some(TowerKind::Stone);
-                self.selected_id = None;
-            }
-            KeyCode::Key2 => {
-                self.build_kind = Some(TowerKind::Burst);
-                self.selected_id = None;
-            }
-            KeyCode::Key3 => {
-                self.build_kind = Some(TowerKind::Needle);
-                self.selected_id = None;
-            }
-            KeyCode::Key4 => {
-                self.build_kind = Some(TowerKind::Volley);
-                self.selected_id = None;
-            }
-            KeyCode::Key5 => {
-                self.build_kind = Some(TowerKind::Frost);
-                self.selected_id = None;
-            }
-            KeyCode::Key6 => {
-                self.build_kind = Some(TowerKind::Pulse);
-                self.selected_id = None;
-            }
             KeyCode::Key0 | KeyCode::Escape => {
                 self.build_kind = None;
                 self.selected_id = None;
@@ -1347,13 +947,11 @@ fn draw_tower_shape(kind: TowerKind, x: f32, y: f32, angle: f32, size: f32, leve
         1.0,
         Color::new(0.46, 0.53, 0.63, 0.8),
     );
-    match kind {
-        TowerKind::Stone => draw_circle(x, y, 9.0 * size, def.color),
-        TowerKind::Burst => draw_poly(x, y, 6, 11.0 * size, 0.0, def.color),
-        TowerKind::Needle => {
-            draw_poly(x, y, 4, 12.0 * size, std::f32::consts::FRAC_PI_4, def.color)
-        }
-        TowerKind::Volley => {
+    match def.shot {
+        "pellet" => draw_circle(x, y, 9.0 * size, def.color),
+        "shell" => draw_poly(x, y, 6, 11.0 * size, 0.0, def.color),
+        "dart" => draw_poly(x, y, 4, 12.0 * size, std::f32::consts::FRAC_PI_4, def.color),
+        "missile" => {
             draw_rectangle(
                 x - 10.0 * size,
                 y - 10.0 * size,
@@ -1365,7 +963,7 @@ fn draw_tower_shape(kind: TowerKind, x: f32, y: f32, angle: f32, size: f32, leve
                 draw_circle(x + dx * size, y + dy * size, 2.2 * size, PANEL);
             }
         }
-        TowerKind::Frost => {
+        "ice" => {
             for i in 0..3 {
                 let a = i as f32 * std::f32::consts::PI / 3.0;
                 draw_line(
@@ -1378,13 +976,14 @@ fn draw_tower_shape(kind: TowerKind, x: f32, y: f32, angle: f32, size: f32, leve
                 );
             }
         }
-        TowerKind::Pulse => {
+        "pulse" => {
             draw_circle(x, y, 10.0 * size, def.color);
             draw_circle_lines(x, y, 6.0 * size, 2.0 * size, PANEL);
             draw_circle_lines(x, y, 2.0 * size, 1.0 * size, PANEL);
         }
+        _ => unreachable!("validated projectile type"),
     }
-    if kind != TowerKind::Pulse && kind != TowerKind::Frost {
+    if def.shot != "pulse" && def.shot != "ice" {
         let end_x = x + angle.cos() * 14.0 * size;
         let end_y = y + angle.sin() * 14.0 * size;
         draw_line(x, y, end_x, end_y, 4.0 * size, def.accent);
@@ -1428,7 +1027,7 @@ fn draw_board(game: &Game, mouse: Vec2) -> Option<(usize, usize)> {
             }
         }
     }
-    for y in 9..=12 {
+    for y in OPEN_R {
         draw_rectangle(
             BOARD_X,
             BOARD_Y + y as f32 * CELL,
@@ -1444,7 +1043,7 @@ fn draw_board(game: &Game, mouse: Vec2) -> Option<(usize, usize)> {
             Color::new(0.42, 0.12, 0.17, 0.55),
         );
     }
-    for x in 12..=15 {
+    for x in OPEN_C {
         draw_rectangle(
             BOARD_X + x as f32 * CELL,
             BOARD_Y,
@@ -1610,15 +1209,11 @@ fn draw_creep(creep: &Creep, time: f32) {
         };
     let radius = creep.kind.radius();
     let color = creep.kind.color();
-    match creep.kind {
-        EnemyKind::Runner | EnemyKind::Flyer => draw_poly(x, y, 3, radius + 1.0, 0.0, color),
-        EnemyKind::Armored => {
-            draw_rectangle(x - radius, y - radius, radius * 2.0, radius * 2.0, color)
-        }
-        EnemyKind::Splitter | EnemyKind::Mini => {
-            draw_poly(x, y, 4, radius + 1.0, std::f32::consts::FRAC_PI_4, color)
-        }
-        EnemyKind::Boss => draw_poly(x, y, 10, radius, time, color),
+    match creep.kind.def().shape {
+        "tri" | "wing" => draw_poly(x, y, 3, radius + 1.0, 0.0, color),
+        "square" => draw_rectangle(x - radius, y - radius, radius * 2.0, radius * 2.0, color),
+        "diamond" => draw_poly(x, y, 4, radius + 1.0, std::f32::consts::FRAC_PI_4, color),
+        "boss" => draw_poly(x, y, 10, radius, time, color),
         _ => draw_circle(x, y, radius, color),
     }
     if time < creep.slow_until {
@@ -1643,11 +1238,16 @@ fn draw_creep(creep: &Creep, time: f32) {
     }
 }
 
+fn tower_info_y() -> f32 {
+    200.0 + TowerKind::ALL.len().div_ceil(3) as f32 * 58.0
+}
+
 fn draw_sidebar(game: &Game) {
-    let x = 598.0;
+    let x = BOARD_X + BOARD_W + 20.0;
     let width = 344.0;
-    draw_rectangle(x, 74.0, width, 540.0, PANEL);
-    draw_rectangle_lines(x, 74.0, width, 540.0, 1.0, LINE);
+    let height = screen_height() - 100.0;
+    draw_rectangle(x, 74.0, width, height, PANEL);
+    draw_rectangle_lines(x, 74.0, width, height, 1.0, LINE);
     draw_text("STATISTIQUES", x + 12.0, 94.0, 14.0, MUTED);
     draw_text(
         &format!("Vague  {}/{}", game.wave, game.mode.waves()),
@@ -1672,7 +1272,14 @@ fn draw_sidebar(game: &Game) {
         TEXT,
     );
 
-    draw_text("CHOISIR UNE TOUR (1-6)", x + 12.0, 177.0, 14.0, MUTED);
+    let shortcuts: String = TOWERS.iter().map(|def| def.key).collect();
+    draw_text(
+        &format!("CHOISIR UNE TOUR ({shortcuts})"),
+        x + 12.0,
+        177.0,
+        14.0,
+        MUTED,
+    );
     for (i, kind) in TowerKind::ALL.iter().enumerate() {
         let row = i / 3;
         let col = i % 3;
@@ -1726,13 +1333,18 @@ fn draw_sidebar(game: &Game) {
         );
     }
 
-    let mut y = 316.0;
+    let mut y = tower_info_y();
     if let Some(id) = game.selected_id {
         if let Some(tower) = game.towers.iter().find(|tower| tower.id == id) {
             let def = TOWERS[tower.kind.index()];
             let (damage, range, rate, slow) = Game::tower_stats(tower);
             draw_text(
-                &format!("{} - niveau {}/5", def.name, tower.level + 1),
+                &format!(
+                    "{} - niveau {}/{}",
+                    def.name,
+                    tower.level + 1,
+                    def.damage.len()
+                ),
                 x + 12.0,
                 y,
                 18.0,
@@ -1769,8 +1381,9 @@ fn draw_sidebar(game: &Game) {
                 );
                 y += 19.0;
             }
-            let can_upgrade = tower.level < 4 && game.gold >= def.upgrades[tower.level];
-            let upgrade_label = if tower.level >= 4 {
+            let can_upgrade =
+                tower.level < def.upgrades.len() && game.gold >= def.upgrades[tower.level];
+            let upgrade_label = if tower.level >= def.upgrades.len() {
                 "Niveau maximum (U)".to_owned()
             } else {
                 format!("Ameliorer {} or (U)", def.upgrades[tower.level])
@@ -1828,14 +1441,16 @@ fn draw_sidebar(game: &Game) {
 
     let next_wave = (game.wave + 1).min(game.mode.waves());
     if next_wave <= game.mode.waves() {
-        let (kind, hp, count, _) = Game::wave_def(next_wave, game.mode.hp_growth());
+        let def = Game::wave_def(next_wave, game.mode);
+        let kind = def.kind;
         draw_text("PROCHAINE VAGUE", x + 12.0, y + 96.0, 14.0, MUTED);
         draw_text(
             &format!(
-                "{} - {} ennemis, ~{} PV",
+                "{} - {} : {} ennemis, ~{} PV",
                 next_wave,
                 kind.name(),
-                (hp * kind.hp_factor() * game.mode.hp_factor()).round() as i32
+                def.count,
+                (def.hp * kind.hp_factor() * game.mode.hp_factor()).round() as i32
             ),
             x + 12.0,
             y + 118.0,
@@ -1849,7 +1464,6 @@ fn draw_sidebar(game: &Game) {
             13.0,
             MUTED,
         );
-        let _ = count;
     }
 }
 
@@ -1914,7 +1528,13 @@ fn draw_start_screen() -> Option<Mode> {
 
 #[macroquad::main("Dedale Defense")]
 async fn main() {
-    request_new_screen_size(960.0, 640.0);
+    request_new_screen_size(
+        BOARD_X + BOARD_W + 382.0,
+        (BOARD_Y + BOARD_H + 126.0)
+            .max(640.0)
+            .max(tower_info_y() + 320.0)
+            .max(308.0 + Mode::ALL.len() as f32 * 46.0),
+    );
     let mut game: Option<Game> = None;
     loop {
         clear_background(Color::new(0.035, 0.055, 0.085, 1.0));
@@ -1931,6 +1551,9 @@ async fn main() {
                 KeyCode::Key4,
                 KeyCode::Key5,
                 KeyCode::Key6,
+                KeyCode::Key7,
+                KeyCode::Key8,
+                KeyCode::Key9,
                 KeyCode::Key0,
                 KeyCode::Escape,
                 KeyCode::U,
@@ -1968,7 +1591,7 @@ async fn main() {
                 if let Some((x, y)) = cell {
                     board_click(current, (x, y), current.keep_building);
                 } else {
-                    let x = 598.0;
+                    let x = BOARD_X + BOARD_W + 20.0;
                     for (i, kind) in TowerKind::ALL.iter().enumerate() {
                         let col = i % 3;
                         let row = i / 3;
@@ -1990,11 +1613,11 @@ async fn main() {
                     if let Some(id) = current.selected_id {
                         let tower = current.towers.iter().find(|tower| tower.id == id);
                         if let Some(tower) = tower {
-                            let y = 316.0
+                            let y = tower_info_y()
                                 + 22.0
                                 + 18.0
                                 + 18.0
-                                + if tower.kind == TowerKind::Frost {
+                                + if TOWERS[tower.kind.index()].slow[tower.level] > 0.0 {
                                     19.0
                                 } else {
                                     0.0
@@ -2040,8 +1663,16 @@ mod tests {
     #[test]
     fn board_starts_with_open_routes() {
         let game = Game::new(Mode::Normal);
-        assert!((9..=12).all(|y| game.field_right[index(0, y)] < u32::MAX / 4));
-        assert!((12..=15).all(|x| game.field_bottom[index(x, 0)] < u32::MAX / 4));
+        assert!(
+            OPEN_R
+                .iter()
+                .all(|&y| game.field_right[index(0, y)] < u32::MAX / 4)
+        );
+        assert!(
+            OPEN_C
+                .iter()
+                .all(|&x| game.field_bottom[index(x, 0)] < u32::MAX / 4)
+        );
     }
 
     #[test]
@@ -2066,30 +1697,56 @@ mod tests {
 
     #[test]
     fn wave_progression_uses_expected_enemy_cycle() {
-        let growth = Mode::Normal.hp_growth();
-        assert_eq!(Game::wave_def(1, growth).0, EnemyKind::Walker);
-        assert_eq!(Game::wave_def(4, growth).0, EnemyKind::Flyer);
-        assert_eq!(Game::wave_def(10, growth).0, EnemyKind::Boss);
+        assert_eq!(Game::wave_def(1, Mode::Normal).kind, EnemyKind::Walker);
+        assert_eq!(Game::wave_def(4, Mode::Normal).kind, EnemyKind::Flyer);
+        assert_eq!(Game::wave_def(10, Mode::Normal).kind, EnemyKind::Boss);
     }
 
     #[test]
-    fn every_mode_matches_the_browser_build() {
-        // Same table as MODES in app/src/game.js: lives, gold, hp, gap, waves.
-        let table = [
-            (Mode::Easy, 30, 70, 0.75, 28.0, 30),
-            (Mode::Normal, 20, 60, 1.0, 24.0, 50),
-            (Mode::Hard, 10, 50, 1.35, 20.0, 60),
-            (Mode::UncleScrooge, 20, 10000, 1.3, 24.0, 40),
-            (Mode::Rush, 15, 60, 1.1, 10.0, 20),
-            (Mode::Marathon, 30, 80, 0.85, 30.0, 70),
-        ];
-        assert_eq!(Mode::ALL.len(), table.len());
-        for (mode, lives, gold, hp, gap, waves) in table {
-            assert_eq!(mode.lives(), lives, "{} lives", mode.name());
-            assert_eq!(mode.gold(), gold, "{} gold", mode.name());
-            assert_eq!(mode.hp_factor(), hp, "{} hp factor", mode.name());
-            assert_eq!(mode.wave_gap(), gap, "{} gap", mode.name());
-            assert_eq!(mode.waves(), waves, "{} waves", mode.name());
+    fn every_level_and_wave_matches_shared_json() {
+        let data: serde_json::Value =
+            serde_json::from_str(include_str!("../../game-content.json")).unwrap();
+        let levels = data["levels"].as_array().unwrap();
+        assert_eq!(Mode::ALL.len(), levels.len());
+        for (mode, level) in Mode::ALL.iter().zip(levels) {
+            assert_eq!(mode.name(), level["name"].as_str().unwrap());
+            assert_eq!(mode.lives() as i64, level["lives"].as_i64().unwrap());
+            assert_eq!(mode.gold() as i64, level["gold"].as_i64().unwrap());
+            assert_eq!(mode.hp_factor(), level["hp"].as_f64().unwrap() as f32);
+            assert_eq!(mode.wave_gap(), level["gap"].as_f64().unwrap() as f32);
+            assert_eq!(mode.waves() as u64, level["waves"].as_u64().unwrap());
+            let game = Game::new(*mode);
+            assert_eq!(game.lives, mode.lives());
+            assert_eq!(game.gold, mode.gold());
+            let waves = &data["waveSets"][level["waveSet"].as_str().unwrap()];
+            for n in 1..=mode.waves() {
+                let actual = Game::wave_def(n, *mode);
+                let expected = &waves[(n - 1) as usize];
+                let enemy = &data["enemies"][expected["type"].as_str().unwrap()];
+                assert_eq!(actual.kind.name(), enemy["name"].as_str().unwrap());
+                assert_eq!(actual.hp, expected["hp"].as_f64().unwrap() as f32);
+                assert_eq!(actual.count as u64, enemy["count"].as_u64().unwrap());
+                assert_eq!(actual.gap, enemy["gap"].as_f64().unwrap() as f32);
+                assert_eq!(
+                    actual.bounty,
+                    (enemy["bounty"].as_f64().unwrap()
+                        * expected["bountyMultiplier"].as_f64().unwrap())
+                        as f32
+                );
+                let targets: Vec<_> = expected["targets"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|t| {
+                        if t == "R" {
+                            Target::Right
+                        } else {
+                            Target::Bottom
+                        }
+                    })
+                    .collect();
+                assert!(actual.targets == targets);
+            }
         }
     }
 
@@ -2111,8 +1768,8 @@ mod tests {
 
     #[test]
     fn marathon_grows_enemy_health_more_slowly() {
-        let normal = Game::wave_def(20, Mode::Normal.hp_growth()).1;
-        let marathon = Game::wave_def(20, Mode::Marathon.hp_growth()).1;
+        let normal = Game::wave_def(20, Mode::Normal).hp;
+        let marathon = Game::wave_def(20, Mode::Marathon).hp;
         assert!(marathon < normal);
     }
 
@@ -2128,5 +1785,160 @@ mod tests {
         let flyer = &game.creeps[1];
         assert_eq!(flyer.wx, BOARD_W + CELL);
         assert_eq!(flyer.wy, flyer.y);
+    }
+
+    #[test]
+    fn mixed_waves_alternate_entrances_per_enemy() {
+        let mut game = Game::new(Mode::Normal);
+        game.wave = 14;
+        game.send_wave();
+        game.update(0.0);
+        game.update(Game::wave_def(15, Mode::Normal).gap);
+        assert_eq!(game.creeps.len(), 2);
+        assert!(game.creeps[0].target == Target::Right);
+        assert!(game.creeps[1].target == Target::Bottom);
+    }
+
+    #[test]
+    fn split_children_inherit_the_parent_route_and_shared_stats() {
+        let mut game = Game::new(Mode::Normal);
+        game.spawn(EnemyKind::Splitter, 100.0, 8.0, Target::Bottom);
+        game.creeps[0].exiting = true;
+        game.creeps[0].next_cell = None;
+        game.creeps[0].wx = 120.0;
+        game.creeps[0].wy = BOARD_H + CELL;
+        let parent = game.creeps[0].clone();
+        game.hurt(parent.id, parent.hp);
+        let split = parent.kind.def().split.unwrap();
+        assert_eq!(game.creeps.len(), 1 + split.count);
+        for child in &game.creeps[1..] {
+            assert_eq!(child.kind, split.kind);
+            assert_eq!(child.hp, parent.max_hp * split.hp);
+            assert_eq!(child.bounty, parent.bounty * split.bounty);
+            assert!(child.target == parent.target);
+            assert!(child.exiting);
+            assert_eq!(child.next_cell, None);
+            assert_eq!(child.wx, parent.wx);
+            assert_eq!(child.wy, parent.wy);
+            assert!((child.x - parent.x).abs() <= SPLIT_JITTER / 2.0);
+            assert!((child.y - parent.y).abs() <= SPLIT_JITTER / 2.0);
+        }
+    }
+
+    #[test]
+    fn slow_effect_resets_after_expiry_and_preserves_immunity() {
+        let mut game = Game::new(Mode::Normal);
+        for kind in [EnemyKind::Walker, EnemyKind::Armored] {
+            game.spawn(kind, 100.0, 1.0, Target::Right);
+            let creep = game.creeps.last_mut().unwrap();
+            creep.slow_until = -1.0;
+            creep.slow_factor = 0.8;
+            let frost = TOWERS[TowerKind::Frost.index()];
+            game.shots.push(Shot {
+                target_id: creep.id,
+                x: creep.x,
+                y: creep.y,
+                speed: frost.speed,
+                damage: frost.damage[0],
+                splash: 0.0,
+                slow: frost.slow[0],
+                color: frost.accent,
+            });
+            game.update_shots(0.0);
+            let creep = game.creeps.last().unwrap();
+            if kind.is_immune() {
+                assert_eq!(creep.slow_until, -1.0);
+            } else {
+                assert_eq!(creep.slow_factor, frost.slow[0]);
+                assert_eq!(creep.slow_until, game.game_time + SLOW_DURATION);
+            }
+        }
+    }
+
+    #[test]
+    fn tower_shortcuts_follow_shared_content() {
+        let mut game = Game::new(Mode::Normal);
+        for kind in TowerKind::ALL {
+            let key = match TOWERS[kind.index()].key {
+                '1' => KeyCode::Key1,
+                '2' => KeyCode::Key2,
+                '3' => KeyCode::Key3,
+                '4' => KeyCode::Key4,
+                '5' => KeyCode::Key5,
+                '6' => KeyCode::Key6,
+                '7' => KeyCode::Key7,
+                '8' => KeyCode::Key8,
+                '9' => KeyCode::Key9,
+                _ => panic!("unsupported shortcut"),
+            };
+            game.handle_key(key);
+            assert_eq!(game.build_kind, Some(kind));
+        }
+    }
+
+    #[test]
+    fn towers_and_enemies_match_shared_json() {
+        let data: serde_json::Value =
+            serde_json::from_str(include_str!("../../game-content.json")).unwrap();
+        for (actual, expected) in TOWERS.iter().zip(data["towers"].as_array().unwrap()) {
+            assert_eq!(actual.name, expected["name"].as_str().unwrap());
+            assert_eq!(actual.cost as i64, expected["cost"].as_i64().unwrap());
+            assert_eq!(actual.range, expected["range"].as_f64().unwrap() as f32);
+            assert_eq!(actual.rate, expected["rate"].as_f64().unwrap() as f32);
+            assert_eq!(actual.speed, expected["speed"].as_f64().unwrap() as f32);
+            assert_eq!(actual.splash, expected["splash"].as_f64().unwrap() as f32);
+            assert_eq!(actual.multi as u64, expected["multi"].as_u64().unwrap());
+            assert_eq!(actual.stun, expected["stun"].as_f64().unwrap() as f32);
+            assert_eq!(actual.shot, expected["shot"].as_str().unwrap());
+            assert_eq!(actual.ground, expected["ground"].as_bool().unwrap());
+            assert_eq!(actual.air, expected["air"].as_bool().unwrap());
+            for i in 0..5 {
+                assert_eq!(
+                    actual.damage[i],
+                    expected["dmg"][i].as_f64().unwrap() as f32
+                );
+                assert_eq!(actual.slow[i], expected["slow"][i].as_f64().unwrap() as f32);
+                if i < 4 {
+                    assert_eq!(
+                        actual.upgrades[i] as i64,
+                        expected["ups"][i].as_i64().unwrap()
+                    );
+                }
+            }
+        }
+        for (kind, expected) in EnemyKind::ALL
+            .iter()
+            .zip(data["enemies"].as_object().unwrap().values())
+        {
+            assert_eq!(kind.name(), expected["name"].as_str().unwrap());
+            assert_eq!(kind.hp_factor(), expected["hp"].as_f64().unwrap() as f32);
+            assert_eq!(kind.speed(), expected["speed"].as_f64().unwrap() as f32);
+            assert_eq!(kind.radius(), expected["r"].as_f64().unwrap() as f32);
+            assert_eq!(kind.is_flying(), expected["flying"].as_bool().unwrap());
+            assert_eq!(kind.is_immune(), expected["immune"].as_bool().unwrap());
+            assert_eq!(
+                kind.def().life_loss as i64,
+                expected["lifeLoss"].as_i64().unwrap()
+            );
+            assert_eq!(kind.def().shape, expected["shape"].as_str().unwrap());
+            assert_eq!(kind.def().split.is_some(), !expected["split"].is_null());
+            if let Some(split) = kind.def().split {
+                assert_eq!(
+                    split.kind.name(),
+                    data["enemies"][expected["split"]["type"].as_str().unwrap()]["name"]
+                        .as_str()
+                        .unwrap()
+                );
+                assert_eq!(
+                    split.count as u64,
+                    expected["split"]["count"].as_u64().unwrap()
+                );
+                assert_eq!(split.hp, expected["split"]["hp"].as_f64().unwrap() as f32);
+                assert_eq!(
+                    split.bounty,
+                    expected["split"]["bounty"].as_f64().unwrap() as f32
+                );
+            }
+        }
     }
 }
