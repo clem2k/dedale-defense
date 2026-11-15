@@ -3,26 +3,34 @@
   "board": {
     "cell": 20,
     "cols": 28,
-    "rows": 22,
+    "rows": 24,
     "openRows": [
       9,
       10,
       11,
-      12
+      12,
+      13,
+      14
     ],
     "openCols": [
+      10,
+      11,
       12,
       13,
       14,
-      15
-    ]
+      15,
+      16,
+      17
+    ],
+    "rangeScale": 1.4444444444444444,
+    "enemySpeedScale": {
+      "R": 1,
+      "B": 1.1
+    }
   },
   "rules": {
-    "rangeGrowth": 0.08,
-    "rateReduction": 0.04,
-    "sellRefund": 0.75,
     "slowDuration": 2,
-    "stunDuration": 0.6,
+    "stunDuration": 2,
     "killScore": 10,
     "winScore": 100,
     "splitJitter": 6
@@ -98,37 +106,68 @@
       "key": "1",
       "color": "#9aa4b2",
       "accent": "#e4e7ec",
-      "desc": "Tir rapide et bon marché. Touche le sol et les airs.",
+      "desc": "Touche le sol et les airs. Portée étendue au niveau 6.",
       "cost": 5,
       "ups": [
         5,
         10,
-        20,
-        40
+        40,
+        40,
+        120
       ],
       "dmg": [
-        5,
         10,
         20,
         40,
-        80
+        80,
+        160,
+        400
       ],
-      "range": 70,
-      "rate": 0.5,
+      "range": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        180
+      ],
+      "rate": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        1
+      ],
       "ground": true,
       "air": true,
       "shot": "pellet",
       "speed": 340,
-      "splash": 0,
       "multi": 1,
-      "slow": [
+      "sell": [
+        3,
+        7,
+        15,
+        30,
+        60,
+        150
+      ],
+      "special": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "factor": [
+        0,
         0,
         0,
         0,
         0,
         0
-      ],
-      "stun": 0
+      ]
     },
     {
       "id": "burst",
@@ -136,37 +175,68 @@
       "key": "2",
       "color": "#4ea1ff",
       "accent": "#b9dcff",
-      "desc": "Obus qui explose et blesse les ennemis proches. Sol uniquement.",
+      "desc": "Tir très rapide. Touche le sol et les airs.",
       "cost": 15,
       "ups": [
-        15,
-        30,
-        60,
-        120
+        12,
+        23,
+        35,
+        75,
+        290
       ],
       "dmg": [
-        8,
-        16,
-        32,
-        64,
-        128
+        5,
+        10,
+        18,
+        34,
+        65,
+        320
       ],
-      "range": 62,
-      "rate": 0.9,
+      "range": [
+        70,
+        70,
+        70,
+        70,
+        70,
+        90
+      ],
+      "rate": [
+        0.25,
+        0.25,
+        0.25,
+        0.25,
+        0.25,
+        0.25
+      ],
       "ground": true,
-      "air": false,
-      "shot": "shell",
+      "air": true,
+      "shot": "dart",
       "speed": 240,
-      "splash": 30,
       "multi": 1,
-      "slow": [
+      "sell": [
+        11,
+        20,
+        37,
+        63,
+        120,
+        337
+      ],
+      "special": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "factor": [
+        0,
         0,
         0,
         0,
         0,
         0
-      ],
-      "stun": 0
+      ]
     },
     {
       "id": "needle",
@@ -174,37 +244,68 @@
       "key": "3",
       "color": "#c084fc",
       "accent": "#ead5ff",
-      "desc": "Longue portée et gros dégâts, mais lente. Sol et airs.",
-      "cost": 25,
+      "desc": "Touche une cible et éclabousse les ennemis terrestres proches.",
+      "cost": 20,
       "ups": [
-        25,
-        50,
-        100,
-        200
+        15,
+        35,
+        60,
+        110,
+        160
       ],
       "dmg": [
-        25,
-        50,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "range": [
+        90,
         100,
-        200,
-        400
+        110,
+        120,
+        130,
+        140
       ],
-      "range": 130,
-      "rate": 1.4,
+      "rate": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
       "ground": true,
-      "air": true,
-      "shot": "dart",
+      "air": false,
+      "shot": "shell",
       "speed": 520,
-      "splash": 0,
       "multi": 1,
-      "slow": [
-        0,
-        0,
-        0,
-        0,
-        0
+      "sell": [
+        15,
+        26,
+        52,
+        97,
+        180,
+        300
       ],
-      "stun": 0
+      "special": [
+        "spread",
+        "spread",
+        "spread",
+        "spread",
+        "spread",
+        "spread"
+      ],
+      "factor": [
+        4,
+        8,
+        16,
+        32,
+        64,
+        128
+      ]
     },
     {
       "id": "volley",
@@ -212,37 +313,68 @@
       "key": "4",
       "color": "#f97066",
       "accent": "#ffd1cc",
-      "desc": "Lance jusqu'à quatre missiles à la fois. Airs uniquement.",
-      "cost": 30,
+      "desc": "Tir rapide contre les ennemis aériens.",
+      "cost": 50,
       "ups": [
         30,
-        60,
-        120,
-        240
+        50,
+        75,
+        125,
+        310
       ],
       "dmg": [
-        12,
-        24,
-        48,
-        96,
-        192
+        20,
+        40,
+        80,
+        160,
+        320,
+        480
       ],
-      "range": 105,
-      "rate": 0.85,
+      "range": [
+        60,
+        60,
+        65,
+        65,
+        70,
+        75
+      ],
+      "rate": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333,
+        0.25
+      ],
       "ground": false,
       "air": true,
       "shot": "missile",
       "speed": 300,
-      "multi": 4,
-      "splash": 0,
-      "slow": [
+      "multi": 1,
+      "sell": [
+        37,
+        60,
+        97,
+        153,
+        247,
+        480
+      ],
+      "special": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "factor": [
+        0,
         0,
         0,
         0,
         0,
         0
-      ],
-      "stun": 0
+      ]
     },
     {
       "id": "frost",
@@ -250,37 +382,68 @@
       "key": "5",
       "color": "#5fe0e0",
       "accent": "#d6fbfb",
-      "desc": "Ralentit sa cible pendant deux secondes. Sol et airs.",
-      "cost": 20,
+      "desc": "Peut diviser par deux la vitesse des ennemis proches pendant deux secondes.",
+      "cost": 50,
       "ups": [
-        20,
-        40,
-        80,
-        160
+        25,
+        25,
+        25,
+        25,
+        50
       ],
       "dmg": [
-        2,
-        4,
-        8,
-        16,
-        32
+        10,
+        15,
+        20,
+        25,
+        30,
+        40
       ],
-      "range": 72,
-      "rate": 0.6,
+      "range": [
+        50,
+        50,
+        50,
+        50,
+        50,
+        75
+      ],
+      "rate": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
       "ground": true,
       "air": true,
       "shot": "ice",
       "speed": 320,
-      "slow": [
-        0.35,
-        0.4,
-        0.45,
-        0.5,
-        0.6
-      ],
-      "splash": 0,
       "multi": 1,
-      "stun": 0
+      "sell": [
+        37,
+        56,
+        75,
+        93,
+        112,
+        150
+      ],
+      "special": [
+        "slow",
+        "slow",
+        "slow",
+        "slow",
+        "slow",
+        "slow"
+      ],
+      "factor": [
+        0.75,
+        0.75,
+        0.75,
+        0.75,
+        0.75,
+        1
+      ]
     },
     {
       "id": "pulse",
@@ -288,36 +451,67 @@
       "key": "6",
       "color": "#fdb022",
       "accent": "#fff0c2",
-      "desc": "Onde de choc autour d'elle, peut étourdir. Sol uniquement.",
-      "cost": 40,
+      "desc": "Peut immobiliser les ennemis terrestres proches pendant deux secondes.",
+      "cost": 30,
       "ups": [
-        40,
-        80,
-        160,
-        320
+        25,
+        50,
+        100,
+        185,
+        355
       ],
       "dmg": [
+        10,
         20,
         40,
         80,
         160,
         320
       ],
-      "range": 46,
-      "rate": 1.2,
+      "range": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        40
+      ],
+      "rate": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
       "ground": true,
       "air": false,
       "shot": "pulse",
-      "stun": 0.15,
-      "speed": 0,
-      "splash": 0,
+      "speed": 320,
       "multi": 1,
-      "slow": [
-        0,
-        0,
-        0,
-        0,
-        0
+      "sell": [
+        22,
+        41,
+        78,
+        153,
+        292,
+        558
+      ],
+      "special": [
+        "stun",
+        "stun",
+        "stun",
+        "stun",
+        "stun",
+        "stun"
+      ],
+      "factor": [
+        0.1,
+        0.25,
+        0.33,
+        0.5,
+        0.75,
+        0.9
       ]
     }
   ],
@@ -446,7 +640,7 @@
       "gap": 1,
       "bounty": 25,
       "color": "#f04438",
-      "r": 11,
+      "r": 9,
       "shape": "boss",
       "desc": "Un seul, mais énorme.",
       "flying": false,

@@ -15,15 +15,16 @@ export function validateContent(data) {
   check(data && typeof data === "object" && data.version === 1, "unsupported version");
   const b = data.board;
   check(b && number(b.cell, 1) && integer(b.cols, 4) && integer(b.rows, 4), "invalid board dimensions");
+  check(number(b.rangeScale, Number.MIN_VALUE), "invalid range scale");
+  check(b.enemySpeedScale && ["R", "B"].every((key) => number(b.enemySpeedScale[key], Number.MIN_VALUE)), "invalid enemy speed scale");
   for (const [key, limit] of [["openRows", b.rows], ["openCols", b.cols]]) {
     check(Array.isArray(b[key]) && b[key].length > 0 && unique(b[key]) &&
       b[key].every((n) => integer(n, 1) && n < limit - 1), `invalid board.${key}`);
   }
   const r = data.rules;
-  check(r && ["rangeGrowth", "rateReduction", "sellRefund", "slowDuration", "stunDuration", "killScore"]
+  check(r && ["slowDuration", "stunDuration", "killScore"]
     .concat("winScore", "splitJitter").every((key) => number(r[key])), "invalid combat rules");
   check(integer(r.killScore) && integer(r.winScore), "score multipliers must be integers");
-  check(r.sellRefund <= 1, "sellRefund must not exceed 1");
   check(data.enemies && Object.keys(data.enemies).length > 0, "missing enemies");
   for (const [key, e] of Object.entries(data.enemies)) {
     check(id(key) && text(e.name) && color(e.color), `invalid enemy ${key}`);
@@ -42,13 +43,16 @@ export function validateContent(data) {
   for (const t of data.towers) {
     check(id(t.id) && text(t.name) && text(t.desc) && typeof t.key === "string" && /^[1-9]$/.test(t.key) &&
       color(t.color) && color(t.accent), `invalid tower ${t.id}`);
-    check(integer(t.cost, 1) && number(t.range, 1) && number(t.rate, Number.MIN_VALUE) &&
-      number(t.speed) && number(t.splash) && integer(t.multi, 1) && number(t.stun) && t.stun <= 1 &&
+    check(integer(t.cost, 1) &&
+      number(t.speed, Number.MIN_VALUE) && integer(t.multi, 1) &&
       typeof t.ground === "boolean" && typeof t.air === "boolean" && (t.ground || t.air), `invalid tower stats: ${t.id}`);
-    check(Array.isArray(t.ups) && t.ups.length === 4 && t.ups.every((n) => integer(n, 1)) &&
-      Array.isArray(t.dmg) && t.dmg.length === 5 && t.dmg.every((n) => number(n)) &&
-      Array.isArray(t.slow) && t.slow.length === 5 && t.slow.every((n) => number(n) && n < 1), `invalid upgrades: ${t.id}`);
-    check(1 - r.rateReduction * t.ups.length > 0, `nonpositive upgraded firing rate: ${t.id}`);
+    check(Array.isArray(t.ups) && t.ups.length === 5 && t.ups.every((n) => integer(n, 1)) &&
+      Array.isArray(t.dmg) && t.dmg.length === 6 && t.dmg.every((n) => number(n)), `invalid upgrades: ${t.id}`);
+    check(["range", "rate", "sell", "factor", "special"].every((key) => Array.isArray(t[key]) && t[key].length === 6),
+      `invalid level stats: ${t.id}`);
+    check(t.range.every((n) => number(n, 1)) && t.rate.every((n) => number(n, Number.MIN_VALUE)) &&
+      t.sell.every((n) => integer(n)) && t.special.every((s) => ["none", "spread", "slow", "stun"].includes(s)) &&
+      t.factor.every((n, i) => number(n) && (t.special[i] === "spread" || n <= 1)), `invalid effects: ${t.id}`);
     check(["pellet", "shell", "dart", "missile", "ice", "pulse"].includes(t.shot) &&
       (t.shot === "pulse" || t.speed > 0), `invalid projectile: ${t.id}`);
   }

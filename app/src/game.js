@@ -75,12 +75,21 @@ function newGame(m) {
     path: [],
     nextId: 1,
     time: 0,
+    startHintUntil: performance.now() + 5000,
   };
   buildType = -1;
   selected = null;
   refreshFields();
   ui.showStart(false);
   ui.update(true);
+}
+
+function showStartHint() {
+  return S && !S.started && !S.over && performance.now() < S.startHintUntil;
+}
+
+function dismissStartHint() {
+  if (S) S.startHintUntil = 0;
 }
 
 // ---------- Path finding (8 directions, no corner cutting) ----------
@@ -163,7 +172,10 @@ function refreshFields() {
   S.fieldB = computeField(EXIT_B);
   // Preview of the two routes, from the middle of each entrance.
   S.path = [];
-  for (const [field, start] of [[S.fieldR, ENTRY_L[1]], [S.fieldB, ENTRY_T[1]]]) {
+  for (const [field, start] of [
+    [S.fieldR, ENTRY_L[Math.floor(ENTRY_L.length / 2)]],
+    [S.fieldB, ENTRY_T[Math.floor(ENTRY_T.length / 2)]],
+  ]) {
     const pts = [];
     let i = start, guard = 0;
     while (i >= 0 && field[i] > 0 && guard++ < 800) {
@@ -181,6 +193,7 @@ function cellsOf(cx, cy) {
 }
 
 function placeCheck(cx, cy) {
+  if (!Number.isInteger(cx) || !Number.isInteger(cy)) return "out";
   if (cx < 1 || cy < 1 || cx + 1 > COLS - 2 || cy + 1 > ROWS - 2) return "out";
   const cells = cellsOf(cx, cy);
   for (const c of cells) if (S.towerAt[c] || wall[c]) return "taken";
@@ -233,16 +246,15 @@ function towerStats(t) {
   const L = t.level;
   return {
     dmg: d.dmg[L],
-    range: d.range * (1 + RULES.rangeGrowth * L),
-    rate: d.rate * (1 - RULES.rateReduction * L),
-    slow: d.slow[L],
+    range: d.range[L] * CONTENT.board.rangeScale,
+    rate: d.rate[L],
+    slow: d.special[L] === "slow" ? 0.5 : 0,
   };
 }
 
 function sellValue(t) {
-  // Full refund if it was placed before the first wave, otherwise 75 %.
-  if (!t.builtStarted) return t.spent;
-  return Math.floor(t.spent * RULES.sellRefund);
+  if (!S.started) return t.spent;
+  return TOWERS[t.type].sell[t.level];
 }
 
 function upgrade(t) {
@@ -309,7 +321,7 @@ function makeCreep(type, hp, bounty, target, from) {
   }
   const k = {
     id: S.nextId++, type, x, y, hp, maxHp: hp, bounty, target,
-    speed: c.speed, flying: !!c.flying, r: c.r,
+    speed: c.speed * CONTENT.board.enemySpeedScale[target], flying: !!c.flying, r: c.r,
     slowUntil: 0, slowF: 0, stunUntil: 0,
     cell: -1, wcell, exiting: false, dead: false,
     wob: Math.random() * Math.PI * 2,
@@ -399,24 +411,17 @@ function canHit(d, k) {
 function fire(t) {
   const d = TOWERS[t.type];
   const st = towerStats(t);
-  const inRange = S.creeps.filter((k) => !k.dead && canHit(d, k) && Math.hypot(k.x - t.x, k.y - t.y) <= st.range + k.r);
+  const inRange = S.creeps.filter((k) => !k.dead && canHit(d, k) && Math.hypot(k.x - t.x, k.y - t.y) <= st.range);
   if (!inRange.length) return false;
-  if (d.shot === "pulse") {
-    S.fx.push({ kind: "ring", x: t.x, y: t.y, r: 8, max: st.range, color: d.color, life: 0.35, maxLife: 0.35 });
-    for (const k of inRange) {
-      hurt(k, st.dmg);
-      if (!CREEPS[k.type].immune && Math.random() < d.stun) k.stunUntil = S.time + RULES.stunDuration;
-    }
-    return true;
-  }
   inRange.sort((a, b) => remaining(a) - remaining(b));
   const targets = d.multi ? inRange.slice(0, d.multi) : [inRange[0]];
   t.angle = Math.atan2(targets[0].y - t.y, targets[0].x - t.x);
   for (const k of targets) {
     S.shots.push({
       kind: d.shot, x: t.x + Math.cos(t.angle) * 8, y: t.y + Math.sin(t.angle) * 8,
-      target: k, tx: k.x, ty: k.y, speed: d.speed, dmg: st.dmg, splash: d.splash || 0,
-      slow: st.slow, color: d.accent, wob: Math.random() * 6,
+      target: k, tx: k.x, ty: k.y, speed: d.speed, dmg: st.dmg,
+      color: d.accent, wob: Math.random() * 6,
+      tower: t, range: st.range, special: d.special[t.level], factor: d.factor[t.level],
     });
   }
   return true;
@@ -430,22 +435,30 @@ function updateShots(dt) {
     const step = s.speed * dt;
     if (d <= step + 2) {
       s.done = true;
-      if (s.splash) {
-        S.fx.push({ kind: "ring", x: s.tx, y: s.ty, r: 4, max: s.splash, color: "#4ea1ff", life: 0.3, maxLife: 0.3 });
-        for (const k of S.creeps) if (!k.dead && !k.flying && Math.hypot(k.x - s.tx, k.y - s.ty) <= s.splash + k.r) hurt(k, s.dmg);
-      } else if (s.target && !s.target.dead) {
-        const k = s.target;
-        if (s.slow && !CREEPS[k.type].immune) {
-          k.slowF = Math.max(s.slow, S.time < k.slowUntil ? k.slowF : 0);
-          k.slowUntil = S.time + RULES.slowDuration;
-        }
-        hurt(k, s.dmg);
-      }
+      if (s.target && !s.target.dead) impact(s);
       continue;
     }
+
     s.x += (dx / d) * step; s.y += (dy / d) * step;
   }
   S.shots = S.shots.filter((s) => !s.done);
+}
+
+function impact(s) {
+  const def = TOWERS[s.tower.type];
+  const nearby = S.creeps.filter((k) => !k.dead && canHit(def, k) &&
+    Math.hypot(k.x - s.tx, k.y - s.ty) <= s.range &&
+    Math.hypot(k.x - s.tower.x, k.y - s.tower.y) <= s.range);
+  if (s.special !== "none")
+    S.fx.push({ kind: "ring", x: s.tx, y: s.ty, r: 4, max: s.range, color: def.color, life: 0.3, maxLife: 0.3 });
+  for (const k of nearby) {
+    if (s.special === "spread" && k !== s.target) hurt(k, s.factor);
+    if (!CREEPS[k.type].immune && (s.special === "slow" || s.special === "stun") && Math.random() < s.factor) {
+      if (s.special === "slow") { k.slowF = 0.5; k.slowUntil = S.time + RULES.slowDuration; }
+      else k.stunUntil = S.time + RULES.stunDuration;
+    }
+  }
+  hurt(s.target, s.dmg);
 }
 
 // ---------- Main update ----------
@@ -529,12 +542,12 @@ function drawBackground() {
   g.fillStyle = grad;
   g.fillRect(0, 0, W, H);
   // grid
-  for (let x = 0; x <= COLS; x++) {
-    g.strokeStyle = x % 2 ? "rgba(120,160,220,0.06)" : "rgba(120,160,220,0.13)";
+  for (let x = 1; x < COLS; x++) {
+    g.strokeStyle = x % 2 ? "rgba(120,160,220,0.13)" : "rgba(120,160,220,0.06)";
     g.beginPath(); g.moveTo(x * CELL + 0.5, 0); g.lineTo(x * CELL + 0.5, H); g.stroke();
   }
-  for (let y = 0; y <= ROWS; y++) {
-    g.strokeStyle = y % 2 ? "rgba(120,160,220,0.06)" : "rgba(120,160,220,0.13)";
+  for (let y = 1; y < ROWS; y++) {
+    g.strokeStyle = y % 2 ? "rgba(120,160,220,0.13)" : "rgba(120,160,220,0.06)";
     g.beginPath(); g.moveTo(0, y * CELL + 0.5); g.lineTo(W, y * CELL + 0.5); g.stroke();
   }
   // walls
@@ -749,7 +762,7 @@ function draw() {
     const r = placeCheck(hover.cx, hover.cy);
     const ok = r === "ok" && S.gold >= TOWERS[buildType].cost;
     const x = (hover.cx + 1) * CELL, y = (hover.cy + 1) * CELL;
-    showRange(x, y, TOWERS[buildType].range, ok ? "#3ccb7f" : "#eb3751");
+    showRange(x, y, TOWERS[buildType].range[0] * CONTENT.board.rangeScale, ok ? "#3ccb7f" : "#eb3751");
     ctx.globalAlpha = 0.65;
     drawTowerShape(ctx, buildType, 0, x, y, -Math.PI / 2, 1.08);
     ctx.globalAlpha = 1;
@@ -819,7 +832,7 @@ function draw() {
     ctx.fillStyle = "#d0d5dd";
     ctx.fillText("Appuyez sur Espace pour reprendre", W / 2, H / 2 + 24);
     ctx.textAlign = "start";
-  } else if (!S.started && !S.over && !ui.overlayOpen) {
+  } else if (showStartHint() && !ui.overlayOpen) {
     ctx.fillStyle = "rgba(10,16,28,0.6)";
     roundRect(ctx, W / 2 - 170, 14, 340, 44, 8); ctx.fill();
     ctx.fillStyle = "#fff";
@@ -912,14 +925,15 @@ const ui = {
       const max = t.level >= d.ups.length;
       const nx = max ? null : towerStats({ ...t, level: t.level + 1 });
       const upCost = max ? 0 : d.ups[t.level];
-      const row = (k, v, nv) => `<tr><td>${k}</td><td>${v}${nv !== undefined && nv !== v ? ` <span class="up">→ ${nv}</span>` : ""}</td></tr>`;
-      html = `<h3>${d.name} <small>niveau ${t.level + 1}/5</small></h3>
+      const row = (k, v, nv) => `<tr><td>${k}</td><td>${v}${nv != null && nv !== v ? ` <span class="up">→ ${nv}</span>` : ""}</td></tr>`;
+      html = `<h3>${d.name} <small>niveau ${t.level + 1}/${d.dmg.length}</small></h3>
         <div class="desc">${d.desc}</div>
         <table>
         ${row("Dégâts", st.dmg, nx && nx.dmg)}
-        ${row("Portée", Math.round(st.range), nx && Math.round(nx.range))}
+        ${row("Portée", d.range[t.level], nx && d.range[t.level + 1])}
         ${row("Cadence", st.rate.toFixed(2) + " s", nx && nx.rate.toFixed(2) + " s")}
-        ${d.slow.some((value) => value > 0) ? row("Ralentit", Math.round(st.slow * 100) + " %", nx && Math.round(nx.slow * 100) + " %") : ""}
+        ${row("Vitesse", (1 / st.rate).toFixed(0) + " tirs/s", nx && (1 / nx.rate).toFixed(0) + " tirs/s")}
+        ${d.special[t.level] !== "none" ? row(d.special[t.level], d.special[t.level] === "spread" ? d.factor[t.level] + " dégâts" : Math.round(d.factor[t.level] * 100) + " %") : ""}
         ${row("Vise", [d.ground && "sol", d.air && "air"].filter(Boolean).join(" + "))}
         </table>
         <div class="acts">
@@ -931,9 +945,9 @@ const ui = {
       html = `<h3>${d.name} <small>${d.cost} or</small></h3>
         <div class="desc">${d.desc}</div>
         <table>
-        <tr><td>Dégâts</td><td>${d.dmg[0]} → ${d.dmg[4]}</td></tr>
-        <tr><td>Portée</td><td>${d.range}</td></tr>
-        <tr><td>Cadence</td><td>${d.rate.toFixed(2)} s</td></tr>
+        <tr><td>Dégâts</td><td>${d.dmg[0]} → ${d.dmg.at(-1)}</td></tr>
+        <tr><td>Portée</td><td>${d.range[0]}</td></tr>
+        <tr><td>Cadence</td><td>${d.rate[0].toFixed(2)} s</td></tr>
         <tr><td>Vise</td><td>${[d.ground && "sol", d.air && "air"].filter(Boolean).join(" + ")}</td></tr>
         </table>
         <div class="desc" style="margin-top:6px">${buildType >= 0 ? "Cliquez sur le plateau pour la poser. Maj : en poser plusieurs. 0 : annuler." : "Touche " + d.key + " pour la choisir."}</div>`;
@@ -1006,7 +1020,7 @@ function boardPos(e) {
   const r = canvas.getBoundingClientRect();
   const x = ((e.clientX - r.left) / r.width) * W;
   const y = ((e.clientY - r.top) / r.height) * H;
-  return { x, y, cx: Math.round(x / CELL - 1), cy: Math.round(y / CELL - 1) };
+  return { x, y, cx: Math.round(x / CELL) - 1, cy: Math.round(y / CELL) - 1 };
 }
 
 canvas.addEventListener("pointermove", (e) => { hover = boardPos(e); });
@@ -1059,6 +1073,9 @@ document.addEventListener("click", (e) => {
 // ---------- Fitting the game to the window ----------
 const game = $("game");
 const stage = $("stage");
+game.addEventListener("pointerdown", () => {
+  if (!ui.overlayOpen) dismissStartHint();
+}, { capture: true });
 function fit() {
   const vw = document.documentElement.clientWidth;
   const vh = window.innerHeight;

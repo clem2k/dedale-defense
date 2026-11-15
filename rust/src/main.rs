@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
+use std::time::{Duration, Instant};
 
 include!(concat!(env!("OUT_DIR"), "/content.rs"));
 const COUNT: usize = COLS * ROWS;
@@ -33,7 +34,6 @@ struct Tower {
     cooldown: f32,
     angle: f32,
     spent: i32,
-    built_started: bool,
 }
 
 #[derive(Clone)]
@@ -71,9 +71,12 @@ struct Shot {
     y: f32,
     speed: f32,
     damage: f32,
-    splash: f32,
-    slow: f32,
     color: Color,
+    origin: (f32, f32),
+    range: f32,
+    special: &'static str,
+    factor: f32,
+    kind: TowerKind,
 }
 
 struct Game {
@@ -103,6 +106,7 @@ struct Game {
     speed: f32,
     message: String,
     message_time: f32,
+    start_hint_until: Option<Instant>,
 }
 
 impl Game {
@@ -134,9 +138,18 @@ impl Game {
             speed: 1.0,
             message: String::new(),
             message_time: 0.0,
+            start_hint_until: Some(Instant::now() + Duration::from_secs(5)),
         };
         game.refresh_fields();
         game
+    }
+
+    fn show_start_hint(&self, now: Instant) -> bool {
+        !self.started && !self.over && self.start_hint_until.is_some_and(|deadline| now < deadline)
+    }
+
+    fn dismiss_start_hint(&mut self) {
+        self.start_hint_until = None;
     }
 
     fn towers_at(&self, x: usize, y: usize) -> Option<u64> {
@@ -311,7 +324,6 @@ impl Game {
             cooldown: 0.0,
             angle: -std::f32::consts::FRAC_PI_2,
             spent: def.cost,
-            built_started: self.started,
         });
         self.gold -= def.cost;
         self.refresh_fields();
@@ -354,8 +366,8 @@ impl Game {
             return;
         };
         let tower = self.towers.remove(position);
-        let refund = if tower.built_started {
-            (tower.spent as f32 * SELL_REFUND).floor() as i32
+        let refund = if self.started {
+            TOWERS[tower.kind.index()].sell[tower.level]
         } else {
             tower.spent
         };
@@ -506,7 +518,12 @@ impl Game {
         if self.creeps[index].dead || self.game_time < self.creeps[index].stun_until {
             return;
         }
-        let mut speed = self.creeps[index].kind.speed();
+        let mut speed = self.creeps[index].kind.speed()
+            * if self.creeps[index].target == Target::Right {
+                ENEMY_SPEED_X
+            } else {
+                ENEMY_SPEED_Y
+            };
         if self.game_time < self.creeps[index].slow_until {
             speed *= 1.0 - self.creeps[index].slow_factor;
         }
@@ -647,15 +664,18 @@ impl Game {
         let def = TOWERS[tower.kind.index()];
         (
             def.damage[tower.level],
-            def.range * (1.0 + RANGE_GROWTH * tower.level as f32),
-            def.rate * (1.0 - RATE_REDUCTION * tower.level as f32),
-            def.slow[tower.level],
+            def.range[tower.level] * RANGE_SCALE,
+            def.rate[tower.level],
+            if def.special[tower.level] == "slow" {
+                0.5
+            } else {
+                0.0
+            },
         )
     }
 
     fn fire_towers(&mut self, dt: f32) {
         let mut shots = Vec::new();
-        let mut hits = Vec::new();
         let creep_targets: Vec<(f32, u64, f32, f32, bool, f32)> = self
             .creeps
             .iter()
@@ -676,27 +696,20 @@ impl Game {
             if tower.cooldown > 0.0 {
                 continue;
             }
-            let (damage, range, rate, slow) = Self::tower_stats(tower);
+            let (damage, range, rate, _) = Self::tower_stats(tower);
             let def = TOWERS[tower.kind.index()];
             let x = (tower.cx as f32 + 1.0) * CELL;
             let y = (tower.cy as f32 + 1.0) * CELL;
             let mut targets: Vec<(f32, u64, f32, f32)> = creep_targets
                 .iter()
-                .filter(|(_, _, cx, cy, flying, radius)| {
+                .filter(|(_, _, cx, cy, flying, _)| {
                     (if *flying { def.air } else { def.ground })
-                        && (*cx - x).hypot(*cy - y) <= range + radius
+                        && (*cx - x).hypot(*cy - y) <= range
                 })
                 .map(|(remaining, id, cx, cy, _, _)| (*remaining, *id, *cx, *cy))
                 .collect();
             targets.sort_by(|a, b| a.0.total_cmp(&b.0));
             if targets.is_empty() {
-                continue;
-            }
-            if def.shot == "pulse" {
-                for (_, id, _, _) in targets {
-                    hits.push((id, damage, def.stun));
-                }
-                tower.cooldown = rate;
                 continue;
             }
             tower.angle = (targets[0].3 - y).atan2(targets[0].2 - x);
@@ -707,24 +720,15 @@ impl Game {
                     y: y + tower.angle.sin() * 8.0,
                     speed: def.speed,
                     damage,
-                    splash: def.splash,
-                    slow,
                     color: def.accent,
+                    origin: (x, y),
+                    range,
+                    special: def.special[tower.level],
+                    factor: def.factor[tower.level],
+                    kind: tower.kind,
                 });
             }
             tower.cooldown = rate;
-        }
-        for (id, damage, stun) in hits {
-            self.hurt(id, damage);
-            if let Some(creep) = self
-                .creeps
-                .iter_mut()
-                .find(|creep| creep.id == id && !creep.dead)
-            {
-                if !creep.kind.is_immune() && macroquad::rand::gen_range(0.0, 1.0) < stun {
-                    creep.stun_until = self.game_time + STUN_DURATION;
-                }
-            }
         }
         self.shots.extend(shots);
     }
@@ -743,14 +747,7 @@ impl Game {
                 let distance = dx.hypot(dy);
                 let step = shot.speed * dt;
                 if distance <= step + 2.0 {
-                    impacts.push((
-                        shot.target_id,
-                        target.x,
-                        target.y,
-                        shot.damage,
-                        shot.splash,
-                        shot.slow,
-                    ));
+                    impacts.push((target.x, target.y, shot));
                 } else if distance > 0.0 {
                     shot.x += dx / distance * step;
                     shot.y += dy / distance * step;
@@ -759,39 +756,43 @@ impl Game {
             }
         }
         self.shots = pending;
-        for (id, x, y, damage, splash, slow) in impacts {
-            if splash > 0.0 {
-                let targets: Vec<u64> = self
-                    .creeps
-                    .iter()
-                    .filter(|creep| {
-                        !creep.dead
-                            && !creep.flying
-                            && (creep.x - x).hypot(creep.y - y) <= splash + creep.kind.radius()
-                    })
-                    .map(|creep| creep.id)
-                    .collect();
-                for target in targets {
-                    self.hurt(target, damage);
-                }
-            } else {
-                if let Some(creep) = self
-                    .creeps
-                    .iter_mut()
-                    .find(|creep| creep.id == id && !creep.dead)
+        for (x, y, shot) in impacts {
+            self.impact(&shot, x, y);
+        }
+    }
+
+    fn impact(&mut self, shot: &Shot, x: f32, y: f32) {
+        let def = TOWERS[shot.kind.index()];
+        let targets: Vec<u64> = self
+            .creeps
+            .iter()
+            .filter(|c| {
+                !c.dead
+                    && (if c.flying { def.air } else { def.ground })
+                    && (c.x - x).hypot(c.y - y) <= shot.range
+                    && (c.x - shot.origin.0).hypot(c.y - shot.origin.1) <= shot.range
+            })
+            .map(|c| c.id)
+            .collect();
+        for id in targets {
+            if shot.special == "spread" && id != shot.target_id {
+                self.hurt(id, shot.factor);
+            }
+            if let Some(c) = self.creeps.iter_mut().find(|c| c.id == id && !c.dead) {
+                if !c.kind.is_immune()
+                    && matches!(shot.special, "slow" | "stun")
+                    && macroquad::rand::gen_range(0.0, 1.0) < shot.factor
                 {
-                    if slow > 0.0 && !creep.kind.is_immune() {
-                        creep.slow_factor = if self.game_time < creep.slow_until {
-                            creep.slow_factor.max(slow)
-                        } else {
-                            slow
-                        };
-                        creep.slow_until = self.game_time + SLOW_DURATION;
+                    if shot.special == "slow" {
+                        c.slow_factor = 0.5;
+                        c.slow_until = self.game_time + SLOW_DURATION;
+                    } else {
+                        c.stun_until = self.game_time + STUN_DURATION;
                     }
                 }
-                self.hurt(id, damage);
             }
         }
+        self.hurt(shot.target_id, shot.damage);
     }
 
     fn update(&mut self, dt: f32) {
@@ -998,7 +999,14 @@ fn draw_tower_shape(kind: TowerKind, x: f32, y: f32, angle: f32, size: f32, leve
     }
 }
 
-fn draw_board(game: &Game, mouse: Vec2) -> Option<(usize, usize)> {
+fn placement_anchor(position: Vec2) -> (usize, usize) {
+    (
+        ((position.x / CELL).round() as usize).saturating_sub(1),
+        ((position.y / CELL).round() as usize).saturating_sub(1),
+    )
+}
+
+fn draw_board(game: &Game, mouse: Vec2) -> Option<Vec2> {
     draw_rectangle(BOARD_X, BOARD_Y, BOARD_W, BOARD_H, BG);
     for y in 0..ROWS {
         for x in 0..COLS {
@@ -1023,7 +1031,18 @@ fn draw_board(game: &Game, mouse: Vec2) -> Option<(usize, usize)> {
                     CELL,
                     Color::new(shade, shade + 0.025, shade + 0.045, 1.0),
                 );
-                draw_rectangle_lines(px, py, CELL, CELL, 0.5, Color::new(0.28, 0.37, 0.49, 0.20));
+                let vertical = if x % 2 == 1 {
+                    LINE
+                } else {
+                    Color::new(LINE.r, LINE.g, LINE.b, 0.3)
+                };
+                let horizontal = if y % 2 == 1 {
+                    LINE
+                } else {
+                    Color::new(LINE.r, LINE.g, LINE.b, 0.3)
+                };
+                draw_line(px, py, px, py + CELL, 0.5, vertical);
+                draw_line(px, py, px + CELL, py, 0.5, horizontal);
             }
         }
     }
@@ -1077,17 +1096,14 @@ fn draw_board(game: &Game, mouse: Vec2) -> Option<(usize, usize)> {
             && mouse.y >= BOARD_Y
             && mouse.y < BOARD_Y + BOARD_H
         {
-            let cell_x = ((mouse.x - BOARD_X) / CELL).floor() as usize;
-            let cell_y = ((mouse.y - BOARD_Y) / CELL).floor() as usize;
-            let cx = cell_x.saturating_sub(1);
-            let cy = cell_y.saturating_sub(1);
+            let (cx, cy) = placement_anchor(mouse - vec2(BOARD_X, BOARD_Y));
             let valid = game.can_place(cx, cy).is_ok() && game.gold >= TOWERS[kind.index()].cost;
             let x = BOARD_X + (cx as f32 + 1.0) * CELL;
             let y = BOARD_Y + (cy as f32 + 1.0) * CELL;
             draw_circle_lines(
                 x,
                 y,
-                TOWERS[kind.index()].range,
+                TOWERS[kind.index()].range[0] * RANGE_SCALE,
                 1.0,
                 if valid { GREEN } else { RED },
             );
@@ -1111,7 +1127,7 @@ fn draw_board(game: &Game, mouse: Vec2) -> Option<(usize, usize)> {
     for shot in &game.shots {
         draw_circle(BOARD_X + shot.x, BOARD_Y + shot.y, 3.0, shot.color);
     }
-    if game.paused || !game.started {
+    if game.paused || game.show_start_hint(Instant::now()) {
         draw_rectangle(
             BOARD_X,
             BOARD_Y,
@@ -1189,10 +1205,7 @@ fn draw_board(game: &Game, mouse: Vec2) -> Option<(usize, usize)> {
         && mouse.y >= BOARD_Y
         && mouse.y < BOARD_Y + BOARD_H
     {
-        Some((
-            ((mouse.x - BOARD_X) / CELL).floor() as usize,
-            ((mouse.y - BOARD_Y) / CELL).floor() as usize,
-        ))
+        Some(mouse - vec2(BOARD_X, BOARD_Y))
     } else {
         None
     }
@@ -1337,7 +1350,7 @@ fn draw_sidebar(game: &Game) {
     if let Some(id) = game.selected_id {
         if let Some(tower) = game.towers.iter().find(|tower| tower.id == id) {
             let def = TOWERS[tower.kind.index()];
-            let (damage, range, rate, slow) = Game::tower_stats(tower);
+            let (damage, _, rate, _) = Game::tower_stats(tower);
             draw_text(
                 &format!(
                     "{} - niveau {}/{}",
@@ -1352,7 +1365,10 @@ fn draw_sidebar(game: &Game) {
             );
             y += 22.0;
             draw_text(
-                &format!("Degats {}   Portee {}", damage as i32, range as i32),
+                &format!(
+                    "Degats {}   Portee {}",
+                    damage as i32, def.range[tower.level] as i32
+                ),
                 x + 12.0,
                 y,
                 14.0,
@@ -1361,9 +1377,14 @@ fn draw_sidebar(game: &Game) {
             y += 18.0;
             draw_text(
                 &format!(
-                    "Cadence {:.2}s   Cible sol/air{}",
+                    "Cadence {:.2}s   Vise {}",
                     rate,
-                    if def.air { "" } else { " (sol)" }
+                    match (def.ground, def.air) {
+                        (true, true) => "sol + air",
+                        (true, false) => "sol",
+                        (false, true) => "air",
+                        _ => unreachable!("validated targeting flags"),
+                    }
                 ),
                 x + 12.0,
                 y,
@@ -1371,14 +1392,20 @@ fn draw_sidebar(game: &Game) {
                 MUTED,
             );
             y += 18.0;
-            if slow > 0.0 {
-                draw_text(
-                    &format!("Ralentissement {}%", (slow * 100.0) as i32),
-                    x + 12.0,
-                    y,
-                    13.0,
-                    MUTED,
-                );
+            if def.special[tower.level] != "none" {
+                let label = match def.special[tower.level] {
+                    "spread" => format!("Zone : {} degats", def.factor[tower.level]),
+                    "slow" => format!(
+                        "Ralentit x0.5 : {}% (2s)",
+                        (def.factor[tower.level] * 100.0).round()
+                    ),
+                    "stun" => format!(
+                        "Etourdit : {}% (2s)",
+                        (def.factor[tower.level] * 100.0).round()
+                    ),
+                    _ => unreachable!("validated special effect"),
+                };
+                draw_text(&label, x + 12.0, y, 13.0, MUTED);
                 y += 19.0;
             }
             let can_upgrade =
@@ -1467,16 +1494,18 @@ fn draw_sidebar(game: &Game) {
     }
 }
 
-fn board_click(game: &mut Game, cell: (usize, usize), shift: bool) {
-    let (x, y) = cell;
+fn board_click(game: &mut Game, position: Vec2, shift: bool) {
+    game.dismiss_start_hint();
     if game.build_kind.is_some() {
-        let cx = x.saturating_sub(1);
-        let cy = y.saturating_sub(1);
+        let (cx, cy) = placement_anchor(position);
         game.keep_building = shift;
         game.place_tower(cx, cy);
         return;
     }
-    game.selected_id = game.towers_at(x, y);
+    game.selected_id = game.towers_at(
+        (position.x / CELL).floor() as usize,
+        (position.y / CELL).floor() as usize,
+    );
 }
 
 fn draw_start_screen() -> Option<Mode> {
@@ -1543,6 +1572,12 @@ async fn main() {
                 game = Some(Game::new(mode));
             }
         } else if let Some(current) = &mut game {
+            if is_mouse_button_pressed(MouseButton::Left)
+                || is_mouse_button_pressed(MouseButton::Right)
+                || is_mouse_button_pressed(MouseButton::Middle)
+            {
+                current.dismiss_start_hint();
+            }
             let mut reset_mode = None;
             for key in [
                 KeyCode::Key1,
@@ -1588,8 +1623,8 @@ async fn main() {
                 current.selected_id = None;
             }
             if is_mouse_button_pressed(MouseButton::Left) && !current.over {
-                if let Some((x, y)) = cell {
-                    board_click(current, (x, y), current.keep_building);
+                if let Some(position) = cell {
+                    board_click(current, position, current.keep_building);
                 } else {
                     let x = BOARD_X + BOARD_W + 20.0;
                     for (i, kind) in TowerKind::ALL.iter().enumerate() {
@@ -1617,7 +1652,7 @@ async fn main() {
                                 + 22.0
                                 + 18.0
                                 + 18.0
-                                + if TOWERS[tower.kind.index()].slow[tower.level] > 0.0 {
+                                + if TOWERS[tower.kind.index()].special[tower.level] != "none" {
                                     19.0
                                 } else {
                                     0.0
@@ -1659,6 +1694,24 @@ async fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn construction_hint_expires_and_first_click_still_places_a_tower() {
+        let mut game = Game::new(Mode::Normal);
+        let deadline = game.start_hint_until.unwrap();
+        assert!(game.show_start_hint(deadline - Duration::from_millis(1)));
+        assert!(!game.show_start_hint(deadline));
+        assert!(!game.show_start_hint(deadline + Duration::from_secs(1)));
+        game = Game::new(Mode::Normal);
+        assert!(game.show_start_hint(Instant::now()));
+        game.build_kind = Some(TowerKind::Stone);
+        board_click(&mut game, vec2(120.0, 120.0), false);
+        assert!(!game.show_start_hint(Instant::now()));
+        assert_eq!(game.towers.len(), 1);
+        assert!(!game.started);
+        game = Game::new(Mode::Normal);
+        assert!(game.show_start_hint(Instant::now()));
+    }
 
     #[test]
     fn board_starts_with_open_routes() {
@@ -1840,16 +1893,19 @@ mod tests {
                 y: creep.y,
                 speed: frost.speed,
                 damage: frost.damage[0],
-                splash: 0.0,
-                slow: frost.slow[0],
                 color: frost.accent,
+                origin: (creep.x, creep.y),
+                range: frost.range[0] * RANGE_SCALE,
+                special: "slow",
+                factor: 1.0,
+                kind: TowerKind::Frost,
             });
             game.update_shots(0.0);
             let creep = game.creeps.last().unwrap();
             if kind.is_immune() {
                 assert_eq!(creep.slow_until, -1.0);
             } else {
-                assert_eq!(creep.slow_factor, frost.slow[0]);
+                assert_eq!(creep.slow_factor, 0.5);
                 assert_eq!(creep.slow_until, game.game_time + SLOW_DURATION);
             }
         }
@@ -1877,28 +1933,185 @@ mod tests {
     }
 
     #[test]
+    fn grid_and_all_six_tower_levels_use_csv_units() {
+        assert_eq!((COLS - 2) / 2, 13);
+        assert_eq!((ROWS - 2) / 2, 11);
+        assert!((180.0 * RANGE_SCALE * 2.0 - (COLS - 2) as f32 * CELL).abs() < 0.001);
+        let mut game = Game::new(Mode::UncleScrooge);
+        assert!(game.can_place(25, 21).is_ok());
+        assert!(game.can_place(24, 20).is_ok());
+        for kind in TowerKind::ALL {
+            game = Game::new(Mode::UncleScrooge);
+            game.build_kind = Some(kind);
+            game.place_tower(5, 5);
+            game.selected_id = Some(game.towers[0].id);
+            for level in 0..6 {
+                let def = TOWERS[kind.index()];
+                let (damage, range, rate, _) = Game::tower_stats(&game.towers[0]);
+                assert_eq!(damage, def.damage[level]);
+                assert_eq!(range, def.range[level] * RANGE_SCALE);
+                assert_eq!(rate, def.rate[level]);
+                if level < 5 {
+                    game.upgrade_selected();
+                }
+            }
+            assert_eq!(game.towers[0].level, 5);
+            game.upgrade_selected();
+            assert_eq!(game.towers[0].level, 5);
+            game.sell_selected();
+            assert_eq!(game.gold, Mode::UncleScrooge.gold());
+        }
+    }
+
+    #[test]
+    fn half_tower_input_and_placement_keep_small_corridors_open() {
+        let mut game = Game::new(Mode::UncleScrooge);
+        for (cx, cy) in [(5, 5), (8, 6)] {
+            let position = vec2((cx + 1) as f32 * CELL, (cy + 1) as f32 * CELL);
+            for offset in [-9.0, 0.0, 9.0] {
+                assert_eq!(placement_anchor(position + vec2(offset, offset)), (cx, cy));
+            }
+            game.build_kind = Some(TowerKind::Stone);
+            board_click(&mut game, position, false);
+            assert_eq!(game.towers.last().map(|t| (t.cx, t.cy)), Some((cx, cy)));
+        }
+        assert_eq!(game.towers.len(), 2);
+        assert!(game.can_place(6, 5).is_err());
+        for kind in EnemyKind::ALL.into_iter().filter(|kind| !kind.is_flying()) {
+            game.spawn(kind, 100.0, 0.0, Target::Right);
+            let creep = game.creeps.last_mut().unwrap();
+            creep.x = 7.5 * CELL;
+            creep.y = 5.5 * CELL;
+            creep.next_cell = Some(index(7, 6));
+            creep.wx = creep.x;
+            creep.wy = 6.5 * CELL;
+            let i = game.creeps.len() - 1;
+            game.move_creep(i, CELL / kind.speed());
+            assert!((game.creeps[i].y - 6.5 * CELL).abs() < 0.001);
+            assert!(!game.creeps[i].dead);
+            assert_eq!(game.creeps[i].cell, Some(index(7, 6)));
+        }
+        let mut field = vec![200; COUNT];
+        field[index(5, 4)] = 0;
+        field[index(4, 4)] = 100;
+        assert_eq!(game.next_step(&field, index(4, 5)), Some(index(4, 4)));
+    }
+
+    #[test]
+    fn entrances_and_enemy_sizes_match_reference_proportions() {
+        assert_eq!(OPEN_R.len(), 6);
+        assert_eq!(OPEN_C.len(), 8);
+        assert_eq!(OPEN_R[0] + OPEN_R[OPEN_R.len() - 1] + 1, ROWS);
+        assert_eq!(OPEN_C[0] + OPEN_C[OPEN_C.len() - 1] + 1, COLS);
+        let game = Game::new(Mode::Normal);
+        for kind in EnemyKind::ALL {
+            assert!(kind.radius() * 2.0 < CELL);
+        }
+        for y in 0..ROWS {
+            assert_eq!(!Game::is_wall(0, y), OPEN_R.contains(&y));
+            assert_eq!(!Game::is_wall(COLS - 1, y), OPEN_R.contains(&y));
+            if OPEN_R.contains(&y) {
+                assert!(game.field_right[index(0, y)] < u32::MAX / 4);
+            }
+        }
+        for x in 0..COLS {
+            assert_eq!(!Game::is_wall(x, 0), OPEN_C.contains(&x));
+            assert_eq!(!Game::is_wall(x, ROWS - 1), OPEN_C.contains(&x));
+            if OPEN_C.contains(&x) {
+                assert!(game.field_bottom[index(x, 0)] < u32::MAX / 4);
+            }
+        }
+    }
+
+    #[test]
+    fn area_effects_require_both_ranges_and_compatible_targets() {
+        for (kind, special) in [
+            (TowerKind::Needle, "spread"),
+            (TowerKind::Frost, "slow"),
+            (TowerKind::Pulse, "stun"),
+        ] {
+            let mut game = Game::new(Mode::Normal);
+            for (enemy, x) in [
+                (EnemyKind::Walker, 30.0),
+                (EnemyKind::Walker, 40.0),
+                (EnemyKind::Walker, 60.0),
+                (EnemyKind::Walker, -30.0),
+                (EnemyKind::Armored, 40.0),
+                (EnemyKind::Flyer, 40.0),
+            ] {
+                game.spawn(enemy, 10000.0, 0.0, Target::Right);
+                let c = game.creeps.last_mut().unwrap();
+                c.x = x;
+                c.y = 0.0;
+            }
+            let before: Vec<f32> = game.creeps.iter().map(|c| c.hp).collect();
+            let shot = Shot {
+                target_id: game.creeps[0].id,
+                x: 30.0,
+                y: 0.0,
+                speed: 1.0,
+                damage: 8.0,
+                color: TEXT,
+                origin: (0.0, 0.0),
+                range: 50.0,
+                special,
+                factor: if special == "spread" { 4.0 } else { 1.0 },
+                kind,
+            };
+            game.impact(&shot, 30.0, 0.0);
+            assert_eq!(game.creeps[0].hp, before[0] - 8.0);
+            for i in [2, 3] {
+                assert_eq!(game.creeps[i].hp, before[i]);
+                assert_eq!(game.creeps[i].slow_until, 0.0);
+                assert_eq!(game.creeps[i].stun_until, 0.0);
+            }
+            if special == "spread" {
+                assert_eq!(game.creeps[1].hp, before[1] - 4.0);
+                assert_eq!(game.creeps[5].hp, before[5]);
+            } else {
+                assert_eq!(game.creeps[4].slow_until, 0.0);
+                assert_eq!(game.creeps[4].stun_until, 0.0);
+                if special == "slow" {
+                    assert_eq!(game.creeps[1].slow_factor, 0.5);
+                    assert_eq!(game.creeps[1].slow_until, 2.0);
+                    assert_eq!(game.creeps[5].slow_until, 2.0);
+                } else {
+                    assert_eq!(game.creeps[1].stun_until, 2.0);
+                    assert_eq!(game.creeps[5].stun_until, 0.0);
+                }
+            }
+        }
+    }
+
+    #[test]
     fn towers_and_enemies_match_shared_json() {
         let data: serde_json::Value =
             serde_json::from_str(include_str!("../../game-content.json")).unwrap();
         for (actual, expected) in TOWERS.iter().zip(data["towers"].as_array().unwrap()) {
             assert_eq!(actual.name, expected["name"].as_str().unwrap());
             assert_eq!(actual.cost as i64, expected["cost"].as_i64().unwrap());
-            assert_eq!(actual.range, expected["range"].as_f64().unwrap() as f32);
-            assert_eq!(actual.rate, expected["rate"].as_f64().unwrap() as f32);
             assert_eq!(actual.speed, expected["speed"].as_f64().unwrap() as f32);
-            assert_eq!(actual.splash, expected["splash"].as_f64().unwrap() as f32);
             assert_eq!(actual.multi as u64, expected["multi"].as_u64().unwrap());
-            assert_eq!(actual.stun, expected["stun"].as_f64().unwrap() as f32);
             assert_eq!(actual.shot, expected["shot"].as_str().unwrap());
             assert_eq!(actual.ground, expected["ground"].as_bool().unwrap());
             assert_eq!(actual.air, expected["air"].as_bool().unwrap());
-            for i in 0..5 {
+            for i in 0..6 {
+                assert_eq!(
+                    actual.range[i],
+                    expected["range"][i].as_f64().unwrap() as f32
+                );
+                assert_eq!(actual.rate[i], expected["rate"][i].as_f64().unwrap() as f32);
+                assert_eq!(actual.sell[i] as i64, expected["sell"][i].as_i64().unwrap());
+                assert_eq!(actual.special[i], expected["special"][i].as_str().unwrap());
+                assert_eq!(
+                    actual.factor[i],
+                    expected["factor"][i].as_f64().unwrap() as f32
+                );
                 assert_eq!(
                     actual.damage[i],
                     expected["dmg"][i].as_f64().unwrap() as f32
                 );
-                assert_eq!(actual.slow[i], expected["slow"][i].as_f64().unwrap() as f32);
-                if i < 4 {
+                if i < 5 {
                     assert_eq!(
                         actual.upgrades[i] as i64,
                         expected["ups"][i].as_i64().unwrap()
@@ -1939,6 +2152,64 @@ mod tests {
                     expected["split"]["bounty"].as_f64().unwrap() as f32
                 );
             }
+        }
+    }
+
+    #[test]
+    fn every_csv_row_matches_native_stats_and_post_start_refund() {
+        let rows: Vec<_> = include_str!("../../towers.csv")
+            .lines()
+            .skip(1)
+            .filter(|line| !line.trim().is_empty())
+            .collect();
+        assert_eq!(rows.len(), 36);
+        for line in rows {
+            let fields: Vec<_> = line.split(',').collect();
+            let index: usize = fields[0].parse().unwrap();
+            let level: usize = fields[1].parse::<usize>().unwrap() - 1;
+            let def = TOWERS[index - 1];
+            let cost: i32 = fields[2].parse().unwrap();
+            assert_eq!(
+                if level == 0 {
+                    def.cost
+                } else {
+                    def.upgrades[level - 1]
+                },
+                cost
+            );
+            assert_eq!(def.damage[level], fields[3].parse::<f32>().unwrap());
+            assert_eq!(def.range[level], fields[4].parse::<f32>().unwrap());
+            assert_eq!(def.rate[level], 1.0 / fields[5].parse::<f32>().unwrap());
+            assert_eq!(def.sell[level], fields[6].parse::<i32>().unwrap());
+            assert_eq!(
+                def.special[level],
+                if fields[7].is_empty() {
+                    "none"
+                } else {
+                    fields[7]
+                }
+            );
+            assert_eq!(
+                def.factor[level],
+                if fields[8].is_empty() {
+                    0.0
+                } else {
+                    fields[8].parse::<f32>().unwrap()
+                }
+            );
+            assert_eq!(def.ground, fields[9] == "1");
+            assert_eq!(def.air, fields[10] == "1");
+            let mut game = Game::new(Mode::UncleScrooge);
+            game.build_kind = Some(TowerKind::ALL[index - 1]);
+            game.place_tower(5, 5);
+            game.selected_id = Some(game.towers[0].id);
+            for _ in 0..level {
+                game.upgrade_selected();
+            }
+            game.send_wave();
+            let gold = game.gold;
+            game.sell_selected();
+            assert_eq!(game.gold - gold, def.sell[level]);
         }
     }
 }

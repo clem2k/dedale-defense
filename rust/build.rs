@@ -163,10 +163,16 @@ fn main() {
         ints(field(board, "openCols"))
     );
     let rules = field(&data, "rules");
+    code += &format!(
+        "const RANGE_SCALE: f32 = {:?}_f32;\n",
+        num(field(board, "rangeScale"))
+    );
+    code += &format!(
+        "const ENEMY_SPEED_X: f32 = {:?}_f32;\nconst ENEMY_SPEED_Y: f32 = {:?}_f32;\n",
+        num(field(field(board, "enemySpeedScale"), "R")),
+        num(field(field(board, "enemySpeedScale"), "B"))
+    );
     for (key, constant) in [
-        ("rangeGrowth", "RANGE_GROWTH"),
-        ("rateReduction", "RATE_REDUCTION"),
-        ("sellRefund", "SELL_REFUND"),
         ("slowDuration", "SLOW_DURATION"),
         ("stunDuration", "STUN_DURATION"),
         ("splitJitter", "SPLIT_JITTER"),
@@ -184,11 +190,6 @@ fn main() {
         );
         code += &format!("const {constant}: i32 = {n};\n");
     }
-    assert!(
-        num(field(rules, "sellRefund")) <= 1.0
-            && 1.0 - 4.0 * num(field(rules, "rateReduction")) > 0.0,
-        "game-content.json: invalid refund or firing rate"
-    );
     let levels = array(field(&data, "levels"));
     let towers = array(field(&data, "towers"));
     let enemies = field(&data, "enemies")
@@ -265,9 +266,9 @@ fn main() {
         fn color(self) -> Color { self.def().color }\n\
         fn is_flying(self) -> bool { self.def().flying }\n\
         fn is_immune(self) -> bool { self.def().immune }\n}\n";
-    code += "#[derive(Clone, Copy)]\nstruct TowerDef { name: &'static str, cost: i32, upgrades: [i32; 4],\n\
-        damage: [f32; 5], range: f32, rate: f32, ground: bool, air: bool, speed: f32, splash: f32,\n\
-        multi: usize, slow: [f32; 5], stun: f32, shot: &'static str, key: char, color: Color, accent: Color }\n";
+    code += "#[derive(Clone, Copy)]\nstruct TowerDef { name: &'static str, cost: i32, upgrades: [i32; 5],\n\
+        damage: [f32; 6], range: [f32; 6], rate: [f32; 6], ground: bool, air: bool, speed: f32,\n\
+        multi: usize, sell: [i32; 6], special: [&'static str; 6], factor: [f32; 6], shot: &'static str, key: char, color: Color, accent: Color }\n";
     code += &format!("const TOWERS: [TowerDef; {}] = [\n", towers.len());
     let mut keys = std::collections::HashSet::new();
     for t in towers {
@@ -280,39 +281,57 @@ fn main() {
         assert!(
             ["pellet", "shell", "dart", "missile", "ice", "pulse"].contains(&shot)
                 && (shot == "pulse" || num(field(t, "speed")) > 0.0)
-                && num(field(t, "range")) >= 1.0
-                && num(field(t, "rate")) > 0.0
+                && array(field(t, "range")).iter().all(|n| num(n) >= 1.0)
+                && array(field(t, "rate")).iter().all(|n| num(n) > 0.0)
                 && uint(field(t, "cost")) > 0
                 && uint(field(t, "multi")) > 0
-                && num(field(t, "stun")) <= 1.0
                 && (boolean(field(t, "ground")) || boolean(field(t, "air")))
-                && array(field(t, "ups")).len() == 4
-                && array(field(t, "ups")).iter().all(|n| uint(n) > 0)
-                && array(field(t, "slow")).iter().all(|n| num(n) < 1.0),
+                && array(field(t, "ups")).len() == 5
+                && array(field(t, "ups")).iter().all(|n| uint(n) > 0),
             "game-content.json: invalid tower"
         );
         code += &format!(
-            "TowerDef {{ name: {:?}, cost: {}, upgrades: {}, damage: {}, range: {:?}_f32, rate: {:?}_f32,\n\
-             ground: {}, air: {}, speed: {:?}_f32, splash: {:?}_f32, multi: {}, slow: {}, stun: {:?}_f32,\n\
+            "TowerDef {{ name: {:?}, cost: {}, upgrades: {}, damage: {}, range: {}, rate: {},\n\
+             ground: {}, air: {}, speed: {:?}_f32, multi: {},\n\
              shot: {:?}, key: {:?}, color: {}, accent: {} }},\n",
             text(field(t, "name")),
             uint(field(t, "cost")),
             ints(field(t, "ups")),
-            floats(field(t, "dmg"), 5),
-            num(field(t, "range")),
-            num(field(t, "rate")),
+            floats(field(t, "dmg"), 6),
+            floats(field(t, "range"), 6),
+            floats(field(t, "rate"), 6),
             boolean(field(t, "ground")),
             boolean(field(t, "air")),
             num(field(t, "speed")),
-            num(field(t, "splash")),
             uint(field(t, "multi")),
-            floats(field(t, "slow"), 5),
-            num(field(t, "stun")),
             shot,
             key.chars().next().unwrap(),
             color(field(t, "color")),
             color(field(t, "accent"))
         );
+        let start = code.rfind("TowerDef {").unwrap();
+        let special = array(field(t, "special"));
+        assert_eq!(special.len(), 6, "invalid special levels");
+        let factors = array(field(t, "factor"));
+        assert!(
+            special.iter().zip(factors).all(|(s, f)| {
+                ["none", "spread", "slow", "stun"].contains(&text(s))
+                    && (text(s) == "spread" || num(f) <= 1.0)
+            }),
+            "invalid special effect"
+        );
+        let fields = format!(
+            "sell: {}, special: [{}], factor: {}, ",
+            ints(field(t, "sell")),
+            special
+                .iter()
+                .map(|s| format!("{:?}", text(s)))
+                .collect::<Vec<_>>()
+                .join(", "),
+            floats(field(t, "factor"), 6)
+        );
+        assert_eq!(array(field(t, "sell")).len(), 6, "invalid sell levels");
+        code.insert_str(start + "TowerDef { ".len(), &fields);
     }
     code += "];\n#[derive(Clone, Copy)]\nstruct WaveDef { kind: EnemyKind, hp: f32, count: usize, bounty: f32,\n\
         gap: f32, targets: &'static [Target] }\n";

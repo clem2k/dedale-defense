@@ -44,7 +44,7 @@ investigation.cany/# preuves content-addressées (SHA-256), brief, inconnus ouve
 [game-content.json](game-content.json) est la source unique du contenu et de l'équilibrage :
 
 - `board` : taille des cases, dimensions du plateau et cases ouvertes sur ses bords ;
-- `rules` : progression de portée/cadence des tours, remboursement, durées des effets, dispersion des éclats et multiplicateurs de score ;
+- `rules` : durées des effets, dispersion des éclats et multiplicateurs de score ;
 - `towers` : identifiants, noms, raccourcis, couleurs, prix, améliorations, dégâts, cibles et effets ;
 - `enemies` : PV relatifs, vitesse, apparence, nombre par vague, intervalle d'apparition, récompense, immunités, vies perdues et division ;
 - `waveSets` : listes de vagues explicites, avec type d'ennemi, PV de base, multiplicateur de récompense et entrées ;
@@ -78,7 +78,25 @@ Pour créer des vagues personnalisées, ajouter une liste à `waveSets`, puis la
 
 `R` désigne le trajet gauche → droite et `B` le trajet haut → bas. Les entrées d'une liste alternent **par ennemi**, pas par vague. Dès la vague 15, les listes actuelles utilisent les deux entrées. Le Rust est désormais aligné sur ce comportement du navigateur, ainsi que sur ses noms, couleurs, rayons et règles d'effets.
 
-Les tours ont quatre améliorations (`ups`) et cinq valeurs de dégâts/ralentissement (`dmg`, `slow`). Les raccourcis doivent être uniques, de `1` à `9`. De nouvelles tours peuvent réutiliser les comportements de projectile existants : `pellet`, `shell`, `dart`, `missile`, `ice`, `pulse`. Un comportement entièrement nouveau nécessite encore une implémentation dans chaque moteur : le JSON partage les données, pas le code de simulation ou de rendu.
+Les tours conservent leurs noms et ont six niveaux, avec cinq coûts d'amélioration (`ups`) et six valeurs de dégâts, portée, cadence, revente et effets (`dmg`, `range`, `rate`, `sell`, `special`, `factor`). Les caractéristiques proviennent de [towers.csv](towers.csv). Pour les réimporter :
+
+```sh
+npm --prefix app run import:towers
+```
+
+Les coûts après le niveau 1 sont les coûts d'amélioration, pas les coûts cumulés. `speed` dans le CSV est le nombre de tirs par seconde ; `rate` dans le JSON est l'intervalle en secondes. La vitesse du projectile est distincte.
+
+Le plateau jouable contient exactement **13 × 11 tours carrées** (chaque tour occupe 2 × 2 cases de navigation de 20 pixels). L'intérieur mesure 520 × 440 pixels, avec une bordure de 20 pixels : le canvas complet mesure 560 × 480. Les portées du CSV sont des **diamètres**, convertis par `board.rangeScale` en rayons de simulation. Ainsi, 180 couvre toute la largeur jouable, soit un rayon de 260 pixels. Les ennemis gardent leur taille relative aux tours ; leur vitesse verticale est multipliée par 1,1 pour compenser la hauteur accrue et conserver le temps de traversée.
+
+Le placement avance par **demi-tour** (20 pixels), sur les deux axes : deux tours peuvent être décalées d'une demi-case de tour pour créer des couloirs étroits, sans chevauchement. La grille fine, l'aperçu et le clic utilisent ce même pas ; les déplacements diagonaux ne traversent pas les coins des tours. Les ouvertures sont centrées : gauche/droite sur **3 tours de hauteur** (6 demi-cases, 120 pixels), haut/bas sur **4 tours de largeur** (8 demi-cases, 160 pixels). Le Colosse a un rayon de 9 pixels pour passer, comme les autres ennemis, dans les couloirs de 20 pixels.
+
+L'import du CSV ne modifie ni `board` ni `enemies` : leurs proportions restent définies uniquement dans le JSON commun.
+
+Tous les tirs ciblent un ennemi compatible sol/air. `spread` inflige `damage` à la cible et `factor` aux autres ennemis de la zone. `slow` a une probabilité `factor` par ennemi de diviser sa vitesse par deux pendant deux secondes. `stun` a une probabilité `factor` par ennemi de l'immobiliser pendant deux secondes. La zone est centrée sur la cible, de même rayon que la portée de la tour, et exclut les ennemis hors de portée de la tour. Les Blindés restent immunisés au ralentissement et à l'étourdissement.
+
+Avant la première vague, la revente rend les dépenses intégrales ; ensuite, elle utilise la valeur exacte `sell` au niveau courant, y compris pour une tour posée avant le début de partie.
+
+Les raccourcis doivent être uniques, de `1` à `9`. De nouvelles tours peuvent réutiliser les apparences de projectile existantes : `pellet`, `shell`, `dart`, `missile`, `ice`, `pulse`. Un comportement entièrement nouveau nécessite encore une implémentation dans chaque moteur : le JSON partage les données, pas le code de simulation ou de rendu.
 
 Après une modification du JSON, reconstruire les deux versions :
 
