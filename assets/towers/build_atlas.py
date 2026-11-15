@@ -1,6 +1,5 @@
 """Extract the 48 tower views from the supplied reference (requires Pillow)."""
 
-import json
 from collections import deque
 from pathlib import Path
 
@@ -72,22 +71,19 @@ def transparent_frame(source, center, size, vertical_bounds):
 
 def main():
     root = Path(__file__).resolve().parent
-    metadata = json.loads((root / "atlas.json").read_text())
     source = Image.open(root.parent / "sprite_towers.jpeg").convert("RGBA")
     if source.size != (2400, 1792):
         raise ValueError("Reference dimensions changed; update the extraction coordinates.")
     columns = (184, 426, 668, 909, 1152, 1394, 1636, 1878)
     rows = (170, 407, 644, 884, 1127, 1371)
     vertical_bounds = ((74, 250), (311, 496), (550, 738), (790, 971), (1034, 1211), (1275, 1472))
-    size = metadata["frameSize"]
-    if len(columns) != len(metadata["directions"]) or len(rows) != len(metadata["towers"]):
-        raise ValueError("Atlas metadata does not match the reference layout.")
+    size = 208
     atlas = Image.new("RGBA", (len(columns) * size, len(rows) * size))
     for row, y in enumerate(rows):
         for column, x in enumerate(columns):
             atlas.paste(transparent_frame(source, (x, y), size, vertical_bounds[row]),
                         (column * size, row * size))
-    atlas.save(root / metadata["image"], optimize=True)
+    atlas.save(root / "towers.png", optimize=True)
     print(f"Created {atlas.width}x{atlas.height} RGBA atlas: 6 towers x 8 directions")
 
 

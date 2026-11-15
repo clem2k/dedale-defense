@@ -1,0 +1,11 @@
+id,name,hp,speed,count,gap,bounty,color,r,flying,immune,lifeLoss,split type,split count,split hp,split bounty,desc,sprite file,sprite row,sprite column,sprite size,draw scale
+walker,Marcheurs,1,40,10,0.65,1,#a6ef67,6,0,0,1,,,,,Ennemis ordinaires.,assets/enemies/enemies.png,1,1,208,2.25
+runner,Coureurs,0.7,78,10,0.55,1,#fef08a,5,0,0,1,,,,,Très rapides.,assets/enemies/enemies.png,1,2,208,2.25
+swarm,Essaim,0.4,46,22,0.3,0.5,#fda29b,4,0,0,1,,,,,Nombreux mais fragiles.,assets/enemies/enemies.png,1,3,208,2.25
+flyer,Volants,0.85,46,8,0.9,1.5,#7cd4fd,6,1,0,1,,,,,Survolent les tours.,assets/enemies/enemies.png,1,4,208,2.25
+armored,Blindés,1.5,34,8,0.9,1.5,#bdb4fe,7,0,1,1,,,,,Insensibles au givre et au choc.,assets/enemies/enemies.png,1,5,208,2.25
+splitter,Scindeurs,1.05,40,8,0.85,1,#f9a8d4,7,0,0,1,mini,2,0.3,0.5,Se divisent en deux en mourant.,assets/enemies/enemies.png,1,6,208,2.25
+mini,Éclats,0.3,52,0,0,0.5,#f9a8d4,4,0,0,1,,,,,,assets/enemies/enemies.png,1,7,208,2.25
+brute,Brutes,4,24,5,1.2,4,#fb923c,8,0,0,1,,,,,Très résistantes mais lentes.,assets/enemies/enemies.png,1,8,208,2.25
+interceptor,Intercepteurs,1.8,64,6,1,3,#22d3ee,7,1,0,1,,,,,Volants rapides et résistants.,assets/enemies/enemies.png,1,9,208,2.25
+boss,Colosse,14,28,1,1,25,#f04438,9,0,0,2,,,,,"Un seul, mais énorme.",assets/enemies/enemies.png,1,10,208,2.25

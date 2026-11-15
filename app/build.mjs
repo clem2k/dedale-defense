@@ -8,15 +8,6 @@ const root = dirname(fileURLToPath(import.meta.url));
 const src = join(root, "src");
 const dist = join(root, "dist");
 const content = loadContent();
-const assetRoot = join(root, "../assets/towers");
-const atlas = JSON.parse(readFileSync(join(assetRoot, "atlas.json"), "utf8"));
-if (atlas.image !== "towers.png" || !Number.isInteger(atlas.frameSize) || atlas.frameSize <= 0
-  || atlas.drawSize !== content.board.cell * 2
-  || JSON.stringify(atlas.directions) !== JSON.stringify(["E", "SE", "S", "SW", "W", "NW", "N", "NE"])
-  || new Set(atlas.towers).size !== atlas.towers.length
-  || content.towers.some((tower) => !atlas.towers.includes(tower.id))) {
-  throw new Error("Invalid tower atlas metadata or missing tower sprite");
-}
 const keys = content.towers.map((tower) => tower.key);
 const towerKeys = keys.length > 1 && keys.every((key, i) => Number(key) === i + 1)
   ? `1-${keys.length}` : keys.join(", ");
@@ -26,9 +17,10 @@ mkdirSync(dist, { recursive: true });
 
 for (const f of ["style.css", "game.js"]) copyFileSync(join(src, f), join(dist, f));
 writeFileSync(join(dist, "content.js"), `export const CONTENT = ${JSON.stringify(content)};\n`);
-writeFileSync(join(dist, "tower-atlas.js"), `export const TOWER_ATLAS = ${JSON.stringify(atlas)};\n`);
-mkdirSync(join(dist, "assets/towers"), { recursive: true });
-copyFileSync(join(assetRoot, atlas.image), join(dist, "assets/towers", atlas.image));
+for (const image of new Set([...content.towers, ...Object.values(content.enemies)].map((d) => d.sprite.image))) {
+  mkdirSync(dirname(join(dist, image)), { recursive: true });
+  copyFileSync(join(root, "..", image), join(dist, image));
+}
 
 const html = readFileSync(join(src, "index.html"), "utf8");
 const pages = [

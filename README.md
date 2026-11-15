@@ -7,7 +7,7 @@ Voir [user.md](user.md) pour le guide du joueur.
 ## Sprites communs
 
 Les deux moteurs utilisent le même [atlas PNG transparent](assets/towers/towers.png),
-décrit par [assets/towers/atlas.json](assets/towers/atlas.json). Ses six lignes correspondent
+référencé directement dans [towers.csv](towers.csv). Ses six lignes correspondent
 à Caillou, Éclat, Aiguille, Volée, Givre et Onde ; ses huit colonnes sont
 E, SE, S, SW, W, NW, N et NE. Les vues ne sont pas tournées par le moteur :
 l'angle de visée sélectionne la direction la plus proche, avec un cadrage fixe
@@ -31,7 +31,76 @@ cargo build --release --manifest-path rust/Cargo.toml
 
 L'extraction retire le fond sombre, les cadres et les annotations. Les coordonnées
 sont propres à cette planche ; une nouvelle mise en page nécessite de les adapter.
-Les futurs sprites peuvent être regroupés par famille sous `assets/` (par exemple `enemies/`).
+
+### Ennemis
+
+Les deux moteurs utilisent également [l'atlas des ennemis](assets/enemies/enemies.png),
+référencé directement dans [ennemies.csv](ennemies.csv). Il contient une seule
+ligne de dix sprites, dans l'ordre de [ennemies.csv](ennemies.csv) : Marcheurs,
+Coureurs, Essaim, Volants, Blindés, Scindeurs, Éclats, Brutes, Intercepteurs et Colosse.
+La correspondance utilise les identifiants, pas l'ordre des définitions du moteur.
+
+La [référence JPEG](assets/sprite%20ennemis.jpeg) reste intacte. L'extraction supprime
+le fond sombre, y compris au centre des formes creuses, et ajoute une marge transparente :
+
+```sh
+python3 assets/enemies/build_atlas.py
+npm --prefix app run build
+cargo build --release --manifest-path rust/Cargo.toml
+```
+
+Le script nécessite Pillow et les dimensions actuelles de la référence (4128 × 1024).
+La taille d'affichage reste proportionnelle au rayon de chaque ennemi ; les collisions,
+les PV, les indicateurs d'effets et les barres de vie restent indépendants des sprites.
+Le web copie le PNG dans `app/dist/assets/enemies/` avec un chemin relatif au module,
+et le Rust l'embarque dans l'exécutable, comme pour les tours.
+
+Les Brutes et les Intercepteurs sont définis dans le CSV. Les vagues existantes ne
+changent pas : une vague personnalisée peut utiliser `brute` ou `interceptor`.
+
+### Modifier les caractéristiques et les sprites
+
+[towers.csv](towers.csv) et [ennemies.csv](ennemies.csv) sont les seules sources des
+caractéristiques et des associations aux sprites. Les deux builds les lisent
+automatiquement : aucun import manuel ni copie des données dans un JSON n'est nécessaire.
+
+| Colonne | Utilisation |
+|---|---|
+| `sprite file` | Chemin du PNG depuis la racine, sous `assets/` |
+| `sprite row`, `sprite column` | Ligne et colonne **à partir de 1** |
+| `sprite size` | Taille en pixels d'une case carrée du PNG (208 actuellement) |
+| `draw size` (tours) | Taille d'affichage en pixels (40 actuellement) |
+| `draw scale` (ennemis) | Taille d'affichage = rayon `r` × ce facteur (2.25 actuellement) |
+
+Pour les tours, `sprite column` désigne la première de huit cases consécutives :
+E, SE, S, SW, W, NW, N et NE. Pour les ennemis, elle désigne une seule case.
+Par exemple, Caillou utilise la ligne 1 de `assets/towers/towers.png` ;
+le Colosse utilise la ligne 1, colonne 10 de `assets/enemies/enemies.png`.
+Changer la ligne ou la colonne réassocie le sprite sans régénérer le PNG.
+Plusieurs types peuvent partager la même case ou utiliser des PNG différents.
+
+Dans [towers.csv](towers.csv), chaque tour garde six lignes (niveaux 1 à 6).
+Les colonnes communes `id`, `name`, `key`, `color`, `accent`, `desc`, `shot`,
+`projectile speed`, `multi` et les colonnes de sprite se remplissent **uniquement
+au niveau 1** ; elles restent vides aux autres niveaux. Les statistiques de combat
+se remplissent à chaque niveau, et `earth`/`fly` doivent rester identiques sur les six lignes.
+Les numéros `tower` sont consécutifs ; `id` est l'identifiant stable et `key` le raccourci.
+
+Dans [ennemies.csv](ennemies.csv), chaque ligne définit un type entier.
+`flying` et `immune` utilisent `0`/`1`. Les quatre colonnes `split ...` sont
+toutes vides, ou toutes remplies ; `split type` référence l'`id` d'un autre ennemi.
+Les nombres utilisent un point décimal ; les champs contenant une virgule
+ou un saut de ligne doivent être entre guillemets (les tableurs le font automatiquement).
+
+Après une modification, reconstruire et recharger la page web ou relancer le natif :
+
+```sh
+npm --prefix app run build
+cargo run --release --manifest-path rust/Cargo.toml
+```
+
+Il n'y a pas de rechargement à chaud. Une ligne invalide, une référence inconnue,
+un PNG absent ou une case hors de l'image font échouer le build explicitement.
 
 ## Version native Rust
 
@@ -42,7 +111,10 @@ cd rust
 cargo run --release
 ```
 
-Cette première compilation télécharge les dépendances Rust. Les tests de logique du plateau et des vagues se lancent avec `cargo test`.
+Node.js est également requis à la compilation native : le build Rust appelle le même
+lecteur/validateur de CSV que le web, afin d'éviter deux interprétations différentes.
+Le jeu compilé ne dépend ni de Node.js ni des CSV/PNG externes.
+La première compilation télécharge les dépendances Rust. Les tests de logique du plateau et des vagues se lancent avec `cargo test`.
 
 ## Structure
 
@@ -50,6 +122,7 @@ Cette première compilation télécharge les dépendances Rust. Les tests de log
 app/
   build.mjs        # copie le jeu dans app/dist/ et génère les pages (/, en/, es/, de/, fr/, id/)
   content.mjs      # chargement et validation des données communes
+  csv.mjs          # lecture des CSV et conversion en définitions communes
   content.test.mjs # tests des données, de la simulation et du build
   package.json
   src/
@@ -58,9 +131,11 @@ app/
     style.css
 rust/
   Cargo.toml       # application native Rust
-  build.rs         # valide le JSON et génère les définitions Rust à la compilation
+  build.rs         # charge les CSV via Node.js et génère les définitions Rust
   src/main.rs      # simulation, interface et rendu natif
-game-content.json  # source unique des niveaux, vagues, tours, ennemis et règles communes
+game-content.json  # niveaux, vagues, plateau et règles communes uniquement
+towers.csv         # caractéristiques, niveaux et sprites des tours
+ennemies.csv       # caractéristiques et sprites des ennemis
 capture/, checks/  # captures et vérifications de la référence (kongregate.com)
 craft.json         # dossier de fabrication : demande, statut, 7 rounds de vérification
 feed.json          # journal chronologique de la construction (étapes, outils, vérifications)
@@ -70,12 +145,10 @@ investigation.cany/# preuves content-addressées (SHA-256), brief, inconnus ouve
 
 ## Contenu commun aux deux versions
 
-[game-content.json](game-content.json) est la source unique du contenu et de l'équilibrage :
+[game-content.json](game-content.json) conserve uniquement la configuration générale :
 
 - `board` : taille des cases, dimensions du plateau et cases ouvertes sur ses bords ;
 - `rules` : durées des effets, dispersion des éclats et multiplicateurs de score ;
-- `towers` : identifiants, noms, raccourcis, couleurs, prix, améliorations, dégâts, cibles et effets ;
-- `enemies` : PV relatifs, vitesse, apparence, nombre par vague, intervalle d'apparition, récompense, immunités, vies perdues et division ;
 - `waveSets` : listes de vagues explicites, avec type d'ennemi, PV de base, multiplicateur de récompense et entrées ;
 - `levels` : modes de jeu, avec vies, or, multiplicateur de PV, délai, nombre de vagues et référence à une liste de vagues.
 
@@ -107,34 +180,39 @@ Pour créer des vagues personnalisées, ajouter une liste à `waveSets`, puis la
 
 `R` désigne le trajet gauche → droite et `B` le trajet haut → bas. Les entrées d'une liste alternent **par ennemi**, pas par vague. Dès la vague 15, les listes actuelles utilisent les deux entrées. Le Rust est désormais aligné sur ce comportement du navigateur, ainsi que sur ses noms, couleurs, rayons et règles d'effets.
 
-Les tours conservent leurs noms et ont six niveaux, avec cinq coûts d'amélioration (`ups`) et six valeurs de dégâts, portée, cadence, revente et effets (`dmg`, `range`, `rate`, `sell`, `special`, `factor`). Les caractéristiques proviennent de [towers.csv](towers.csv). Pour les réimporter :
+Les tours ont six niveaux, avec cinq coûts d'amélioration (`ups`) et six valeurs de
+dégâts, portée, cadence, revente et effets (`dmg`, `range`, `rate`, `sell`, `special`,
+`factor`). Ces tableaux sont générés automatiquement depuis [towers.csv](towers.csv).
 
-```sh
-npm --prefix app run import:towers
-```
-
-Les coûts après le niveau 1 sont les coûts d'amélioration, pas les coûts cumulés. `speed` dans le CSV est le nombre de tirs par seconde ; `rate` dans le JSON est l'intervalle en secondes. La vitesse du projectile est distincte.
+Les coûts après le niveau 1 sont les coûts d'amélioration, pas les coûts cumulés.
+`speed` dans le CSV des tours est le nombre de tirs par seconde ; `rate` dans les données
+générées est l'intervalle en secondes. `projectile speed` est la vitesse du projectile.
+Dans le CSV des ennemis, `speed` est la vitesse de déplacement.
 
 Le plateau jouable contient exactement **13 × 11 tours carrées** (chaque tour occupe 2 × 2 cases de navigation de 20 pixels). L'intérieur mesure 520 × 440 pixels, avec une bordure de 20 pixels : le canvas complet mesure 560 × 480. Les portées du CSV sont des **diamètres**, convertis par `board.rangeScale` en rayons de simulation. Ainsi, 180 couvre toute la largeur jouable, soit un rayon de 260 pixels. Les ennemis gardent leur taille relative aux tours ; leur vitesse verticale est multipliée par 1,1 pour compenser la hauteur accrue et conserver le temps de traversée.
 
 Le placement avance par **demi-tour** (20 pixels), sur les deux axes : deux tours peuvent être décalées d'une demi-case de tour pour créer des couloirs étroits, sans chevauchement. La grille fine, l'aperçu et le clic utilisent ce même pas ; les déplacements diagonaux ne traversent pas les coins des tours. Les ouvertures sont centrées : gauche/droite sur **3 tours de hauteur** (6 demi-cases, 120 pixels), haut/bas sur **4 tours de largeur** (8 demi-cases, 160 pixels). Le Colosse a un rayon de 9 pixels pour passer, comme les autres ennemis, dans les couloirs de 20 pixels.
 
-L'import du CSV ne modifie ni `board` ni `enemies` : leurs proportions restent définies uniquement dans le JSON commun.
+La lecture des CSV ne réécrit jamais le JSON commun ni les images.
 
 Tous les tirs ciblent un ennemi compatible sol/air. `spread` inflige `damage` à la cible et `factor` aux autres ennemis de la zone. `slow` a une probabilité `factor` par ennemi de diviser sa vitesse par deux pendant deux secondes. `stun` a une probabilité `factor` par ennemi de l'immobiliser pendant deux secondes. La zone est centrée sur la cible, de même rayon que la portée de la tour, et exclut les ennemis hors de portée de la tour. Les Blindés restent immunisés au ralentissement et à l'étourdissement.
 
 Avant la première vague, la revente rend les dépenses intégrales ; ensuite, elle utilise la valeur exacte `sell` au niveau courant, y compris pour une tour posée avant le début de partie.
 
-Les raccourcis doivent être uniques, de `1` à `9`. De nouvelles tours peuvent réutiliser les apparences de projectile existantes : `pellet`, `shell`, `dart`, `missile`, `ice`, `pulse`. Un comportement entièrement nouveau nécessite encore une implémentation dans chaque moteur : le JSON partage les données, pas le code de simulation ou de rendu.
+Les raccourcis doivent être uniques, de `1` à `9`. De nouvelles tours peuvent réutiliser les apparences de projectile existantes : `pellet`, `shell`, `dart`, `missile`, `ice`, `pulse`. Un comportement entièrement nouveau nécessite encore une implémentation dans chaque moteur : les CSV partagent les données, pas le code de simulation ou de rendu.
 
-Après une modification du JSON, reconstruire les deux versions :
+Après une modification du JSON ou des CSV, reconstruire les deux versions :
 
 ```sh
 npm --prefix app run build
 cargo build --release --manifest-path rust/Cargo.toml
 ```
 
-Le build web génère `app/dist/content.js`, importé par toutes les pages, sans chargement réseau supplémentaire de JSON. Le build Rust génère des constantes typées dans le répertoire Cargo et se relance automatiquement si le JSON change. Il ne dépend pas de Node.js. Les deux versions embarquent leur contenu et n'ont pas besoin du JSON à côté du jeu distribué. Les références inconnues et données invalides font échouer le build explicitement.
+Le build web génère `app/dist/content.js`, importé par toutes les pages, sans chargement
+réseau supplémentaire de JSON ou de CSV. Le build Rust génère des constantes typées
+dans le répertoire Cargo et se relance automatiquement si le JSON, les CSV, leur lecteur
+ou un PNG référencé change. Les deux versions embarquent les données ; le Rust embarque
+aussi les images. Les références inconnues et données invalides font échouer le build explicitement.
 
 ## Utilisation
 
@@ -164,4 +242,7 @@ npm --prefix app test
 cargo test --manifest-path rust/Cargo.toml
 ```
 
-Les tests comparent tous les niveaux et toutes leurs vagues au JSON partagé, contrôlent les tours/ennemis et couvrent les routes, les améliorations, les remboursements, la division et les effets. Les tests web vérifient aussi le contenu embarqué, les pages localisées, l'ajout d'un niveau et le rejet des données invalides.
+Les tests comparent les niveaux et les vagues au JSON partagé, les tours/ennemis aux
+données issues des CSV, et couvrent les routes, améliorations, remboursements, divisions
+et effets. Les tests web modifient aussi les CSV dans un projet temporaire pour vérifier
+les statistiques et associations de sprites du build, sans modifier la configuration générale.

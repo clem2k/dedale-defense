@@ -1,10 +1,11 @@
 import { readFileSync } from "node:fs";
-
-export const contentPath = new URL("../game-content.json", import.meta.url);
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { loadEnemies, loadTowers } from "./csv.mjs";
 
 export function validateContent(data) {
   const check = (condition, message) => {
-    if (!condition) throw new Error(`game-content.json: ${message}`);
+    if (!condition) throw new Error(`game content (game-content.json / towers.csv / ennemies.csv): ${message}`);
   };
   const number = (value, min = 0) => Number.isFinite(value) && value >= min;
   const integer = (value, min = 0) => Number.isInteger(value) && value >= min;
@@ -12,6 +13,10 @@ export function validateContent(data) {
   const color = (value) => typeof value === "string" && /^#[0-9a-f]{6}$/i.test(value);
   const text = (value) => typeof value === "string" && value.length > 0;
   const unique = (values) => new Set(values).size === values.length;
+  const sprite = (s, scale) => s && typeof s.image === "string"
+    && /^assets\/(?:[a-z0-9_-]+\/)*[a-z0-9_ -]+\.png$/i.test(s.image)
+    && integer(s.row) && integer(s.column) && integer(s.frameSize, 1)
+    && number(s[scale], Number.MIN_VALUE);
   check(data && typeof data === "object" && data.version === 1, "unsupported version");
   const b = data.board;
   check(b && number(b.cell, 1) && integer(b.cols, 4) && integer(b.rows, 4), "invalid board dimensions");
@@ -32,7 +37,7 @@ export function validateContent(data) {
       integer(e.count) && number(e.gap) && (e.count === 0 || e.gap > 0) &&
       number(e.bounty) && integer(e.lifeLoss, 1), `invalid enemy stats: ${key}`);
     check(typeof e.flying === "boolean" && typeof e.immune === "boolean", `invalid enemy flags: ${key}`);
-    check(["circle", "tri", "wing", "square", "diamond", "boss"].includes(e.shape), `invalid enemy shape: ${key}`);
+    check(sprite(e.sprite, "drawScale"), `invalid enemy sprite: ${key}`);
     if (e.split !== null) {
       check(e.split && data.enemies[e.split.type] && integer(e.split.count, 1) &&
         number(e.split.hp, Number.MIN_VALUE) && number(e.split.bounty), `invalid split: ${key}`);
@@ -41,6 +46,7 @@ export function validateContent(data) {
   check(Array.isArray(data.towers) && data.towers.length > 0, "missing towers");
   check(unique(data.towers.map((t) => t.id)) && unique(data.towers.map((t) => t.key)), "duplicate tower id or key");
   for (const t of data.towers) {
+    check(sprite(t.sprite, "drawSize"), `invalid tower sprite: ${t.id}`);
     check(id(t.id) && text(t.name) && text(t.desc) && typeof t.key === "string" && /^[1-9]$/.test(t.key) &&
       color(t.color) && color(t.accent), `invalid tower ${t.id}`);
     check(integer(t.cost, 1) &&
@@ -75,6 +81,29 @@ export function validateContent(data) {
   return data;
 }
 
-export function loadContent() {
-  return validateContent(JSON.parse(readFileSync(contentPath, "utf8")));
+export function loadContent(root = new URL("../", import.meta.url)) {
+  const data = JSON.parse(readFileSync(new URL("game-content.json", root), "utf8"));
+  if ("towers" in data || "enemies" in data)
+    throw new Error("game-content.json: towers and enemies must be defined only in towers.csv and ennemies.csv");
+  const content = validateContent({ ...data, towers: loadTowers(root), enemies: loadEnemies(root) });
+  const images = new Map();
+  for (const [definition, directions] of [
+    ...content.towers.map((t) => [t, 8]), ...Object.values(content.enemies).map((e) => [e, 1]),
+  ]) {
+    const s = definition.sprite;
+    if (!images.has(s.image)) {
+      const png = readFileSync(new URL(s.image.split("/").map(encodeURIComponent).join("/"), root));
+      if (png.length < 24 || png.subarray(0, 8).toString("hex") !== "89504e470d0a1a0a"
+        || png.toString("ascii", 12, 16) !== "IHDR")
+        throw new Error(`CSV sprite: invalid PNG ${s.image}`);
+      images.set(s.image, [png.readUInt32BE(16), png.readUInt32BE(20)]);
+    }
+    const [width, height] = images.get(s.image);
+    if ((s.column + directions) * s.frameSize > width || (s.row + 1) * s.frameSize > height)
+      throw new Error(`CSV sprite: frame outside ${s.image}: ${definition.id || definition.name}`);
+  }
+  return content;
 }
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url))
+  process.stdout.write(JSON.stringify(loadContent()));

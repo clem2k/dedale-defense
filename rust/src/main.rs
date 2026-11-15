@@ -9,7 +9,14 @@ const BOARD_W: f32 = COLS as f32 * CELL;
 const BOARD_H: f32 = ROWS as f32 * CELL;
 const BOARD_X: f32 = 18.0;
 const BOARD_Y: f32 = 74.0;
-const TOWER_ATLAS_BYTES: &[u8] = include_bytes!("../../assets/towers/towers.png");
+#[derive(Clone, Copy)]
+struct SpriteDef {
+    texture: usize,
+    x: f32,
+    y: f32,
+    frame_size: f32,
+    scale: f32,
+}
 
 const BG: Color = Color::new(0.055, 0.085, 0.13, 1.0);
 const PANEL: Color = Color::new(0.09, 0.13, 0.19, 1.0);
@@ -936,16 +943,22 @@ fn tower_sprite_frame(kind: TowerKind, angle: f32) -> Rect {
     let direction = (angle / std::f32::consts::FRAC_PI_4 + 0.5)
         .floor()
         .rem_euclid(8.0);
+    let sprite = TOWER_SPRITES[kind.index()];
     Rect::new(
-        direction * TOWER_FRAME_SIZE,
-        TOWER_SPRITE_ROWS[kind.index()] as f32 * TOWER_FRAME_SIZE,
-        TOWER_FRAME_SIZE,
-        TOWER_FRAME_SIZE,
+        sprite.x + direction * sprite.frame_size,
+        sprite.y,
+        sprite.frame_size,
+        sprite.frame_size,
     )
 }
 
+fn enemy_sprite_frame(kind: EnemyKind) -> Rect {
+    let sprite = ENEMY_SPRITES[kind.index()];
+    Rect::new(sprite.x, sprite.y, sprite.frame_size, sprite.frame_size)
+}
+
 fn draw_tower_shape(
-    texture: &Texture2D,
+    textures: &[Texture2D],
     kind: TowerKind,
     position: Vec2,
     angle: f32,
@@ -953,9 +966,10 @@ fn draw_tower_shape(
     level: usize,
 ) {
     let Vec2 { x, y } = position;
-    let width = TOWER_DRAW_SIZE * size;
+    let sprite = TOWER_SPRITES[kind.index()];
+    let width = sprite.scale * size;
     draw_texture_ex(
-        texture,
+        &textures[sprite.texture],
         x - width / 2.0,
         y - width / 2.0,
         WHITE,
@@ -982,7 +996,7 @@ fn placement_anchor(position: Vec2) -> (usize, usize) {
     )
 }
 
-fn draw_board(game: &Game, mouse: Vec2, texture: &Texture2D) -> Option<Vec2> {
+fn draw_board(game: &Game, mouse: Vec2, textures: &[Texture2D]) -> Option<Vec2> {
     draw_rectangle(BOARD_X, BOARD_Y, BOARD_W, BOARD_H, BG);
     for y in 0..ROWS {
         for x in 0..COLS {
@@ -1059,7 +1073,7 @@ fn draw_board(game: &Game, mouse: Vec2, texture: &Texture2D) -> Option<Vec2> {
         let x = BOARD_X + (tower.cx as f32 + 1.0) * CELL;
         let y = BOARD_Y + (tower.cy as f32 + 1.0) * CELL;
         draw_tower_shape(
-            texture,
+            textures,
             tower.kind,
             vec2(x, y),
             tower.angle,
@@ -1091,7 +1105,7 @@ fn draw_board(game: &Game, mouse: Vec2, texture: &Texture2D) -> Option<Vec2> {
                 if valid { GREEN } else { RED },
             );
             draw_tower_shape(
-                texture,
+                textures,
                 kind,
                 vec2(x, y),
                 -std::f32::consts::FRAC_PI_2,
@@ -1109,10 +1123,10 @@ fn draw_board(game: &Game, mouse: Vec2, texture: &Texture2D) -> Option<Vec2> {
     }
 
     for creep in game.creeps.iter().filter(|creep| !creep.flying) {
-        draw_creep(creep, game.game_time);
+        draw_creep(creep, game.game_time, textures);
     }
     for creep in game.creeps.iter().filter(|creep| creep.flying) {
-        draw_creep(creep, game.game_time);
+        draw_creep(creep, game.game_time, textures);
     }
     for shot in &game.shots {
         draw_circle(BOARD_X + shot.x, BOARD_Y + shot.y, 3.0, shot.color);
@@ -1201,7 +1215,7 @@ fn draw_board(game: &Game, mouse: Vec2, texture: &Texture2D) -> Option<Vec2> {
     }
 }
 
-fn draw_creep(creep: &Creep, time: f32) {
+fn draw_creep(creep: &Creep, time: f32, textures: &[Texture2D]) {
     let x = BOARD_X + creep.x;
     let y = BOARD_Y
         + creep.y
@@ -1211,14 +1225,19 @@ fn draw_creep(creep: &Creep, time: f32) {
             0.0
         };
     let radius = creep.kind.radius();
-    let color = creep.kind.color();
-    match creep.kind.def().shape {
-        "tri" | "wing" => draw_poly(x, y, 3, radius + 1.0, 0.0, color),
-        "square" => draw_rectangle(x - radius, y - radius, radius * 2.0, radius * 2.0, color),
-        "diamond" => draw_poly(x, y, 4, radius + 1.0, std::f32::consts::FRAC_PI_4, color),
-        "boss" => draw_poly(x, y, 10, radius, time, color),
-        _ => draw_circle(x, y, radius, color),
-    }
+    let sprite = ENEMY_SPRITES[creep.kind.index()];
+    let size = radius * sprite.scale;
+    draw_texture_ex(
+        &textures[sprite.texture],
+        x - size / 2.0,
+        y - size / 2.0,
+        WHITE,
+        DrawTextureParams {
+            source: Some(enemy_sprite_frame(creep.kind)),
+            dest_size: Some(vec2(size, size)),
+            ..Default::default()
+        },
+    );
     if time < creep.slow_until {
         draw_circle_lines(x, y, radius + 2.0, 1.5, Color::new(0.37, 0.88, 0.88, 1.0));
     }
@@ -1245,7 +1264,7 @@ fn tower_info_y() -> f32 {
     200.0 + TowerKind::ALL.len().div_ceil(3) as f32 * 58.0
 }
 
-fn draw_sidebar(game: &Game, texture: &Texture2D) {
+fn draw_sidebar(game: &Game, textures: &[Texture2D]) {
     let x = BOARD_X + BOARD_W + 20.0;
     let width = 344.0;
     let height = screen_height() - 100.0;
@@ -1313,7 +1332,7 @@ fn draw_sidebar(game: &Game, texture: &Texture2D) {
             if selected || hovered { GOLD } else { LINE },
         );
         draw_tower_shape(
-            texture,
+            textures,
             *kind,
             vec2(bx + 18.0, by + 24.0),
             -std::f32::consts::FRAC_PI_2,
@@ -1547,18 +1566,14 @@ fn draw_start_screen() -> Option<Mode> {
 
 #[macroquad::main("Dedale Defense")]
 async fn main() {
-    let tower_texture = Texture2D::from_file_with_format(TOWER_ATLAS_BYTES, Some(ImageFormat::Png));
-    assert_eq!(
-        tower_texture.width(),
-        TOWER_FRAME_SIZE * 8.0,
-        "invalid tower atlas width"
-    );
-    assert_eq!(
-        tower_texture.height(),
-        TOWER_ATLAS_HEIGHT,
-        "invalid tower atlas height"
-    );
-    tower_texture.set_filter(FilterMode::Nearest);
+    let textures: Vec<_> = SPRITE_IMAGES
+        .iter()
+        .map(|bytes| {
+            let texture = Texture2D::from_file_with_format(bytes, Some(ImageFormat::Png));
+            texture.set_filter(FilterMode::Nearest);
+            texture
+        })
+        .collect();
     request_new_screen_size(
         BOARD_X + BOARD_W + 382.0,
         (BOARD_Y + BOARD_H + 126.0)
@@ -1618,8 +1633,8 @@ async fn main() {
                 15.0,
                 MUTED,
             );
-            let cell = draw_board(current, mouse_vec, &tower_texture);
-            draw_sidebar(current, &tower_texture);
+            let cell = draw_board(current, mouse_vec, &textures);
+            draw_sidebar(current, &textures);
             if is_mouse_button_pressed(MouseButton::Right) {
                 current.build_kind = None;
                 current.selected_id = None;
@@ -1698,13 +1713,31 @@ mod tests {
     use super::*;
 
     #[test]
-    fn tower_atlas_has_all_transparent_frames_and_eight_directions() {
-        let image =
-            Image::from_file_with_format(TOWER_ATLAS_BYTES, Some(ImageFormat::Png)).unwrap();
-        assert_eq!(image.width as f32, TOWER_FRAME_SIZE * 8.0);
-        assert_eq!(image.height as f32, TOWER_ATLAS_HEIGHT);
-        assert_eq!(TOWER_DRAW_SIZE, CELL * 2.0);
+    fn csv_sprites_select_the_configured_image_frame_and_size() {
+        let data: serde_json::Value =
+            serde_json::from_str(include_str!(concat!(env!("OUT_DIR"), "/content.json"))).unwrap();
+        let images: Vec<_> = SPRITE_IMAGES
+            .iter()
+            .map(|bytes| Image::from_file_with_format(bytes, Some(ImageFormat::Png)).unwrap())
+            .collect();
+        for (kind, expected) in EnemyKind::ALL
+            .into_iter()
+            .zip(data["enemies"].as_object().unwrap().values())
+        {
+            let sprite = ENEMY_SPRITES[kind.index()];
+            let frame = enemy_sprite_frame(kind);
+            check_sprite(sprite, frame, &expected["sprite"], "drawScale", &images);
+        }
         for kind in TowerKind::ALL {
+            let sprite = TOWER_SPRITES[kind.index()];
+            let expected = &data["towers"][kind.index()]["sprite"];
+            check_sprite(
+                sprite,
+                tower_sprite_frame(kind, 0.0),
+                expected,
+                "drawSize",
+                &images,
+            );
             for direction in 0..8 {
                 for turns in -2..=2 {
                     for offset in [-0.1, 0.0, 0.1] {
@@ -1712,33 +1745,53 @@ mod tests {
                             + turns as f32 * std::f32::consts::TAU
                             + offset;
                         let frame = tower_sprite_frame(kind, angle);
-                        assert_eq!(frame.x, direction as f32 * TOWER_FRAME_SIZE);
-                        assert_eq!(
-                            frame.y,
-                            TOWER_SPRITE_ROWS[kind.index()] as f32 * TOWER_FRAME_SIZE
-                        );
+                        assert_eq!(frame.x, sprite.x + direction as f32 * sprite.frame_size);
+                        assert_eq!(frame.y, sprite.y);
                     }
                 }
                 let frame =
                     tower_sprite_frame(kind, direction as f32 * std::f32::consts::FRAC_PI_4);
-                let x = frame.x as u32;
-                let y = frame.y as u32;
-                let size = TOWER_FRAME_SIZE as u32;
-                let mut visible = 0;
-                for dy in 0..size {
-                    for dx in 0..size {
-                        let alpha = image.get_pixel(x + dx, y + dy).a;
-                        if dx == 0 || dy == 0 || dx == size - 1 || dy == size - 1 {
-                            assert_eq!(alpha, 0.0, "sprite must have transparent padding");
-                        }
-                        if alpha > 0.0 {
-                            visible += 1;
-                        }
-                    }
-                }
-                assert!(visible > 1000, "missing tower sprite");
+                check_frame(&images[sprite.texture], frame);
             }
         }
+    }
+
+    fn check_sprite(
+        sprite: SpriteDef,
+        frame: Rect,
+        expected: &serde_json::Value,
+        scale: &str,
+        images: &[Image],
+    ) {
+        let size = expected["frameSize"].as_f64().unwrap() as f32;
+        assert_eq!(frame.x, expected["column"].as_f64().unwrap() as f32 * size);
+        assert_eq!(frame.y, expected["row"].as_f64().unwrap() as f32 * size);
+        assert_eq!(frame.w, size);
+        assert_eq!(frame.h, size);
+        assert_eq!(sprite.scale, expected[scale].as_f64().unwrap() as f32);
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("..")
+            .join(expected["image"].as_str().unwrap());
+        assert_eq!(SPRITE_IMAGES[sprite.texture], std::fs::read(path).unwrap());
+        check_frame(&images[sprite.texture], frame);
+    }
+
+    fn check_frame(image: &Image, frame: Rect) {
+        assert!(frame.x + frame.w <= image.width as f32);
+        assert!(frame.y + frame.h <= image.height as f32);
+        let mut visible = 0;
+        for y in 0..frame.h as u32 {
+            for x in 0..frame.w as u32 {
+                let alpha = image.get_pixel(frame.x as u32 + x, frame.y as u32 + y).a;
+                if x == 0 || y == 0 || x == frame.w as u32 - 1 || y == frame.h as u32 - 1 {
+                    assert_eq!(alpha, 0.0, "sprite must have transparent padding");
+                }
+                if alpha > 0.0 {
+                    visible += 1;
+                }
+            }
+        }
+        assert!(visible > 1000, "missing sprite artwork");
     }
 
     #[test]
@@ -1804,7 +1857,7 @@ mod tests {
     #[test]
     fn every_level_and_wave_matches_shared_json() {
         let data: serde_json::Value =
-            serde_json::from_str(include_str!("../../game-content.json")).unwrap();
+            serde_json::from_str(include_str!(concat!(env!("OUT_DIR"), "/content.json"))).unwrap();
         let levels = data["levels"].as_array().unwrap();
         assert_eq!(Mode::ALL.len(), levels.len());
         for (mode, level) in Mode::ALL.iter().zip(levels) {
@@ -2130,9 +2183,9 @@ mod tests {
     }
 
     #[test]
-    fn towers_and_enemies_match_shared_json() {
+    fn towers_and_enemies_match_csv_content() {
         let data: serde_json::Value =
-            serde_json::from_str(include_str!("../../game-content.json")).unwrap();
+            serde_json::from_str(include_str!(concat!(env!("OUT_DIR"), "/content.json"))).unwrap();
         for (actual, expected) in TOWERS.iter().zip(data["towers"].as_array().unwrap()) {
             assert_eq!(actual.name, expected["name"].as_str().unwrap());
             assert_eq!(actual.cost as i64, expected["cost"].as_i64().unwrap());
@@ -2179,7 +2232,6 @@ mod tests {
                 kind.def().life_loss as i64,
                 expected["lifeLoss"].as_i64().unwrap()
             );
-            assert_eq!(kind.def().shape, expected["shape"].as_str().unwrap());
             assert_eq!(kind.def().split.is_some(), !expected["split"].is_null());
             if let Some(split) = kind.def().split {
                 assert_eq!(
@@ -2202,60 +2254,21 @@ mod tests {
     }
 
     #[test]
-    fn every_csv_row_matches_native_stats_and_post_start_refund() {
-        let rows: Vec<_> = include_str!("../../towers.csv")
-            .lines()
-            .skip(1)
-            .filter(|line| !line.trim().is_empty())
-            .collect();
-        assert_eq!(rows.len(), 36);
-        for line in rows {
-            let fields: Vec<_> = line.split(',').collect();
-            let index: usize = fields[0].parse().unwrap();
-            let level: usize = fields[1].parse::<usize>().unwrap() - 1;
-            let def = TOWERS[index - 1];
-            let cost: i32 = fields[2].parse().unwrap();
-            assert_eq!(
-                if level == 0 {
-                    def.cost
-                } else {
-                    def.upgrades[level - 1]
-                },
-                cost
-            );
-            assert_eq!(def.damage[level], fields[3].parse::<f32>().unwrap());
-            assert_eq!(def.range[level], fields[4].parse::<f32>().unwrap());
-            assert_eq!(def.rate[level], 1.0 / fields[5].parse::<f32>().unwrap());
-            assert_eq!(def.sell[level], fields[6].parse::<i32>().unwrap());
-            assert_eq!(
-                def.special[level],
-                if fields[7].is_empty() {
-                    "none"
-                } else {
-                    fields[7]
+    fn csv_refunds_apply_at_every_level_after_the_first_wave() {
+        for (index, def) in TOWERS.iter().enumerate() {
+            for level in 0..6 {
+                let mut game = Game::new(Mode::UncleScrooge);
+                game.build_kind = Some(TowerKind::ALL[index]);
+                game.place_tower(5, 5);
+                game.selected_id = Some(game.towers[0].id);
+                for _ in 0..level {
+                    game.upgrade_selected();
                 }
-            );
-            assert_eq!(
-                def.factor[level],
-                if fields[8].is_empty() {
-                    0.0
-                } else {
-                    fields[8].parse::<f32>().unwrap()
-                }
-            );
-            assert_eq!(def.ground, fields[9] == "1");
-            assert_eq!(def.air, fields[10] == "1");
-            let mut game = Game::new(Mode::UncleScrooge);
-            game.build_kind = Some(TowerKind::ALL[index - 1]);
-            game.place_tower(5, 5);
-            game.selected_id = Some(game.towers[0].id);
-            for _ in 0..level {
-                game.upgrade_selected();
+                game.send_wave();
+                let gold = game.gold;
+                game.sell_selected();
+                assert_eq!(game.gold - gold, def.sell[level]);
             }
-            game.send_wave();
-            let gold = game.gold;
-            game.sell_selected();
-            assert_eq!(game.gold - gold, def.sell[level]);
         }
     }
 }

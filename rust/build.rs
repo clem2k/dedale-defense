@@ -1,5 +1,5 @@
 use serde_json::Value;
-use std::{env, fs, path::PathBuf};
+use std::{env, fs, path::PathBuf, process::Command};
 
 fn field<'a>(v: &'a Value, key: &str) -> &'a Value {
     v.get(key)
@@ -69,13 +69,14 @@ fn enumeration(name: &str, ids: &[&str]) -> String {
         .map(|v| format!("Self::{v}"))
         .collect::<Vec<_>>()
         .join(", ");
-    let all_attribute = if name == "EnemyKind" {
-        "#[cfg(test)]"
+    // Custom waves can use enemy kinds absent from the bundled wave sets.
+    let (attribute, all_attribute) = if name == "EnemyKind" {
+        ("#[allow(dead_code)]", "#[cfg(test)]")
     } else {
-        ""
+        ("", "")
     };
     format!(
-        "#[derive(Clone, Copy, Debug, PartialEq, Eq)]\nenum {name} {{ {entries} }}\n\
+        "{attribute}\n#[derive(Clone, Copy, Debug, PartialEq, Eq)]\nenum {name} {{ {entries} }}\n\
          impl {name} {{ {all_attribute} const ALL: [Self; {len}] = [{all}]; fn index(self) -> usize {{ self as usize }} }}\n",
         len = ids.len()
     )
@@ -123,13 +124,47 @@ fn ints(v: &Value) -> String {
     )
 }
 
-fn main() {
-    println!("cargo:rerun-if-changed=../game-content.json");
-    println!("cargo:rerun-if-changed=../assets/towers/atlas.json");
-    let data: Value = serde_json::from_str(
-        &fs::read_to_string("../game-content.json").expect("cannot read game-content.json"),
+fn sprite(v: &Value, images: &[String], scale: &str) -> String {
+    let s = field(v, "sprite");
+    let image = text(field(s, "image"));
+    let size = num(field(s, "frameSize"));
+    format!(
+        "SpriteDef {{ texture: {}, x: {:?}_f32, y: {:?}_f32, frame_size: {:?}_f32, scale: {:?}_f32 }}",
+        images
+            .iter()
+            .position(|path| path == image)
+            .expect("missing sprite image"),
+        num(field(s, "column")) * size,
+        num(field(s, "row")) * size,
+        size,
+        num(field(s, scale))
     )
-    .expect("invalid game-content.json");
+}
+
+fn main() {
+    for path in [
+        "../game-content.json",
+        "../towers.csv",
+        "../ennemies.csv",
+        "../app/content.mjs",
+        "../app/csv.mjs",
+    ] {
+        println!("cargo:rerun-if-changed={path}");
+    }
+    let loaded = Command::new("node")
+        .arg("../app/content.mjs")
+        .output()
+        .expect("Node.js is required to load towers.csv and ennemies.csv");
+    assert!(
+        loaded.status.success(),
+        "cannot load CSV game content:\n{}",
+        String::from_utf8_lossy(&loaded.stderr)
+    );
+    let data: Value =
+        serde_json::from_slice(&loaded.stdout).expect("invalid generated CSV content");
+    let output_dir = PathBuf::from(env::var_os("OUT_DIR").expect("missing OUT_DIR"));
+    fs::write(output_dir.join("content.json"), &loaded.stdout)
+        .expect("cannot write generated content");
     assert_eq!(
         uint(field(&data, "version")),
         1,
@@ -162,49 +197,6 @@ fn main() {
         ints(field(board, "openRows")),
         array(field(board, "openCols")).len(),
         ints(field(board, "openCols"))
-    );
-    let atlas: Value = serde_json::from_str(
-        &fs::read_to_string("../assets/towers/atlas.json")
-            .expect("cannot read tower atlas metadata"),
-    )
-    .expect("invalid tower atlas metadata");
-    assert_eq!(
-        text(field(&atlas, "image")),
-        "towers.png",
-        "invalid atlas image"
-    );
-    let frame_size = uint(field(&atlas, "frameSize"));
-    assert!(frame_size > 0, "invalid tower sprite frame size");
-    assert_eq!(
-        num(field(&atlas, "drawSize")),
-        num(field(board, "cell")) * 2.0
-    );
-    let directions: Vec<_> = array(field(&atlas, "directions"))
-        .iter()
-        .map(text)
-        .collect();
-    assert_eq!(directions, ["E", "SE", "S", "SW", "W", "NW", "N", "NE"]);
-    let sprite_ids: Vec<_> = array(field(&atlas, "towers")).iter().map(text).collect();
-    let unique: std::collections::HashSet<_> = sprite_ids.iter().collect();
-    assert_eq!(unique.len(), sprite_ids.len(), "duplicate tower sprite");
-    let sprite_rows: Vec<_> = array(field(&data, "towers"))
-        .iter()
-        .map(|tower| {
-            sprite_ids
-                .iter()
-                .position(|id| *id == text(field(tower, "id")))
-                .expect("missing sprite for tower")
-        })
-        .collect();
-    code += &format!(
-        "const TOWER_FRAME_SIZE: f32 = {frame_size}.0;\n\
-         const TOWER_DRAW_SIZE: f32 = {:?}_f32;\n\
-         const TOWER_ATLAS_HEIGHT: f32 = {}.0;\n\
-         const TOWER_SPRITE_ROWS: [usize; {}] = {:?};\n",
-        num(field(&atlas, "drawSize")),
-        frame_size * sprite_ids.len() as u64,
-        sprite_rows.len(),
-        sprite_rows
     );
     let rules = field(&data, "rules");
     code += &format!(
@@ -246,12 +238,49 @@ fn main() {
     );
     let tower_ids: Vec<_> = towers.iter().map(|t| text(field(t, "id"))).collect();
     let enemy_ids: Vec<_> = enemies.keys().map(String::as_str).collect();
+    let images: std::collections::BTreeSet<_> = towers
+        .iter()
+        .chain(enemies.values())
+        .map(|definition| text(field(field(definition, "sprite"), "image")).to_owned())
+        .collect();
+    let images: Vec<_> = images.into_iter().collect();
+    code += "const SPRITE_IMAGES: &[&[u8]] = &[\n";
+    for image in &images {
+        println!("cargo:rerun-if-changed=../{image}");
+        let path = PathBuf::from("..")
+            .join(image)
+            .canonicalize()
+            .expect("missing CSV sprite PNG");
+        code += &format!(
+            "include_bytes!({:?}),\n",
+            path.to_str().expect("invalid sprite path")
+        );
+    }
+    code += "];\n";
+    for (name, definitions, scale) in [
+        (
+            "TOWER_SPRITES",
+            towers.iter().collect::<Vec<_>>(),
+            "drawSize",
+        ),
+        (
+            "ENEMY_SPRITES",
+            enemies.values().collect::<Vec<_>>(),
+            "drawScale",
+        ),
+    ] {
+        code += &format!("const {name}: [SpriteDef; {}] = [\n", definitions.len());
+        for definition in definitions {
+            code += &(sprite(definition, &images, scale) + ",\n");
+        }
+        code += "];\n";
+    }
     code += &enumeration("Mode", &level_ids);
     code += &enumeration("TowerKind", &tower_ids);
     code += &enumeration("EnemyKind", &enemy_ids);
     code += "#[derive(Clone, Copy)]\nstruct SplitDef { kind: EnemyKind, count: usize, hp: f32, bounty: f32 }\n\
         #[derive(Clone, Copy)]\nstruct EnemyDef { name: &'static str, hp: f32, speed: f32, radius: f32, color: Color,\n\
-        flying: bool, immune: bool, life_loss: i32, shape: &'static str, split: Option<SplitDef> }\n";
+        flying: bool, immune: bool, life_loss: i32, split: Option<SplitDef> }\n";
     code += &format!("const ENEMIES: [EnemyDef; {}] = [\n", enemies.len());
     for (id, e) in enemies {
         assert!(
@@ -281,14 +310,9 @@ fn main() {
                 num(field(split, "bounty"))
             )
         };
-        let shape = text(field(e, "shape"));
-        assert!(
-            ["circle", "tri", "wing", "square", "diamond", "boss"].contains(&shape),
-            "game-content.json: invalid shape"
-        );
         code += &format!(
             "EnemyDef {{ name: {:?}, hp: {:?}_f32, speed: {:?}_f32, radius: {:?}_f32, color: {}, flying: {}, immune: {},\n\
-             life_loss: {}, shape: {:?}, split: {} }},\n",
+             life_loss: {}, split: {} }},\n",
             text(field(e, "name")),
             num(field(e, "hp")),
             num(field(e, "speed")),
@@ -297,7 +321,6 @@ fn main() {
             boolean(field(e, "flying")),
             boolean(field(e, "immune")),
             uint(field(e, "lifeLoss")),
-            shape,
             split_code
         );
     }
@@ -468,6 +491,6 @@ fn main() {
         fn hp_factor(self) -> f32 { self.def().hp }\n\
         fn wave_gap(self) -> f32 { self.def().gap }\n\
         fn waves(self) -> u32 { self.def().waves }\n}\n";
-    let output = PathBuf::from(env::var_os("OUT_DIR").expect("missing OUT_DIR")).join("content.rs");
+    let output = output_dir.join("content.rs");
     fs::write(output, code).expect("cannot write generated game content");
 }

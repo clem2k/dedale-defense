@@ -3,7 +3,6 @@
 // Towers block their way, so the player builds a maze; a tower may never close the last path.
 
 import { CONTENT } from "./content.js";
-import { TOWER_ATLAS } from "./tower-atlas.js";
 
 const CELL = CONTENT.board.cell;
 const COLS = CONTENT.board.cols;
@@ -19,9 +18,18 @@ const CREEPS = CONTENT.enemies;
 
 function towerSpriteFrame(type, angle) {
   const direction = ((Math.floor(angle / (Math.PI / 4) + 0.5) % 8) + 8) % 8;
+  const sprite = TOWERS[type].sprite;
   return {
-    x: direction * TOWER_ATLAS.frameSize,
-    y: TOWER_ATLAS.towers.indexOf(TOWERS[type].id) * TOWER_ATLAS.frameSize,
+    x: (sprite.column + direction) * sprite.frameSize,
+    y: sprite.row * sprite.frameSize,
+  };
+}
+
+function enemySpriteFrame(type) {
+  const sprite = CREEPS[type].sprite;
+  return {
+    x: sprite.column * sprite.frameSize,
+    y: sprite.row * sprite.frameSize,
   };
 }
 
@@ -526,17 +534,25 @@ function endGame(won) {
 }
 
 // ---------- Drawing ----------
-const towerImage = new Image();
-towerImage.src = new URL(`./assets/towers/${TOWER_ATLAS.image}`, import.meta.url).href;
+const spriteImages = new Map();
 try {
-  await towerImage.decode();
-  if (towerImage.naturalWidth !== TOWER_ATLAS.frameSize * TOWER_ATLAS.directions.length
-    || towerImage.naturalHeight !== TOWER_ATLAS.frameSize * TOWER_ATLAS.towers.length) {
-    throw new Error("Tower atlas dimensions do not match its metadata");
+  for (const definition of [...TOWERS, ...Object.values(CREEPS)]) {
+    const sprite = definition.sprite;
+    if (!spriteImages.has(sprite.image)) {
+      const image = new Image();
+      image.src = new URL(`./${sprite.image}`, import.meta.url).href;
+      await image.decode();
+      spriteImages.set(sprite.image, image);
+    }
+    const image = spriteImages.get(sprite.image);
+    const directions = "drawSize" in sprite ? 8 : 1;
+    if ((sprite.column + directions) * sprite.frameSize > image.naturalWidth
+      || (sprite.row + 1) * sprite.frameSize > image.naturalHeight)
+      throw new Error(`Sprite frame outside ${sprite.image}`);
   }
 } catch (error) {
-  document.getElementById("game").textContent = "Impossible de charger les sprites des tours. Rechargez la page.";
-  throw new Error("Failed to load tower sprites", { cause: error });
+  document.getElementById("game").textContent = "Impossible de charger les sprites. Rechargez la page.";
+  throw new Error("Failed to load CSV sprites", { cause: error });
 }
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
@@ -614,13 +630,14 @@ function drawBackground() {
 
 function drawTowerShape(g, type, level, x, y, angle, size = 1) {
   const frame = towerSpriteFrame(type, angle);
+  const sprite = TOWERS[type].sprite;
   g.save();
   g.translate(x, y);
   g.scale(size, size);
   g.imageSmoothingEnabled = false;
-  const half = TOWER_ATLAS.drawSize / 2;
-  g.drawImage(towerImage, frame.x, frame.y, TOWER_ATLAS.frameSize, TOWER_ATLAS.frameSize,
-    -half, -half, TOWER_ATLAS.drawSize, TOWER_ATLAS.drawSize);
+  const half = sprite.drawSize / 2;
+  g.drawImage(spriteImages.get(sprite.image), frame.x, frame.y, sprite.frameSize, sprite.frameSize,
+    -half, -half, sprite.drawSize, sprite.drawSize);
   // level pips
   for (let i = 0; i < level; i++) {
     g.fillStyle = "#fac515";
@@ -640,51 +657,25 @@ function roundRect(g, x, y, w, h, r) {
 }
 
 function drawCreep(k) {
-  const c = CREEPS[k.type];
   const t = S.time;
+  const r = k.r;
   ctx.save();
   ctx.translate(k.x, k.y + (k.flying ? Math.sin(t * 6 + k.wob) * 1.5 : 0));
   if (k.flying) {
     ctx.fillStyle = "rgba(0,0,0,0.25)";
     ctx.beginPath(); ctx.ellipse(3, 7, k.r, k.r * 0.45, 0, 0, Math.PI * 2); ctx.fill();
   }
-  const slowed = t < k.slowUntil;
-  ctx.fillStyle = c.color;
-  ctx.strokeStyle = slowed ? "#5fe0e0" : "rgba(0,0,0,0.5)";
-  ctx.lineWidth = slowed ? 2 : 1;
-  const r = k.r;
-  const dir = k.flying ? (k.target === "R" ? 0 : Math.PI / 2) : Math.atan2(k.wy - k.y, k.wx - k.x);
-  ctx.beginPath();
-  switch (c.shape) {
-    case "tri":
-      ctx.rotate(dir);
-      ctx.moveTo(r + 2, 0); ctx.lineTo(-r, -r); ctx.lineTo(-r, r); ctx.closePath();
-      break;
-    case "square":
-      ctx.rect(-r, -r, r * 2, r * 2);
-      break;
-    case "diamond":
-      ctx.moveTo(0, -r - 1); ctx.lineTo(r + 1, 0); ctx.lineTo(0, r + 1); ctx.lineTo(-r - 1, 0); ctx.closePath();
-      break;
-    case "wing": {
-      ctx.rotate(dir);
-      const flap = Math.sin(t * 14 + k.wob) * 3;
-      ctx.moveTo(r + 2, 0); ctx.lineTo(-r, -r - flap); ctx.lineTo(-r * 0.4, 0); ctx.lineTo(-r, r + flap); ctx.closePath();
-      break;
-    }
-    case "boss":
-      for (let i = 0; i < 10; i++) {
-        const a = (i / 10) * Math.PI * 2 + t;
-        const rr = i % 2 ? r * 0.75 : r;
-        ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr);
-      }
-      ctx.closePath();
-      break;
-    default:
-      ctx.arc(0, 0, r, 0, Math.PI * 2);
+  const frame = enemySpriteFrame(k.type);
+  const sprite = CREEPS[k.type].sprite;
+  const size = r * sprite.drawScale;
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(spriteImages.get(sprite.image), frame.x, frame.y, sprite.frameSize, sprite.frameSize,
+    -size / 2, -size / 2, size, size);
+  if (t < k.slowUntil) {
+    ctx.strokeStyle = "#5fe0e0";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(0, 0, r + 2, 0, Math.PI * 2); ctx.stroke();
   }
-  ctx.fill();
-  ctx.stroke();
   ctx.restore();
   if (t < k.stunUntil) {
     ctx.fillStyle = "#fff0c2";

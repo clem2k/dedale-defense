@@ -1,7 +1,0 @@
-{
-  "image": "towers.png",
-  "frameSize": 208,
-  "drawSize": 40,
-  "directions": ["E", "SE", "S", "SW", "W", "NW", "N", "NE"],
-  "towers": ["stone", "burst", "needle", "volley", "frost", "pulse"]
-}

@@ -1,16 +1,19 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import vm from "node:vm";
+import { pathToFileURL } from "node:url";
 import { loadContent, validateContent } from "./content.mjs";
+import { parseCsv } from "./csv.mjs";
 
 const content = loadContent();
 const source = readFileSync(new URL("./src/game.js", import.meta.url), "utf8");
-const atlas = JSON.parse(readFileSync(new URL("../assets/towers/atlas.json", import.meta.url), "utf8"));
-const csv = readFileSync(new URL("../towers.csv", import.meta.url), "utf8").trim().split(/\r?\n/).slice(1).map((r) => r.split(","));
+const towerCsv = readFileSync(new URL("../towers.csv", import.meta.url), "utf8");
+const enemyCsv = readFileSync(new URL("../ennemies.csv", import.meta.url), "utf8");
+const csv = parseCsv(towerCsv, "towers.csv").map(Object.values);
 
 test("construction hint expires at five real seconds and dismisses immediately", () => {
   let now = 1000;
@@ -33,14 +36,14 @@ test("construction hint expires at five real seconds and dismisses immediately",
 
 test("all tower sprites select the correct row and nearest of eight directions", () => {
   const game = simulation();
-  assert.equal(atlas.drawSize, content.board.cell * 2);
   for (let type = 0; type < content.towers.length; type++) {
+    const sprite = content.towers[type].sprite;
     for (let direction = 0; direction < 8; direction++) {
       for (const turns of [-2, -1, 0, 1, 2]) {
         for (const offset of [-0.1, 0, 0.1]) {
           const frame = game.towerSpriteFrame(type, direction * Math.PI / 4 + turns * Math.PI * 2 + offset);
-          assert.equal(frame.x, direction * atlas.frameSize);
-          assert.equal(frame.y, atlas.towers.indexOf(content.towers[type].id) * atlas.frameSize);
+          assert.equal(frame.x, (sprite.column + direction) * sprite.frameSize);
+          assert.equal(frame.y, sprite.row * sprite.frameSize);
         }
       }
     }
@@ -52,7 +55,9 @@ test("tower rendering uses the atlas without rotating it and preserves level ind
   const renderer = source.slice(source.indexOf("function drawTowerShape("), source.indexOf("function roundRect("));
   const image = {};
   const draw = vm.runInNewContext(`${renderer}; drawTowerShape`, {
-    TOWER_ATLAS: atlas, towerImage: image, towerSpriteFrame: game.towerSpriteFrame,
+    TOWERS: content.towers,
+    spriteImages: new Map(content.towers.map((t) => [t.sprite.image, image])),
+    towerSpriteFrame: game.towerSpriteFrame,
   });
   for (let type = 0; type < 6; type++) {
     for (let direction = 0; direction < 8; direction++) {
@@ -64,11 +69,61 @@ test("tower rendering uses the atlas without rotating it and preserves level ind
       };
       draw(g, type, 5, 100, 120, direction * Math.PI / 4);
       assert.equal(calls.length, 1);
-      assert.deepEqual(calls[0], [image, direction * atlas.frameSize, type * atlas.frameSize,
-        atlas.frameSize, atlas.frameSize, -20, -20, 40, 40]);
+      const sprite = content.towers[type].sprite;
+      assert.deepEqual(calls[0], [image, (sprite.column + direction) * sprite.frameSize, sprite.row * sprite.frameSize,
+        sprite.frameSize, sprite.frameSize, -sprite.drawSize / 2, -sprite.drawSize / 2, sprite.drawSize, sprite.drawSize]);
       assert.equal(g.imageSmoothingEnabled, false);
       assert.equal(pips, 5);
     }
+  }
+});
+
+test("enemy rendering selects every sprite and preserves flight, health and status effects", () => {
+  const game = simulation();
+  game.newGame("normal");
+  game.state.time = 1;
+  const renderer = source.slice(source.indexOf("function drawCreep("), source.indexOf("function draw()"));
+  const image = {};
+  for (const [type, definition] of Object.entries(content.enemies)) {
+    const calls = [];
+    const rings = [];
+    let shadows = 0, healthBars = 0, stunMarkers = 0;
+    const context = {
+      save() {}, restore() {}, translate() {}, beginPath() {}, fill() {}, stroke() {},
+      ellipse() { shadows++; }, arc(...args) { rings.push(args); },
+      fillRect() { healthBars++; }, fillText() { stunMarkers++; },
+      drawImage(...args) { calls.push(args); },
+    };
+    const draw = vm.runInNewContext(`${renderer}; drawCreep`, {
+      S: game.state, ctx: context, CREEPS: content.enemies,
+      spriteImages: new Map(Object.values(content.enemies).map((e) => [e.sprite.image, image])),
+      enemySpriteFrame: game.enemySpriteFrame,
+    });
+    const creep = game.makeCreep(type, 100, 1, "R", null);
+    creep.hp = creep.maxHp / 2;
+    creep.slowUntil = 2;
+    creep.stunUntil = 2;
+    draw(creep);
+    const sprite = definition.sprite;
+    const size = definition.r * sprite.drawScale;
+    assert.deepEqual(calls, [[image, sprite.column * sprite.frameSize, sprite.row * sprite.frameSize,
+      sprite.frameSize, sprite.frameSize, -size / 2, -size / 2, size, size]]);
+    assert.equal(context.imageSmoothingEnabled, false);
+    assert.equal(shadows, definition.flying ? 1 : 0);
+    assert.equal(rings.length, 1);
+    assert.equal(rings[0][2], definition.r + 2);
+    assert.equal(healthBars, 2);
+    assert.equal(stunMarkers, 1);
+    calls.length = 0;
+    rings.length = 0;
+    shadows = healthBars = stunMarkers = 0;
+    creep.hp = creep.maxHp;
+    creep.slowUntil = creep.stunUntil = 0;
+    draw(creep);
+    assert.equal(calls.length, 1);
+    assert.equal(rings.length, 0);
+    assert.equal(healthBars, 0);
+    assert.equal(stunMarkers, 0);
   }
 });
 
@@ -164,23 +219,121 @@ test("offset towers still prevent diagonal corner cutting", () => {
   assert.equal(game.nextStep(field, 4, 5), 4 * cols + 4);
 });
 
-test("importing CSV never resets board proportions or enemy dimensions", () => {
-  const directory = mkdtempSync(join(tmpdir(), "dedale-import-"));
+function withFixture(run) {
+  const directory = mkdtempSync(join(tmpdir(), "dedale-csv-"));
   try {
     const app = join(directory, "app");
     mkdirSync(app);
-    for (const name of ["content.mjs", "import-towers.mjs"]) {
+    for (const name of ["content.mjs", "csv.mjs", "build.mjs"]) {
       copyFileSync(new URL(`./${name}`, import.meta.url), join(app, name));
     }
-    copyFileSync(new URL("../towers.csv", import.meta.url), join(directory, "towers.csv"));
-    writeFileSync(join(directory, "game-content.json"), JSON.stringify(content));
-    execFileSync(process.execPath, [join(app, "import-towers.mjs")]);
-    const imported = JSON.parse(readFileSync(join(directory, "game-content.json"), "utf8"));
-    assert.deepEqual(imported.board, content.board);
-    assert.deepEqual(imported.enemies, content.enemies);
+    cpSync(new URL("./src", import.meta.url), join(app, "src"), { recursive: true });
+    for (const file of ["towers.csv", "ennemies.csv", "game-content.json"]) {
+      copyFileSync(new URL(`../${file}`, import.meta.url), join(directory, file));
+    }
+    for (const image of new Set([...content.towers, ...Object.values(content.enemies)].map((d) => d.sprite.image))) {
+      const path = join(directory, image);
+      mkdirSync(join(path, ".."), { recursive: true });
+      copyFileSync(new URL(`../${image}`, import.meta.url), path);
+    }
+    run(directory, pathToFileURL(directory + "/"));
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
+}
+
+function editCsv(directory, file, edit) {
+  const path = join(directory, file);
+  const rows = parseCsv(readFileSync(path, "utf8"), file);
+  edit(rows);
+  const headers = Object.keys(rows[0]);
+  const quote = (value) => /[,"\r\n]/.test(value) ? `"${value.replaceAll('"', '""')}"` : value;
+  writeFileSync(path, [headers, ...rows.map((row) => headers.map((key) => row[key]))]
+    .map((row) => row.map(quote).join(",")).join("\r\n") + "\r\n");
+}
+
+test("editing only CSV stats, metadata, sprite file and coordinates changes the built game", () => {
+  withFixture((directory, root) => {
+    const config = readFileSync(join(directory, "game-content.json"), "utf8");
+    const alternate = "assets/towers/alternate.png";
+    copyFileSync(join(directory, content.towers[0].sprite.image), join(directory, alternate));
+    editCsv(directory, "towers.csv", (rows) => {
+      rows[0].damage = "123";
+      rows[0].name = 'Tour "test", modifiée';
+      rows[0].desc = "Première ligne\nDeuxième ligne";
+      rows[0]["sprite file"] = alternate;
+      rows[0]["sprite row"] = "2";
+      rows[0]["draw size"] = "36";
+    });
+    editCsv(directory, "ennemies.csv", (rows) => {
+      rows[0].hp = "2.5";
+      rows[0]["sprite column"] = "10";
+      rows[0]["draw scale"] = "3";
+    });
+    execFileSync(process.execPath, [join(directory, "app/build.mjs")]);
+    const module = readFileSync(join(directory, "app/dist/content.js"), "utf8");
+    const built = JSON.parse(module.slice("export const CONTENT = ".length).trim().replace(/;$/, ""));
+    assert.equal(built.towers[0].dmg[0], 123);
+    assert.equal(built.towers[0].name, 'Tour "test", modifiée');
+    assert.equal(built.towers[0].desc, "Première ligne\nDeuxième ligne");
+    assert.equal(built.towers[0].sprite.image, alternate);
+    assert.equal(built.towers[0].sprite.row, 1);
+    assert.equal(built.towers[0].sprite.drawSize, 36);
+    assert.equal(built.enemies.walker.hp, 2.5);
+    assert.equal(built.enemies.walker.sprite.column, 9);
+    assert.equal(built.enemies.walker.sprite.drawScale, 3);
+    assert.deepEqual(readFileSync(join(directory, "app/dist", alternate)), readFileSync(join(directory, alternate)));
+    assert.deepEqual(built.board, content.board);
+    assert.deepEqual(built.waveSets, content.waveSets);
+    assert.equal(readFileSync(join(directory, "game-content.json"), "utf8"), config);
+    assert.deepEqual(loadContent(root), built);
+    const game = simulation(built);
+    game.newGame("normal");
+    game.setBuild(0);
+    game.tryPlace(5, 5);
+    assert.equal(game.towerStats(game.state.towers[0]).dmg, 123);
+    assert.equal(game.enemySpriteFrame("walker").x, 9 * 208);
+    assert.equal(game.towerSpriteFrame(0, 0).y, 208);
+    game.sendWave();
+    game.update(0);
+    assert.equal(game.state.creeps[0].hp, built.waveSets.standard[0].hp * 2.5);
+  });
+});
+
+test("CSV parser accepts BOM, CRLF, escaped quotes and embedded newlines", () => {
+  assert.deepEqual(parseCsv('\uFEFFid,desc\r\na,"Un ""nom"",\nune suite"\r\n', "test.csv"),
+    [{ id: "a", desc: 'Un "nom",\nune suite' }]);
+  for (const invalid of ['id,id\na,b', 'id,desc\na', 'id\n"unfinished', 'id\n"x"oops']) {
+    assert.throws(() => parseCsv(invalid, "test.csv"), /test.csv:/);
+  }
+});
+
+test("CSV validation rejects invalid numbers, inconsistent levels, splits and sprite references", () => {
+  withFixture((directory, root) => {
+    for (const [file, edit, expected] of [
+      ["towers.csv", (r) => { r[0].damage = ""; }, /invalid number/],
+      ["towers.csv", (r) => { r[1].level = "1"; }, /levels 1 to 6/],
+      ["towers.csv", (r) => { r[1].name = "ignored?"; }, /metadata belongs/],
+      ["towers.csv", (r) => { r[0].speed = "0"; }, /invalid effects/],
+      ["towers.csv", (r) => { r[1].earth = "0"; }, /target flags/],
+      ["towers.csv", (r) => { r[0]["sprite row"] = "7"; }, /frame outside/],
+      ["towers.csv", (r) => { r[0]["sprite column"] = "2"; }, /frame outside/],
+      ["ennemies.csv", (r) => { r[0].hp = "NaN"; }, /invalid number/],
+      ["ennemies.csv", (r) => { r[1].id = r[0].id; }, /duplicate enemy/],
+      ["ennemies.csv", (r) => { r[0]["split count"] = "2"; }, /incomplete split/],
+      ["ennemies.csv", (r) => { r[0]["sprite column"] = "0"; }, /invalid enemy sprite/],
+      ["ennemies.csv", (r) => { r[0]["sprite file"] = "../outside.png"; }, /invalid enemy sprite/],
+      ["ennemies.csv", (r) => { r[0]["sprite file"] = "assets/missing.png"; }, /ENOENT/],
+    ]) {
+      editCsv(directory, file, edit);
+      assert.throws(() => loadContent(root), expected);
+      writeFileSync(join(directory, file), file === "towers.csv" ? towerCsv : enemyCsv);
+    }
+    const config = JSON.parse(readFileSync(join(directory, "game-content.json"), "utf8"));
+    config.towers = [];
+    writeFileSync(join(directory, "game-content.json"), JSON.stringify(config));
+    assert.throws(() => loadContent(root), /must be defined only/);
+  });
 });
 
 for (const special of ["spread", "slow", "stun"]) {
@@ -225,15 +378,13 @@ for (const special of ["spread", "slow", "stun"]) {
 
 function simulation(data = content, now = () => 0) {
   const logic = source.slice(0, source.indexOf("// ---------- Drawing ----------"))
-    .replace('import { CONTENT } from "./content.js";', "")
-    .replace('import { TOWER_ATLAS } from "./tower-atlas.js";', "");
+    .replace('import { CONTENT } from "./content.js";', "");
   const setBuild = source.slice(source.indexOf("function setBuild("), source.indexOf("function togglePause("));
   const boardPos = source.slice(source.indexOf("function boardPos("), source.indexOf('canvas.addEventListener("pointermove"'));
   return vm.runInNewContext(`${logic}\n${setBuild}\n${boardPos}
     ({ get state() { return S; }, newGame, waveDef, sendWave, update,
-       setBuild, tryPlace, placeCheck, moveCreep, boardPos, nextStep, towerStats, sellValue, upgrade, sell, hurt, spawn, makeCreep, impact, fire, updateShots, showStartHint, dismissStartHint, towerSpriteFrame })`, {
+       setBuild, tryPlace, placeCheck, moveCreep, boardPos, nextStep, towerStats, sellValue, upgrade, sell, hurt, spawn, makeCreep, impact, fire, updateShots, showStartHint, dismissStartHint, towerSpriteFrame, enemySpriteFrame })`, {
     CONTENT: data,
-    TOWER_ATLAS: atlas,
     performance: { now },
     canvas: { style: {}, getBoundingClientRect: () => ({
       left: 10, top: 20, width: content.board.cols * content.board.cell / 2, height: content.board.rows * content.board.cell / 2,
@@ -434,7 +585,7 @@ for (const [name, mutate] of [
   test(`invalid content fails explicitly: ${name}`, () => {
     const edited = structuredClone(content);
     mutate(edited);
-    assert.throws(() => validateContent(edited), /game-content.json:/);
+    assert.throws(() => validateContent(edited), /game content/);
   });
 }
 
@@ -442,10 +593,12 @@ test("browser build embeds exact shared content and wires every localized page",
   execFileSync(process.execPath, ["build.mjs"], { cwd: new URL(".", import.meta.url) });
   const built = await import("./dist/content.js");
   assert.deepEqual(built.CONTENT, content);
-  const builtAtlas = await import("./dist/tower-atlas.js");
-  assert.deepEqual(builtAtlas.TOWER_ATLAS, atlas);
-  assert.deepEqual(readFileSync(new URL("./dist/assets/towers/towers.png", import.meta.url)),
-    readFileSync(new URL("../assets/towers/towers.png", import.meta.url)));
+  assert.equal(existsSync(new URL("./dist/tower-atlas.js", import.meta.url)), false);
+  assert.equal(existsSync(new URL("./dist/enemy-atlas.js", import.meta.url)), false);
+  for (const image of new Set([...content.towers, ...Object.values(content.enemies)].map((d) => d.sprite.image))) {
+    assert.deepEqual(readFileSync(new URL(`./dist/${image}`, import.meta.url)),
+      readFileSync(new URL(`../${image}`, import.meta.url)));
+  }
   for (const prefix of ["", ...["en", "es", "de", "fr", "id"].map((lang) => `${lang}/games/preecep/desktop-tower-defense/`)]) {
     const html = readFileSync(new URL(`./dist/${prefix}index.html`, import.meta.url), "utf8");
     assert.ok(!html.includes("{{"));
