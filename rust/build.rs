@@ -125,6 +125,7 @@ fn ints(v: &Value) -> String {
 
 fn main() {
     println!("cargo:rerun-if-changed=../game-content.json");
+    println!("cargo:rerun-if-changed=../assets/towers/atlas.json");
     let data: Value = serde_json::from_str(
         &fs::read_to_string("../game-content.json").expect("cannot read game-content.json"),
     )
@@ -161,6 +162,49 @@ fn main() {
         ints(field(board, "openRows")),
         array(field(board, "openCols")).len(),
         ints(field(board, "openCols"))
+    );
+    let atlas: Value = serde_json::from_str(
+        &fs::read_to_string("../assets/towers/atlas.json")
+            .expect("cannot read tower atlas metadata"),
+    )
+    .expect("invalid tower atlas metadata");
+    assert_eq!(
+        text(field(&atlas, "image")),
+        "towers.png",
+        "invalid atlas image"
+    );
+    let frame_size = uint(field(&atlas, "frameSize"));
+    assert!(frame_size > 0, "invalid tower sprite frame size");
+    assert_eq!(
+        num(field(&atlas, "drawSize")),
+        num(field(board, "cell")) * 2.0
+    );
+    let directions: Vec<_> = array(field(&atlas, "directions"))
+        .iter()
+        .map(text)
+        .collect();
+    assert_eq!(directions, ["E", "SE", "S", "SW", "W", "NW", "N", "NE"]);
+    let sprite_ids: Vec<_> = array(field(&atlas, "towers")).iter().map(text).collect();
+    let unique: std::collections::HashSet<_> = sprite_ids.iter().collect();
+    assert_eq!(unique.len(), sprite_ids.len(), "duplicate tower sprite");
+    let sprite_rows: Vec<_> = array(field(&data, "towers"))
+        .iter()
+        .map(|tower| {
+            sprite_ids
+                .iter()
+                .position(|id| *id == text(field(tower, "id")))
+                .expect("missing sprite for tower")
+        })
+        .collect();
+    code += &format!(
+        "const TOWER_FRAME_SIZE: f32 = {frame_size}.0;\n\
+         const TOWER_DRAW_SIZE: f32 = {:?}_f32;\n\
+         const TOWER_ATLAS_HEIGHT: f32 = {}.0;\n\
+         const TOWER_SPRITE_ROWS: [usize; {}] = {:?};\n",
+        num(field(&atlas, "drawSize")),
+        frame_size * sprite_ids.len() as u64,
+        sprite_rows.len(),
+        sprite_rows
     );
     let rules = field(&data, "rules");
     code += &format!(
@@ -268,7 +312,8 @@ fn main() {
         fn is_immune(self) -> bool { self.def().immune }\n}\n";
     code += "#[derive(Clone, Copy)]\nstruct TowerDef { name: &'static str, cost: i32, upgrades: [i32; 5],\n\
         damage: [f32; 6], range: [f32; 6], rate: [f32; 6], ground: bool, air: bool, speed: f32,\n\
-        multi: usize, sell: [i32; 6], special: [&'static str; 6], factor: [f32; 6], shot: &'static str, key: char, color: Color, accent: Color }\n";
+        multi: usize, sell: [i32; 6], special: [&'static str; 6], factor: [f32; 6],\n\
+        #[cfg(test)] shot: &'static str, key: char, accent: Color }\n";
     code += &format!("const TOWERS: [TowerDef; {}] = [\n", towers.len());
     let mut keys = std::collections::HashSet::new();
     for t in towers {
@@ -278,6 +323,7 @@ fn main() {
             "game-content.json: invalid or duplicate tower shortcut"
         );
         let shot = text(field(t, "shot"));
+        color(field(t, "color"));
         assert!(
             ["pellet", "shell", "dart", "missile", "ice", "pulse"].contains(&shot)
                 && (shot == "pulse" || num(field(t, "speed")) > 0.0)
@@ -293,7 +339,7 @@ fn main() {
         code += &format!(
             "TowerDef {{ name: {:?}, cost: {}, upgrades: {}, damage: {}, range: {}, rate: {},\n\
              ground: {}, air: {}, speed: {:?}_f32, multi: {},\n\
-             shot: {:?}, key: {:?}, color: {}, accent: {} }},\n",
+             #[cfg(test)] shot: {:?}, key: {:?}, accent: {} }},\n",
             text(field(t, "name")),
             uint(field(t, "cost")),
             ints(field(t, "ups")),
@@ -306,7 +352,6 @@ fn main() {
             uint(field(t, "multi")),
             shot,
             key.chars().next().unwrap(),
-            color(field(t, "color")),
             color(field(t, "accent"))
         );
         let start = code.rfind("TowerDef {").unwrap();

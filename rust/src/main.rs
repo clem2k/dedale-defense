@@ -9,6 +9,7 @@ const BOARD_W: f32 = COLS as f32 * CELL;
 const BOARD_H: f32 = ROWS as f32 * CELL;
 const BOARD_X: f32 = 18.0;
 const BOARD_Y: f32 = 74.0;
+const TOWER_ATLAS_BYTES: &[u8] = include_bytes!("../../assets/towers/towers.png");
 
 const BG: Color = Color::new(0.055, 0.085, 0.13, 1.0);
 const PANEL: Color = Color::new(0.09, 0.13, 0.19, 1.0);
@@ -931,64 +932,39 @@ fn button(rect: Rect, label: &str, active: bool, enabled: bool) -> bool {
     hovered && is_mouse_button_pressed(MouseButton::Left) && enabled
 }
 
-fn draw_tower_shape(kind: TowerKind, x: f32, y: f32, angle: f32, size: f32, level: usize) {
-    let def = TOWERS[kind.index()];
-    draw_rectangle(
-        x - 18.0 * size,
-        y - 18.0 * size,
-        36.0 * size,
-        36.0 * size,
-        Color::new(0.15, 0.21, 0.31, 1.0),
+fn tower_sprite_frame(kind: TowerKind, angle: f32) -> Rect {
+    let direction = (angle / std::f32::consts::FRAC_PI_4 + 0.5)
+        .floor()
+        .rem_euclid(8.0);
+    Rect::new(
+        direction * TOWER_FRAME_SIZE,
+        TOWER_SPRITE_ROWS[kind.index()] as f32 * TOWER_FRAME_SIZE,
+        TOWER_FRAME_SIZE,
+        TOWER_FRAME_SIZE,
+    )
+}
+
+fn draw_tower_shape(
+    texture: &Texture2D,
+    kind: TowerKind,
+    position: Vec2,
+    angle: f32,
+    size: f32,
+    level: usize,
+) {
+    let Vec2 { x, y } = position;
+    let width = TOWER_DRAW_SIZE * size;
+    draw_texture_ex(
+        texture,
+        x - width / 2.0,
+        y - width / 2.0,
+        WHITE,
+        DrawTextureParams {
+            source: Some(tower_sprite_frame(kind, angle)),
+            dest_size: Some(vec2(width, width)),
+            ..Default::default()
+        },
     );
-    draw_rectangle_lines(
-        x - 18.0 * size,
-        y - 18.0 * size,
-        36.0 * size,
-        36.0 * size,
-        1.0,
-        Color::new(0.46, 0.53, 0.63, 0.8),
-    );
-    match def.shot {
-        "pellet" => draw_circle(x, y, 9.0 * size, def.color),
-        "shell" => draw_poly(x, y, 6, 11.0 * size, 0.0, def.color),
-        "dart" => draw_poly(x, y, 4, 12.0 * size, std::f32::consts::FRAC_PI_4, def.color),
-        "missile" => {
-            draw_rectangle(
-                x - 10.0 * size,
-                y - 10.0 * size,
-                20.0 * size,
-                20.0 * size,
-                def.color,
-            );
-            for (dx, dy) in [(-5.0, -5.0), (5.0, -5.0), (-5.0, 5.0), (5.0, 5.0)] {
-                draw_circle(x + dx * size, y + dy * size, 2.2 * size, PANEL);
-            }
-        }
-        "ice" => {
-            for i in 0..3 {
-                let a = i as f32 * std::f32::consts::PI / 3.0;
-                draw_line(
-                    x - a.cos() * 11.0 * size,
-                    y - a.sin() * 11.0 * size,
-                    x + a.cos() * 11.0 * size,
-                    y + a.sin() * 11.0 * size,
-                    3.0 * size,
-                    def.color,
-                );
-            }
-        }
-        "pulse" => {
-            draw_circle(x, y, 10.0 * size, def.color);
-            draw_circle_lines(x, y, 6.0 * size, 2.0 * size, PANEL);
-            draw_circle_lines(x, y, 2.0 * size, 1.0 * size, PANEL);
-        }
-        _ => unreachable!("validated projectile type"),
-    }
-    if def.shot != "pulse" && def.shot != "ice" {
-        let end_x = x + angle.cos() * 14.0 * size;
-        let end_y = y + angle.sin() * 14.0 * size;
-        draw_line(x, y, end_x, end_y, 4.0 * size, def.accent);
-    }
     for i in 0..level {
         draw_circle(
             x - 12.0 * size + i as f32 * 6.0 * size,
@@ -1006,7 +982,7 @@ fn placement_anchor(position: Vec2) -> (usize, usize) {
     )
 }
 
-fn draw_board(game: &Game, mouse: Vec2) -> Option<Vec2> {
+fn draw_board(game: &Game, mouse: Vec2, texture: &Texture2D) -> Option<Vec2> {
     draw_rectangle(BOARD_X, BOARD_Y, BOARD_W, BOARD_H, BG);
     for y in 0..ROWS {
         for x in 0..COLS {
@@ -1082,7 +1058,14 @@ fn draw_board(game: &Game, mouse: Vec2) -> Option<Vec2> {
     for tower in &game.towers {
         let x = BOARD_X + (tower.cx as f32 + 1.0) * CELL;
         let y = BOARD_Y + (tower.cy as f32 + 1.0) * CELL;
-        draw_tower_shape(tower.kind, x, y, tower.angle, 1.0, tower.level);
+        draw_tower_shape(
+            texture,
+            tower.kind,
+            vec2(x, y),
+            tower.angle,
+            1.0,
+            tower.level,
+        );
         if game.selected_id == Some(tower.id) {
             draw_rectangle_lines(x - CELL, y - CELL, CELL * 2.0, CELL * 2.0, 2.0, GOLD);
             let (_, range, _, _) = Game::tower_stats(tower);
@@ -1107,7 +1090,14 @@ fn draw_board(game: &Game, mouse: Vec2) -> Option<Vec2> {
                 1.0,
                 if valid { GREEN } else { RED },
             );
-            draw_tower_shape(kind, x, y, -std::f32::consts::FRAC_PI_2, 0.75, 0);
+            draw_tower_shape(
+                texture,
+                kind,
+                vec2(x, y),
+                -std::f32::consts::FRAC_PI_2,
+                1.0,
+                0,
+            );
             draw_rectangle(
                 BOARD_X + cx as f32 * CELL,
                 BOARD_Y + cy as f32 * CELL,
@@ -1255,7 +1245,7 @@ fn tower_info_y() -> f32 {
     200.0 + TowerKind::ALL.len().div_ceil(3) as f32 * 58.0
 }
 
-fn draw_sidebar(game: &Game) {
+fn draw_sidebar(game: &Game, texture: &Texture2D) {
     let x = BOARD_X + BOARD_W + 20.0;
     let width = 344.0;
     let height = screen_height() - 100.0;
@@ -1323,9 +1313,9 @@ fn draw_sidebar(game: &Game) {
             if selected || hovered { GOLD } else { LINE },
         );
         draw_tower_shape(
+            texture,
             *kind,
-            bx + 18.0,
-            by + 24.0,
+            vec2(bx + 18.0, by + 24.0),
             -std::f32::consts::FRAC_PI_2,
             0.45,
             0,
@@ -1557,6 +1547,18 @@ fn draw_start_screen() -> Option<Mode> {
 
 #[macroquad::main("Dedale Defense")]
 async fn main() {
+    let tower_texture = Texture2D::from_file_with_format(TOWER_ATLAS_BYTES, Some(ImageFormat::Png));
+    assert_eq!(
+        tower_texture.width(),
+        TOWER_FRAME_SIZE * 8.0,
+        "invalid tower atlas width"
+    );
+    assert_eq!(
+        tower_texture.height(),
+        TOWER_ATLAS_HEIGHT,
+        "invalid tower atlas height"
+    );
+    tower_texture.set_filter(FilterMode::Nearest);
     request_new_screen_size(
         BOARD_X + BOARD_W + 382.0,
         (BOARD_Y + BOARD_H + 126.0)
@@ -1616,8 +1618,8 @@ async fn main() {
                 15.0,
                 MUTED,
             );
-            let cell = draw_board(current, mouse_vec);
-            draw_sidebar(current);
+            let cell = draw_board(current, mouse_vec, &tower_texture);
+            draw_sidebar(current, &tower_texture);
             if is_mouse_button_pressed(MouseButton::Right) {
                 current.build_kind = None;
                 current.selected_id = None;
@@ -1694,6 +1696,50 @@ async fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn tower_atlas_has_all_transparent_frames_and_eight_directions() {
+        let image =
+            Image::from_file_with_format(TOWER_ATLAS_BYTES, Some(ImageFormat::Png)).unwrap();
+        assert_eq!(image.width as f32, TOWER_FRAME_SIZE * 8.0);
+        assert_eq!(image.height as f32, TOWER_ATLAS_HEIGHT);
+        assert_eq!(TOWER_DRAW_SIZE, CELL * 2.0);
+        for kind in TowerKind::ALL {
+            for direction in 0..8 {
+                for turns in -2..=2 {
+                    for offset in [-0.1, 0.0, 0.1] {
+                        let angle = direction as f32 * std::f32::consts::FRAC_PI_4
+                            + turns as f32 * std::f32::consts::TAU
+                            + offset;
+                        let frame = tower_sprite_frame(kind, angle);
+                        assert_eq!(frame.x, direction as f32 * TOWER_FRAME_SIZE);
+                        assert_eq!(
+                            frame.y,
+                            TOWER_SPRITE_ROWS[kind.index()] as f32 * TOWER_FRAME_SIZE
+                        );
+                    }
+                }
+                let frame =
+                    tower_sprite_frame(kind, direction as f32 * std::f32::consts::FRAC_PI_4);
+                let x = frame.x as u32;
+                let y = frame.y as u32;
+                let size = TOWER_FRAME_SIZE as u32;
+                let mut visible = 0;
+                for dy in 0..size {
+                    for dx in 0..size {
+                        let alpha = image.get_pixel(x + dx, y + dy).a;
+                        if dx == 0 || dy == 0 || dx == size - 1 || dy == size - 1 {
+                            assert_eq!(alpha, 0.0, "sprite must have transparent padding");
+                        }
+                        if alpha > 0.0 {
+                            visible += 1;
+                        }
+                    }
+                }
+                assert!(visible > 1000, "missing tower sprite");
+            }
+        }
+    }
 
     #[test]
     fn construction_hint_expires_and_first_click_still_places_a_tower() {

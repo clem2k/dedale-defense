@@ -3,6 +3,7 @@
 // Towers block their way, so the player builds a maze; a tower may never close the last path.
 
 import { CONTENT } from "./content.js";
+import { TOWER_ATLAS } from "./tower-atlas.js";
 
 const CELL = CONTENT.board.cell;
 const COLS = CONTENT.board.cols;
@@ -15,6 +16,14 @@ const RULES = CONTENT.rules;
 const MODES = Object.fromEntries(CONTENT.levels.map((level) => [level.id, level]));
 const TOWERS = CONTENT.towers;
 const CREEPS = CONTENT.enemies;
+
+function towerSpriteFrame(type, angle) {
+  const direction = ((Math.floor(angle / (Math.PI / 4) + 0.5) % 8) + 8) % 8;
+  return {
+    x: direction * TOWER_ATLAS.frameSize,
+    y: TOWER_ATLAS.towers.indexOf(TOWERS[type].id) * TOWER_ATLAS.frameSize,
+  };
+}
 
 function waveDef(n, modeKey = mode) {
   const level = MODES[modeKey];
@@ -517,6 +526,18 @@ function endGame(won) {
 }
 
 // ---------- Drawing ----------
+const towerImage = new Image();
+towerImage.src = new URL(`./assets/towers/${TOWER_ATLAS.image}`, import.meta.url).href;
+try {
+  await towerImage.decode();
+  if (towerImage.naturalWidth !== TOWER_ATLAS.frameSize * TOWER_ATLAS.directions.length
+    || towerImage.naturalHeight !== TOWER_ATLAS.frameSize * TOWER_ATLAS.towers.length) {
+    throw new Error("Tower atlas dimensions do not match its metadata");
+  }
+} catch (error) {
+  document.getElementById("game").textContent = "Impossible de charger les sprites des tours. Rechargez la page.";
+  throw new Error("Failed to load tower sprites", { cause: error });
+}
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 let pixelScale = 1;
@@ -592,57 +613,14 @@ function drawBackground() {
 }
 
 function drawTowerShape(g, type, level, x, y, angle, size = 1) {
-  const d = TOWERS[type];
+  const frame = towerSpriteFrame(type, angle);
   g.save();
   g.translate(x, y);
   g.scale(size, size);
-  // base
-  g.fillStyle = "#26354d";
-  roundRect(g, -18, -18, 36, 36, 6); g.fill();
-  g.strokeStyle = "rgba(255,255,255,0.12)"; g.lineWidth = 1; g.stroke();
-  g.fillStyle = "#1a2638";
-  roundRect(g, -14, -14, 28, 28, 5); g.fill();
-  // body
-  g.fillStyle = d.color;
-  switch (d.shot) {
-    case "pellet":
-      g.beginPath(); g.arc(0, 0, 9, 0, Math.PI * 2); g.fill();
-      break;
-    case "shell":
-      g.beginPath();
-      for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; g.lineTo(Math.cos(a) * 11, Math.sin(a) * 11); }
-      g.closePath(); g.fill();
-      break;
-    case "dart":
-      g.beginPath(); g.moveTo(0, -12); g.lineTo(11, 0); g.lineTo(0, 12); g.lineTo(-11, 0); g.closePath(); g.fill();
-      break;
-    case "missile":
-      roundRect(g, -10, -10, 20, 20, 4); g.fill();
-      g.fillStyle = "#1a2638";
-      for (const [a, b] of [[-5, -5], [5, -5], [-5, 5], [5, 5]]) { g.beginPath(); g.arc(a, b, 2.6, 0, Math.PI * 2); g.fill(); }
-      break;
-    case "ice":
-      g.strokeStyle = d.color; g.lineWidth = 3; g.lineCap = "round";
-      for (let i = 0; i < 3; i++) {
-        const a = (i / 3) * Math.PI;
-        g.beginPath(); g.moveTo(Math.cos(a) * 11, Math.sin(a) * 11); g.lineTo(-Math.cos(a) * 11, -Math.sin(a) * 11); g.stroke();
-      }
-      g.beginPath(); g.arc(0, 0, 4, 0, Math.PI * 2); g.fill();
-      break;
-    case "pulse":
-      g.beginPath(); g.arc(0, 0, 10, 0, Math.PI * 2); g.fill();
-      g.strokeStyle = "#1a2638"; g.lineWidth = 2;
-      g.beginPath(); g.arc(0, 0, 6, 0, Math.PI * 2); g.stroke();
-      g.beginPath(); g.arc(0, 0, 2, 0, Math.PI * 2); g.stroke();
-      break;
-  }
-  // barrel
-  if (d.shot !== "pulse" && d.shot !== "ice") {
-    g.rotate(angle);
-    g.fillStyle = d.accent;
-    g.fillRect(2, -2, d.shot === "dart" ? 14 : 11, 4);
-    g.rotate(-angle);
-  }
+  g.imageSmoothingEnabled = false;
+  const half = TOWER_ATLAS.drawSize / 2;
+  g.drawImage(towerImage, frame.x, frame.y, TOWER_ATLAS.frameSize, TOWER_ATLAS.frameSize,
+    -half, -half, TOWER_ATLAS.drawSize, TOWER_ATLAS.drawSize);
   // level pips
   for (let i = 0; i < level; i++) {
     g.fillStyle = "#fac515";
@@ -750,7 +728,7 @@ function draw() {
   if (selected) showRange(selected.x, selected.y, towerStats(selected).range, "#ffffff");
 
   for (const t of S.towers) {
-    drawTowerShape(ctx, t.type, t.level, t.x, t.y, t.angle, 1.08);
+    drawTowerShape(ctx, t.type, t.level, t.x, t.y, t.angle);
     if (t === selected) {
       ctx.strokeStyle = "#fac515"; ctx.lineWidth = 2;
       ctx.strokeRect(t.x - CELL + 1, t.y - CELL + 1, CELL * 2 - 2, CELL * 2 - 2);
@@ -764,7 +742,7 @@ function draw() {
     const x = (hover.cx + 1) * CELL, y = (hover.cy + 1) * CELL;
     showRange(x, y, TOWERS[buildType].range[0] * CONTENT.board.rangeScale, ok ? "#3ccb7f" : "#eb3751");
     ctx.globalAlpha = 0.65;
-    drawTowerShape(ctx, buildType, 0, x, y, -Math.PI / 2, 1.08);
+    drawTowerShape(ctx, buildType, 0, x, y, -Math.PI / 2);
     ctx.globalAlpha = 1;
     ctx.fillStyle = ok ? "rgba(60,203,127,0.25)" : "rgba(235,55,81,0.35)";
     ctx.fillRect(hover.cx * CELL, hover.cy * CELL, CELL * 2, CELL * 2);

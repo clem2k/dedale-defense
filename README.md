@@ -4,6 +4,35 @@ Jeu de tower defense inspiré de *Desktop Tower Defense* : les ennemis traversen
 
 Voir [user.md](user.md) pour le guide du joueur.
 
+## Sprites communs
+
+Les deux moteurs utilisent le même [atlas PNG transparent](assets/towers/towers.png),
+décrit par [assets/towers/atlas.json](assets/towers/atlas.json). Ses six lignes correspondent
+à Caillou, Éclat, Aiguille, Volée, Givre et Onde ; ses huit colonnes sont
+E, SE, S, SW, W, NW, N et NE. Les vues ne sont pas tournées par le moteur :
+l'angle de visée sélectionne la direction la plus proche, avec un cadrage fixe
+et une marge transparente contre les débordements entre images.
+
+Le rendu sur le plateau reste dans une empreinte de 40 × 40 pixels.
+Les boutons, les aperçus de placement et les tours posées utilisent cet atlas,
+sans changer les collisions, les portées ou les cinq indicateurs d'amélioration.
+Le build web copie le PNG dans `app/dist/assets/towers/` et résout son chemin
+depuis le module JavaScript, y compris sur les pages localisées.
+Le Rust embarque le PNG dans l'exécutable : aucun fichier externe n'est nécessaire.
+
+La [référence JPEG](assets/sprite_towers.jpeg) reste intacte. Pour régénérer
+l'atlas après une modification de cette référence, avec Python et Pillow installés :
+
+```sh
+python3 assets/towers/build_atlas.py
+npm --prefix app run build
+cargo build --release --manifest-path rust/Cargo.toml
+```
+
+L'extraction retire le fond sombre, les cadres et les annotations. Les coordonnées
+sont propres à cette planche ; une nouvelle mise en page nécessite de les adapter.
+Les futurs sprites peuvent être regroupés par famille sous `assets/` (par exemple `enemies/`).
+
 ## Version native Rust
 
 Le dossier `rust/` contient une version graphique native du jeu, écrite en Rust avec Macroquad. Elle s'exécute comme une application de bureau et ne contient ni HTML ni navigateur.

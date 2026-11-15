@@ -9,6 +9,7 @@ import { loadContent, validateContent } from "./content.mjs";
 
 const content = loadContent();
 const source = readFileSync(new URL("./src/game.js", import.meta.url), "utf8");
+const atlas = JSON.parse(readFileSync(new URL("../assets/towers/atlas.json", import.meta.url), "utf8"));
 const csv = readFileSync(new URL("../towers.csv", import.meta.url), "utf8").trim().split(/\r?\n/).slice(1).map((r) => r.split(","));
 
 test("construction hint expires at five real seconds and dismisses immediately", () => {
@@ -28,6 +29,47 @@ test("construction hint expires at five real seconds and dismisses immediately",
   game.tryPlace(5, 5);
   assert.equal(game.state.towers.length, 1);
   assert.equal(game.showStartHint(), false);
+});
+
+test("all tower sprites select the correct row and nearest of eight directions", () => {
+  const game = simulation();
+  assert.equal(atlas.drawSize, content.board.cell * 2);
+  for (let type = 0; type < content.towers.length; type++) {
+    for (let direction = 0; direction < 8; direction++) {
+      for (const turns of [-2, -1, 0, 1, 2]) {
+        for (const offset of [-0.1, 0, 0.1]) {
+          const frame = game.towerSpriteFrame(type, direction * Math.PI / 4 + turns * Math.PI * 2 + offset);
+          assert.equal(frame.x, direction * atlas.frameSize);
+          assert.equal(frame.y, atlas.towers.indexOf(content.towers[type].id) * atlas.frameSize);
+        }
+      }
+    }
+  }
+});
+
+test("tower rendering uses the atlas without rotating it and preserves level indicators", () => {
+  const game = simulation();
+  const renderer = source.slice(source.indexOf("function drawTowerShape("), source.indexOf("function roundRect("));
+  const image = {};
+  const draw = vm.runInNewContext(`${renderer}; drawTowerShape`, {
+    TOWER_ATLAS: atlas, towerImage: image, towerSpriteFrame: game.towerSpriteFrame,
+  });
+  for (let type = 0; type < 6; type++) {
+    for (let direction = 0; direction < 8; direction++) {
+      const calls = [];
+      let pips = 0;
+      const g = {
+        save() {}, restore() {}, translate() {}, scale() {}, beginPath() {}, fill() {},
+        arc() { pips++; }, drawImage(...args) { calls.push(args); },
+      };
+      draw(g, type, 5, 100, 120, direction * Math.PI / 4);
+      assert.equal(calls.length, 1);
+      assert.deepEqual(calls[0], [image, direction * atlas.frameSize, type * atlas.frameSize,
+        atlas.frameSize, atlas.frameSize, -20, -20, 40, 40]);
+      assert.equal(g.imageSmoothingEnabled, false);
+      assert.equal(pips, 5);
+    }
+  }
 });
 
 test("all 36 CSV rows match the shared tower definitions exactly", () => {
@@ -183,13 +225,15 @@ for (const special of ["spread", "slow", "stun"]) {
 
 function simulation(data = content, now = () => 0) {
   const logic = source.slice(0, source.indexOf("// ---------- Drawing ----------"))
-    .replace('import { CONTENT } from "./content.js";', "");
+    .replace('import { CONTENT } from "./content.js";', "")
+    .replace('import { TOWER_ATLAS } from "./tower-atlas.js";', "");
   const setBuild = source.slice(source.indexOf("function setBuild("), source.indexOf("function togglePause("));
   const boardPos = source.slice(source.indexOf("function boardPos("), source.indexOf('canvas.addEventListener("pointermove"'));
   return vm.runInNewContext(`${logic}\n${setBuild}\n${boardPos}
     ({ get state() { return S; }, newGame, waveDef, sendWave, update,
-       setBuild, tryPlace, placeCheck, moveCreep, boardPos, nextStep, towerStats, sellValue, upgrade, sell, hurt, spawn, makeCreep, impact, fire, updateShots, showStartHint, dismissStartHint })`, {
+       setBuild, tryPlace, placeCheck, moveCreep, boardPos, nextStep, towerStats, sellValue, upgrade, sell, hurt, spawn, makeCreep, impact, fire, updateShots, showStartHint, dismissStartHint, towerSpriteFrame })`, {
     CONTENT: data,
+    TOWER_ATLAS: atlas,
     performance: { now },
     canvas: { style: {}, getBoundingClientRect: () => ({
       left: 10, top: 20, width: content.board.cols * content.board.cell / 2, height: content.board.rows * content.board.cell / 2,
@@ -398,6 +442,10 @@ test("browser build embeds exact shared content and wires every localized page",
   execFileSync(process.execPath, ["build.mjs"], { cwd: new URL(".", import.meta.url) });
   const built = await import("./dist/content.js");
   assert.deepEqual(built.CONTENT, content);
+  const builtAtlas = await import("./dist/tower-atlas.js");
+  assert.deepEqual(builtAtlas.TOWER_ATLAS, atlas);
+  assert.deepEqual(readFileSync(new URL("./dist/assets/towers/towers.png", import.meta.url)),
+    readFileSync(new URL("../assets/towers/towers.png", import.meta.url)));
   for (const prefix of ["", ...["en", "es", "de", "fr", "id"].map((lang) => `${lang}/games/preecep/desktop-tower-defense/`)]) {
     const html = readFileSync(new URL(`./dist/${prefix}index.html`, import.meta.url), "utf8");
     assert.ok(!html.includes("{{"));
