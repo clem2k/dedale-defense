@@ -88,17 +88,22 @@ fn begin_ui() {
     if cfg!(target_os = "android") {
         let size = window_size();
         let framebuffer = vec2(screen_width(), screen_height()) * screen_dpi_scale();
-        let viewport = Viewport::fit(framebuffer, size);
-        set_camera(&Camera2D {
-            viewport: Some((
-                viewport.offset.x.round() as i32,
-                viewport.offset.y.round() as i32,
-                viewport.size.x.round() as i32,
-                viewport.size.y.round() as i32,
-            )),
-            ..Camera2D::from_display_rect(Rect::new(0.0, 0.0, size.x, size.y))
-        });
+        set_camera(&screen_camera(Viewport::fit(framebuffer, size), size));
     }
+}
+
+/// Camera drawing the logical UI into the letterboxed part of the screen.
+fn screen_camera(viewport: Viewport, logical: Vec2) -> Camera2D {
+    let mut camera = Camera2D::from_display_rect(Rect::new(0.0, 0.0, logical.x, logical.y));
+    // from_display_rect targets render textures; on screen it would draw upside down.
+    camera.zoom.y = -camera.zoom.y;
+    camera.viewport = Some((
+        viewport.offset.x.round() as i32,
+        viewport.offset.y.round() as i32,
+        viewport.size.x.round() as i32,
+        viewport.size.y.round() as i32,
+    ));
+    camera
 }
 
 const FX_BYTES: [&[u8]; 7] = [
@@ -2099,6 +2104,17 @@ mod tests {
         let viewport = Viewport::fit(vec2(2400.0, 1080.0), window_size());
         assert!(viewport.pointer(vec2(0.0, 540.0)).x < 0.0);
         assert!(viewport.pointer(vec2(2400.0, 540.0)).x > window_size().x);
+    }
+
+    #[test]
+    fn mobile_camera_keeps_the_ui_upright() {
+        let logical = window_size();
+        let camera = screen_camera(Viewport::fit(vec2(2400.0, 1080.0), logical), logical);
+        let top_left = camera.matrix().project_point3(vec3(0.0, 0.0, 0.0));
+        let bottom_right = camera.matrix().project_point3(logical.extend(0.0));
+        // Clip space has +y at the top of the screen.
+        assert!((top_left - vec3(-1.0, 1.0, 0.0)).length() < 0.001);
+        assert!((bottom_right - vec3(1.0, -1.0, 0.0)).length() < 0.001);
     }
 
     #[test]

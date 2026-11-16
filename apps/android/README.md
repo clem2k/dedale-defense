@@ -33,12 +33,12 @@ La révision est figée : la version 0.1.4 publiée sur crates.io utilise un anc
 Cargo incompatible avec le workspace. Le petit point d'entrée Android reste en
 édition Rust 2021 pour le code JNI injecté par Miniquad ; le moteur reste en 2024.
 Le script vérifie la signature de l'APK produit :
-`target/android-artifacts/debug/apk/dedale-android.apk`.
+`target/android-artifacts/debug/apk/defense.apk`.
 
 Avec un appareil en débogage USB ou un émulateur déjà lancé :
 
 ```sh
-"$ANDROID_HOME/platform-tools/adb" install -r target/android-artifacts/debug/apk/dedale-android.apk
+"$ANDROID_HOME/platform-tools/adb" install -r target/android-artifacts/debug/apk/defense.apk
 "$ANDROID_HOME/platform-tools/adb" shell am start -n fr.dedale.defense/.MainActivity
 ```
 
@@ -76,6 +76,13 @@ sont accessibles sans clavier. **Options** suspend la simulation et règle le so
 
 Pour modifier le jeu, travailler dans le moteur partagé ; pour modifier le paquet
 (identifiant, versions, SDK, architectures), éditer `apps/android/Cargo.toml`.
+Le binaire doit rester nommé `defense` (dernier segment de `fr.dedale.defense`) :
+le lanceur généré charge `libdefense.so`, sinon l'appli plante à l'ouverture.
+Le script de build refuse un APK où cette bibliothèque manque.
+
+L'icône (adaptative Android 8+, avec PNG de repli) est générée depuis l'atlas des tours
+dans `apps/android/res/` : `python3 apps/android/icon/build_icon.py` (Pillow requis).
+Les PNG produits sont versionnés ; le build n'a pas besoin de Python.
 Le bureau reste un point d'entrée distinct et conserve ses commandes clavier/souris.
 
 ## Vérification sur appareil
