@@ -17,6 +17,19 @@ Tenez toutes les vagues du mode choisi sans perdre toutes vos vies. Chaque ennem
 
 Votre record est enregistré par mode dans ce navigateur.
 
+## Son et options
+
+Dans les versions web et native, **Options** ouvre le réglage du volume des effets
+sonores (0 à 100 %, 50 % au départ). La partie est suspendue pendant les réglages ;
+**Fermer** ou **Échap** revient au jeu, sans annuler une pause déjà activée.
+Dans la version native, le curseur se déplace aussi avec les flèches gauche/droite.
+
+Le bouton **Mute OFF / Mute ON** dans l'interface principale coupe ou réactive les
+sons immédiatement, sans perdre le volume choisi. Les réglages sont conservés entre
+les parties tant que le jeu reste ouvert. Chaque tour possède son son de tir ;
+un son distinct signale la perte de vies. Sur le web, les sons commencent après
+la première interaction avec la page.
+
 ## Raccourcis
 
 | Touche | Action |

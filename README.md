@@ -4,6 +4,25 @@ Jeu de tower defense inspiré de *Desktop Tower Defense* : les ennemis traversen
 
 Voir [user.md](user.md) pour le guide du joueur.
 
+## Effets sonores
+
+Les deux versions utilisent les MP3 de [assets/fx/](assets/fx/) :
+`01` à `06` correspondent respectivement à Caillou, Éclat, Aiguille, Volée,
+Givre et Onde ; `HIT` accompagne chaque ennemi qui fait perdre des vies,
+y compris la dernière vie. Une salve multicible ne joue qu'un son de tir.
+Les tours personnalisées reprennent le son de leur type de projectile (`shot`).
+
+**Options** suspend temporairement la simulation et règle le volume FX de 0 à 100 %.
+Le bouton **Mute OFF / Mute ON**, toujours visible dans l'interface principale,
+coupe ou réactive immédiatement les sons, sans modifier ce volume.
+Les réglages restent actifs entre les parties pendant la session ; le volume initial
+est de 50 %. Dans le navigateur, les sons s'activent après la première interaction.
+
+Le build web copie les MP3 avec des chemins relatifs au module pour toutes les pages
+localisées. Le build Rust décode les MP3 en WAV avec `minimp3` et `hound`, puis les
+embarque : ni convertisseur externe ni fichier audio externe n'est requis à l'exécution.
+La fonctionnalité audio de Macroquad est activée ; sous Linux, ALSA doit être disponible.
+
 ## Sprites communs
 
 Les deux moteurs utilisent le même [atlas PNG transparent](assets/towers/towers.png),
@@ -124,10 +143,12 @@ app/
   content.mjs      # chargement et validation des données communes
   csv.mjs          # lecture des CSV et conversion en définitions communes
   content.test.mjs # tests des données, de la simulation et du build
+  audio.test.mjs   # tests de lecture FX, volume, mute et erreurs
   package.json
   src/
     index.html     # page du jeu ({{BASE}} est remplacé au build)
     game.js        # logique, rendu canvas, interface
+    audio.js       # chargement et mixage des effets sonores via Web Audio
     style.css
 rust/
   Cargo.toml       # application native Rust

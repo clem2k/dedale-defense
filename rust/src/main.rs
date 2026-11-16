@@ -1,3 +1,6 @@
+use macroquad::audio::{
+    PlaySoundParams, Sound, load_sound_from_bytes, play_sound, set_sound_volume,
+};
 use macroquad::prelude::*;
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
@@ -9,6 +12,184 @@ const BOARD_W: f32 = COLS as f32 * CELL;
 const BOARD_H: f32 = ROWS as f32 * CELL;
 const BOARD_X: f32 = 18.0;
 const BOARD_Y: f32 = 74.0;
+const FX_BYTES: [&[u8]; 7] = [
+    include_bytes!(concat!(env!("OUT_DIR"), "/01.wav")),
+    include_bytes!(concat!(env!("OUT_DIR"), "/02.wav")),
+    include_bytes!(concat!(env!("OUT_DIR"), "/03.wav")),
+    include_bytes!(concat!(env!("OUT_DIR"), "/04.wav")),
+    include_bytes!(concat!(env!("OUT_DIR"), "/05.wav")),
+    include_bytes!(concat!(env!("OUT_DIR"), "/06.wav")),
+    include_bytes!(concat!(env!("OUT_DIR"), "/HIT.wav")),
+];
+
+fn tower_fx(kind: TowerKind) -> usize {
+    TOWERS[kind.index()].fx
+}
+
+struct AudioSettings {
+    volume: u8,
+    muted: bool,
+}
+
+impl AudioSettings {
+    fn effective_volume(&self) -> f32 {
+        if self.muted {
+            0.0
+        } else {
+            self.volume as f32 / 100.0
+        }
+    }
+}
+
+struct FxAudio {
+    sounds: Vec<Sound>,
+    settings: AudioSettings,
+    options_open: bool,
+    dragging: bool,
+}
+
+impl FxAudio {
+    async fn load() -> Self {
+        let mut sounds = Vec::new();
+        for bytes in FX_BYTES {
+            sounds.push(
+                load_sound_from_bytes(bytes)
+                    .await
+                    .expect("cannot load embedded FX"),
+            );
+        }
+        Self {
+            sounds,
+            settings: AudioSettings {
+                volume: 50,
+                muted: false,
+            },
+            options_open: false,
+            dragging: false,
+        }
+    }
+
+    fn play_pending(&self, pending: &mut Vec<usize>) {
+        let volume = self.settings.effective_volume();
+        for index in pending.drain(..) {
+            if volume > 0.0 {
+                play_sound(
+                    &self.sounds[index],
+                    PlaySoundParams {
+                        looped: false,
+                        volume,
+                    },
+                );
+            }
+        }
+    }
+
+    fn draw_controls(&mut self) {
+        let previous = self.settings.effective_volume();
+        if button(
+            Rect::new(screen_width() - 230.0, 18.0, 100.0, 32.0),
+            "Options",
+            false,
+            !self.options_open,
+        ) {
+            self.options_open = true;
+        }
+        if button(
+            Rect::new(screen_width() - 120.0, 18.0, 100.0, 32.0),
+            if self.settings.muted {
+                "Mute ON"
+            } else {
+                "Mute OFF"
+            },
+            self.settings.muted,
+            !self.options_open,
+        ) {
+            self.settings.muted = !self.settings.muted;
+        }
+        if self.options_open {
+            draw_rectangle(
+                0.0,
+                0.0,
+                screen_width(),
+                screen_height(),
+                Color::new(0.02, 0.04, 0.07, 0.9),
+            );
+            let x = (screen_width() - 400.0) / 2.0;
+            let y = (screen_height() - 250.0) / 2.0;
+            draw_rectangle(x, y, 400.0, 250.0, PANEL);
+            draw_rectangle_lines(x, y, 400.0, 250.0, 1.0, LINE);
+            draw_text("OPTIONS", x + 24.0, y + 36.0, 24.0, TEXT);
+            draw_text(
+                "Partie suspendue pendant les reglages.",
+                x + 24.0,
+                y + 64.0,
+                16.0,
+                MUTED,
+            );
+            draw_text(
+                &format!("Volume FX : {} %", self.settings.volume),
+                x + 24.0,
+                y + 100.0,
+                20.0,
+                TEXT,
+            );
+            let slider = Rect::new(x + 24.0, y + 118.0, 352.0, 24.0);
+            let mouse = mouse_position();
+            if is_mouse_button_pressed(MouseButton::Left) {
+                self.dragging = slider.contains(vec2(mouse.0, mouse.1));
+            }
+            if self.dragging && is_mouse_button_down(MouseButton::Left) {
+                self.settings.volume =
+                    (((mouse.0 - slider.x) / slider.w).clamp(0.0, 1.0) * 100.0).round() as u8;
+            }
+            if is_mouse_button_released(MouseButton::Left) {
+                self.dragging = false;
+            }
+            if is_key_pressed(KeyCode::Left) {
+                self.settings.volume = self.settings.volume.saturating_sub(1);
+            }
+            if is_key_pressed(KeyCode::Right) {
+                self.settings.volume = self.settings.volume.saturating_add(1).min(100);
+            }
+            if is_key_pressed(KeyCode::Home) {
+                self.settings.volume = 0;
+            }
+            if is_key_pressed(KeyCode::End) {
+                self.settings.volume = 100;
+            }
+            draw_rectangle(slider.x, slider.y + 10.0, slider.w, 4.0, LINE);
+            draw_circle(
+                slider.x + slider.w * self.settings.volume as f32 / 100.0,
+                slider.y + 12.0,
+                8.0,
+                GOLD,
+            );
+            draw_text(
+                "Fleches : volume. Le mute garde ce reglage.",
+                x + 24.0,
+                y + 172.0,
+                15.0,
+                MUTED,
+            );
+            if button(
+                Rect::new(x + 140.0, y + 194.0, 120.0, 32.0),
+                "Fermer",
+                true,
+                true,
+            ) || is_key_pressed(KeyCode::Escape)
+            {
+                self.options_open = false;
+                self.dragging = false;
+            }
+        }
+        let volume = self.settings.effective_volume();
+        if volume != previous {
+            for sound in &self.sounds {
+                set_sound_volume(sound, volume);
+            }
+        }
+    }
+}
 #[derive(Clone, Copy)]
 struct SpriteDef {
     texture: usize,
@@ -115,6 +296,7 @@ struct Game {
     message: String,
     message_time: f32,
     start_hint_until: Option<Instant>,
+    pending_audio: Vec<usize>,
 }
 
 impl Game {
@@ -147,6 +329,7 @@ impl Game {
             message: String::new(),
             message_time: 0.0,
             start_hint_until: Some(Instant::now() + Duration::from_secs(5)),
+            pending_audio: Vec::new(),
         };
         game.refresh_fields();
         game
@@ -590,6 +773,7 @@ impl Game {
         let loss = self.creeps[index].kind.def().life_loss;
         self.creeps[index].dead = true;
         self.lives = (self.lives - loss).max(0);
+        self.pending_audio.push(6);
         if self.lives == 0 {
             self.finish(false);
         }
@@ -721,6 +905,7 @@ impl Game {
                 continue;
             }
             tower.angle = (targets[0].3 - y).atan2(targets[0].2 - x);
+            self.pending_audio.push(tower_fx(tower.kind));
             for (_, id, _, _) in targets.into_iter().take(def.multi) {
                 shots.push(Shot {
                     target_id: id,
@@ -1517,7 +1702,7 @@ fn board_click(game: &mut Game, position: Vec2, shift: bool) {
     );
 }
 
-fn draw_start_screen() -> Option<Mode> {
+fn draw_start_screen(enabled: bool) -> Option<Mode> {
     draw_rectangle(
         0.0,
         0.0,
@@ -1556,7 +1741,7 @@ fn draw_start_screen() -> Option<Mode> {
                 mode.lives()
             ),
             *mode == Mode::Normal,
-            true,
+            enabled,
         ) {
             return Some(*mode);
         }
@@ -1566,6 +1751,7 @@ fn draw_start_screen() -> Option<Mode> {
 
 #[macroquad::main("Dedale Defense")]
 async fn main() {
+    let mut audio = FxAudio::load().await;
     let textures: Vec<_> = SPRITE_IMAGES
         .iter()
         .map(|bytes| {
@@ -1584,8 +1770,9 @@ async fn main() {
     let mut game: Option<Game> = None;
     loop {
         clear_background(Color::new(0.035, 0.055, 0.085, 1.0));
+        let input_enabled = !audio.options_open;
         if game.is_none() {
-            if let Some(mode) = draw_start_screen() {
+            if let Some(mode) = draw_start_screen(input_enabled) {
                 game = Some(Game::new(mode));
             }
         } else if let Some(current) = &mut game {
@@ -1614,7 +1801,7 @@ async fn main() {
                 KeyCode::N,
                 KeyCode::F,
             ] {
-                if is_key_pressed(key) {
+                if input_enabled && is_key_pressed(key) {
                     current.handle_key(key);
                 }
             }
@@ -1635,11 +1822,11 @@ async fn main() {
             );
             let cell = draw_board(current, mouse_vec, &textures);
             draw_sidebar(current, &textures);
-            if is_mouse_button_pressed(MouseButton::Right) {
+            if input_enabled && is_mouse_button_pressed(MouseButton::Right) {
                 current.build_kind = None;
                 current.selected_id = None;
             }
-            if is_mouse_button_pressed(MouseButton::Left) && !current.over {
+            if input_enabled && is_mouse_button_pressed(MouseButton::Left) && !current.over {
                 if let Some(position) = cell {
                     board_click(current, position, current.keep_building);
                 } else {
@@ -1685,7 +1872,10 @@ async fn main() {
                 }
             }
             let dt = get_frame_time().min(0.1) * current.speed;
-            current.update(dt);
+            if input_enabled {
+                current.update(dt);
+            }
+            audio.play_pending(&mut current.pending_audio);
             if current.over {
                 let label = "N : nouvelle partie";
                 let dims = measure_text(label, None, 16, 1.0);
@@ -1696,7 +1886,7 @@ async fn main() {
                     16.0,
                     TEXT,
                 );
-                if is_key_pressed(KeyCode::N) {
+                if input_enabled && is_key_pressed(KeyCode::N) {
                     reset_mode = Some(current.mode);
                 }
             }
@@ -1704,6 +1894,7 @@ async fn main() {
                 game = Some(Game::new(mode));
             }
         }
+        audio.draw_controls();
         next_frame().await;
     }
 }
@@ -1711,6 +1902,61 @@ async fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fx_volume_and_mute_remain_independent() {
+        let mut settings = AudioSettings {
+            volume: 50,
+            muted: false,
+        };
+        assert_eq!(settings.effective_volume(), 0.5);
+        settings.muted = true;
+        assert_eq!(settings.effective_volume(), 0.0);
+        settings.volume = 27;
+        assert_eq!(settings.effective_volume(), 0.0);
+        settings.muted = false;
+        assert_eq!(settings.effective_volume(), 0.27);
+        settings.volume = 0;
+        assert_eq!(settings.effective_volume(), 0.0);
+    }
+
+    #[test]
+    fn embedded_fx_and_combat_events_cover_all_towers_and_life_loss() {
+        for bytes in FX_BYTES {
+            assert_eq!(&bytes[..4], b"RIFF");
+            assert_eq!(&bytes[8..12], b"WAVE");
+            assert!(bytes.len() > 44);
+        }
+        for kind in TowerKind::ALL {
+            let mut game = Game::new(Mode::UncleScrooge);
+            game.build_kind = Some(kind);
+            game.place_tower(5, 5);
+            game.fire_towers(0.0);
+            assert!(game.pending_audio.is_empty());
+            game.spawn(
+                if TOWERS[kind.index()].ground {
+                    EnemyKind::Walker
+                } else {
+                    EnemyKind::Flyer
+                },
+                100.0,
+                1.0,
+                Target::Right,
+            );
+            game.creeps[0].x = 6.0 * CELL;
+            game.creeps[0].y = 6.0 * CELL;
+            game.fire_towers(0.0);
+            assert_eq!(game.pending_audio, vec![tower_fx(kind)]);
+            assert_eq!(tower_fx(kind), kind.index());
+            game.pending_audio.clear();
+            game.fire_towers(0.0);
+            assert!(game.pending_audio.is_empty());
+            game.lives = 1;
+            game.leak(0);
+            assert_eq!(game.pending_audio, vec![6]);
+            assert!(game.over);
+        }
+    }
 
     #[test]
     fn csv_sprites_select_the_configured_image_frame_and_size() {

@@ -163,6 +163,45 @@ fn main() {
     let data: Value =
         serde_json::from_slice(&loaded.stdout).expect("invalid generated CSV content");
     let output_dir = PathBuf::from(env::var_os("OUT_DIR").expect("missing OUT_DIR"));
+    for name in ["01", "02", "03", "04", "05", "06", "HIT"] {
+        let path = format!("../assets/fx/{name}.mp3");
+        println!("cargo:rerun-if-changed={path}");
+        let mut decoder =
+            minimp3::Decoder::new(fs::File::open(&path).unwrap_or_else(|e| panic!("{path}: {e}")));
+        let first = decoder
+            .next_frame()
+            .unwrap_or_else(|e| panic!("{path}: {e:?}"));
+        let spec = hound::WavSpec {
+            channels: first.channels as u16,
+            sample_rate: first.sample_rate as u32,
+            bits_per_sample: 16,
+            sample_format: hound::SampleFormat::Int,
+        };
+        let mut writer = hound::WavWriter::create(output_dir.join(format!("{name}.wav")), spec)
+            .expect("cannot create decoded FX");
+        let mut frame = first;
+        loop {
+            assert_eq!(
+                frame.channels as u16, spec.channels,
+                "{path}: channel change"
+            );
+            assert_eq!(
+                frame.sample_rate as u32, spec.sample_rate,
+                "{path}: sample rate change"
+            );
+            for sample in frame.data {
+                writer
+                    .write_sample(sample)
+                    .expect("cannot write decoded FX");
+            }
+            match decoder.next_frame() {
+                Ok(next) => frame = next,
+                Err(minimp3::Error::Eof) => break,
+                Err(e) => panic!("{path}: {e:?}"),
+            }
+        }
+        writer.finalize().expect("cannot finalize decoded FX");
+    }
     fs::write(output_dir.join("content.json"), &loaded.stdout)
         .expect("cannot write generated content");
     assert_eq!(
@@ -336,7 +375,7 @@ fn main() {
     code += "#[derive(Clone, Copy)]\nstruct TowerDef { name: &'static str, cost: i32, upgrades: [i32; 5],\n\
         damage: [f32; 6], range: [f32; 6], rate: [f32; 6], ground: bool, air: bool, speed: f32,\n\
         multi: usize, sell: [i32; 6], special: [&'static str; 6], factor: [f32; 6],\n\
-        #[cfg(test)] shot: &'static str, key: char, accent: Color }\n";
+        #[cfg(test)] shot: &'static str, key: char, accent: Color, fx: usize }\n";
     code += &format!("const TOWERS: [TowerDef; {}] = [\n", towers.len());
     let mut keys = std::collections::HashSet::new();
     for t in towers {
@@ -362,7 +401,7 @@ fn main() {
         code += &format!(
             "TowerDef {{ name: {:?}, cost: {}, upgrades: {}, damage: {}, range: {}, rate: {},\n\
              ground: {}, air: {}, speed: {:?}_f32, multi: {},\n\
-             #[cfg(test)] shot: {:?}, key: {:?}, accent: {} }},\n",
+             #[cfg(test)] shot: {:?}, key: {:?}, accent: {}, fx: {} }},\n",
             text(field(t, "name")),
             uint(field(t, "cost")),
             ints(field(t, "ups")),
@@ -375,7 +414,11 @@ fn main() {
             uint(field(t, "multi")),
             shot,
             key.chars().next().unwrap(),
-            color(field(t, "accent"))
+            color(field(t, "accent")),
+            ["pellet", "dart", "shell", "missile", "ice", "pulse"]
+                .iter()
+                .position(|kind| *kind == shot)
+                .expect("unsupported tower FX")
         );
         let start = code.rfind("TowerDef {").unwrap();
         let special = array(field(t, "special"));

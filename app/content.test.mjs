@@ -8,6 +8,7 @@ import vm from "node:vm";
 import { pathToFileURL } from "node:url";
 import { loadContent, validateContent } from "./content.mjs";
 import { parseCsv } from "./csv.mjs";
+import { FX_NAMES, TOWER_FX } from "./src/audio.js";
 
 const content = loadContent();
 const source = readFileSync(new URL("./src/game.js", import.meta.url), "utf8");
@@ -228,6 +229,7 @@ function withFixture(run) {
       copyFileSync(new URL(`./${name}`, import.meta.url), join(app, name));
     }
     cpSync(new URL("./src", import.meta.url), join(app, "src"), { recursive: true });
+    cpSync(new URL("../assets/fx", import.meta.url), join(directory, "assets/fx"), { recursive: true });
     for (const file of ["towers.csv", "ennemies.csv", "game-content.json"]) {
       copyFileSync(new URL(`../${file}`, import.meta.url), join(directory, file));
     }
@@ -378,13 +380,16 @@ for (const special of ["spread", "slow", "stun"]) {
 
 function simulation(data = content, now = () => 0) {
   const logic = source.slice(0, source.indexOf("// ---------- Drawing ----------"))
-    .replace('import { CONTENT } from "./content.js";', "");
+    .replace('import { CONTENT } from "./content.js";', "")
+    .replace('import { FxAudio, TOWER_FX } from "./audio.js";', "");
+  const audio = { played: [], play(name) { this.played.push(name); } };
   const setBuild = source.slice(source.indexOf("function setBuild("), source.indexOf("function togglePause("));
   const boardPos = source.slice(source.indexOf("function boardPos("), source.indexOf('canvas.addEventListener("pointermove"'));
   return vm.runInNewContext(`${logic}\n${setBuild}\n${boardPos}
-    ({ get state() { return S; }, newGame, waveDef, sendWave, update,
+    ({ get state() { return S; }, audio, leak, newGame, waveDef, sendWave, update,
        setBuild, tryPlace, placeCheck, moveCreep, boardPos, nextStep, towerStats, sellValue, upgrade, sell, hurt, spawn, makeCreep, impact, fire, updateShots, showStartHint, dismissStartHint, towerSpriteFrame, enemySpriteFrame })`, {
     CONTENT: data,
+    TOWER_FX, audio,
     performance: { now },
     canvas: { style: {}, getBoundingClientRect: () => ({
       left: 10, top: 20, width: content.board.cols * content.board.cell / 2, height: content.board.rows * content.board.cell / 2,
@@ -595,6 +600,12 @@ test("browser build embeds exact shared content and wires every localized page",
   assert.deepEqual(built.CONTENT, content);
   assert.equal(existsSync(new URL("./dist/tower-atlas.js", import.meta.url)), false);
   assert.equal(existsSync(new URL("./dist/enemy-atlas.js", import.meta.url)), false);
+  for (const name of FX_NAMES) {
+    assert.deepEqual(readFileSync(new URL(`./dist/assets/fx/${name}.mp3`, import.meta.url)),
+      readFileSync(new URL(`../assets/fx/${name}.mp3`, import.meta.url)));
+  }
+  assert.equal(readFileSync(new URL("./dist/audio.js", import.meta.url), "utf8"),
+    readFileSync(new URL("./src/audio.js", import.meta.url), "utf8"));
   for (const image of new Set([...content.towers, ...Object.values(content.enemies)].map((d) => d.sprite.image))) {
     assert.deepEqual(readFileSync(new URL(`./dist/${image}`, import.meta.url)),
       readFileSync(new URL(`../${image}`, import.meta.url)));
@@ -604,5 +615,50 @@ test("browser build embeds exact shared content and wires every localized page",
     assert.ok(!html.includes("{{"));
     assert.ok(html.includes(prefix ? '../../../../game.js' : './game.js'));
     assert.ok(html.includes(`width="${content.board.cell * content.board.cols}" height="${content.board.cell * content.board.rows}"`));
+    for (const id of ["b-mute", "b-options", "options", "fx-volume"]) assert.ok(html.includes(`id="${id}"`));
   }
+});
+
+test("each tower plays its FX once per salvo, never without a target", () => {
+  for (const [type, tower] of content.towers.entries()) {
+    const game = simulation();
+    game.newGame("normal");
+    const placed = { type, level: 0, x: 100, y: 100 };
+    assert.equal(game.fire(placed), false);
+    assert.deepEqual(game.audio.played, []);
+    for (let i = 0; i < 3; i++) {
+      const creep = game.makeCreep(tower.ground ? "walker" : "flyer", 100, 1, "R", null);
+      creep.x = 100; creep.y = 100;
+    }
+    assert.equal(game.fire(placed), true);
+    assert.deepEqual(game.audio.played, [FX_NAMES[type]]);
+    game.newGame("normal");
+    assert.deepEqual(game.audio.played, [FX_NAMES[type]]);
+  }
+});
+
+test("losing lives plays HIT, including a boss and the final life", () => {
+  const game = simulation();
+  game.newGame("normal");
+  const boss = game.makeCreep("boss", 100, 1, "R", null);
+  game.leak(boss);
+  assert.equal(game.state.lives, content.levels.find((l) => l.id === "normal").lives - 2);
+  game.state.lives = 1;
+  game.leak(game.makeCreep("walker", 100, 1, "R", null));
+  assert.equal(game.state.over, true);
+  assert.deepEqual(game.audio.played, ["HIT", "HIT"]);
+});
+
+test("a multi-target salvo plays one FX for all projectiles", () => {
+  const edited = structuredClone(content);
+  edited.towers[0].multi = 3;
+  const game = simulation(edited);
+  game.newGame("normal");
+  for (let i = 0; i < 3; i++) {
+    const creep = game.makeCreep("walker", 100, 1, "R", null);
+    creep.x = 100; creep.y = 100;
+  }
+  assert.equal(game.fire({ type: 0, level: 0, x: 100, y: 100 }), true);
+  assert.equal(game.state.shots.length, 3);
+  assert.deepEqual(game.audio.played, ["01"]);
 });

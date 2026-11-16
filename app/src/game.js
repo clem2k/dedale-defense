@@ -3,6 +3,7 @@
 // Towers block their way, so the player builds a maze; a tower may never close the last path.
 
 import { CONTENT } from "./content.js";
+import { FxAudio, TOWER_FX } from "./audio.js";
 
 const CELL = CONTENT.board.cell;
 const COLS = CONTENT.board.cols;
@@ -398,6 +399,7 @@ function leak(k) {
   k.dead = true;
   const loss = CREEPS[k.type].lifeLoss;
   S.lives = Math.max(0, S.lives - loss);
+  audio.play("HIT");
   S.floats.push({ x: Math.min(W - 20, Math.max(20, k.x)), y: Math.min(H - 10, Math.max(14, k.y)), text: `-${loss} vie`, color: "#eb3751", life: 1.2, max: 1.2 });
   if (S.lives <= 0) endGame(false);
 }
@@ -433,6 +435,7 @@ function fire(t) {
   inRange.sort((a, b) => remaining(a) - remaining(b));
   const targets = d.multi ? inRange.slice(0, d.multi) : [inRange[0]];
   t.angle = Math.atan2(targets[0].y - t.y, targets[0].x - t.x);
+  audio.play(TOWER_FX[d.shot]);
   for (const k of targets) {
     S.shots.push({
       kind: d.shot, x: t.x + Math.cos(t.angle) * 8, y: t.y + Math.sin(t.angle) * 8,
@@ -480,7 +483,7 @@ function impact(s) {
 
 // ---------- Main update ----------
 function update(dt) {
-  if (!S || S.over || S.paused || ui.overlayOpen) return;
+  if (!S || S.over || S.paused || ui.overlayOpen || ui.optionsOpen) return;
   S.time += dt;
 
   if (S.started && S.wave < MODES[S.mode].waves) {
@@ -817,9 +820,13 @@ function draw() {
 // ---------- Interface ----------
 const $ = (id) => document.getElementById(id);
 const overlay = $("overlay");
+const audio = new FxAudio((message) => { $("audio-error").textContent = message; });
+document.addEventListener("pointerdown", () => { void audio.unlock(); }, { capture: true });
+document.addEventListener("keydown", () => { void audio.unlock(); }, { capture: true });
 
 const ui = {
   overlayOpen: false,
+  optionsOpen: false,
   last: {},
   buildTowerButtons() {
     const box = $("towers");
@@ -1008,6 +1015,11 @@ canvas.addEventListener("pointerdown", (e) => {
 canvas.addEventListener("contextmenu", (e) => e.preventDefault());
 
 window.addEventListener("keydown", (e) => {
+  if (ui.optionsOpen) {
+    if (e.key === "Escape") { $("options").close(); e.preventDefault(); }
+    return;
+  }
+  if (e.target instanceof HTMLInputElement) return;
   if (e.key === "Shift") shiftHeld = true;
   if (!S || ui.overlayOpen) return;
   const k = e.key.toLowerCase();
@@ -1032,6 +1044,21 @@ $("b-next").addEventListener("click", () => { if (S && !S.paused) sendWave(); })
 $("b-pause").addEventListener("click", togglePause);
 $("b-speed").addEventListener("click", toggleSpeed);
 $("b-menu").addEventListener("click", () => { if (S) S.paused = false; ui.showStart(true); });
+$("b-mute").addEventListener("click", () => {
+  audio.toggleMute();
+  $("b-mute").textContent = audio.muted ? "Mute ON" : "Mute OFF";
+  $("b-mute").setAttribute("aria-pressed", String(audio.muted));
+});
+$("b-options").addEventListener("click", () => {
+  ui.optionsOpen = true;
+  $("options").showModal();
+});
+$("b-options-close").addEventListener("click", () => $("options").close());
+$("options").addEventListener("close", () => { ui.optionsOpen = false; });
+$("fx-volume").addEventListener("input", (event) => {
+  audio.setVolume(Number(event.target.value) / 100);
+  $("fx-volume-value").textContent = `${event.target.value} %`;
+});
 
 // Buttons lose focus after a click so Space keeps meaning "pause".
 document.addEventListener("click", (e) => {

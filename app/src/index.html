@@ -42,10 +42,26 @@
             <button id="b-speed" class="btn" title="F">Vitesse ×1</button>
           </div>
           <button id="b-menu" class="btn ghost">Nouvelle partie</button>
+          <div class="row">
+            <button id="b-options" class="btn" aria-haspopup="dialog">Options</button>
+            <button id="b-mute" class="btn" aria-pressed="false" title="Couper ou réactiver les sons FX">Mute OFF</button>
+          </div>
+          <p id="audio-error" role="status"></p>
         </div>
       </aside>
     </div>
   </main>
+  <dialog id="options" class="card" aria-labelledby="options-title">
+    <h2 id="options-title">Options</h2>
+    <p>La partie est suspendue pendant les réglages.</p>
+    <label for="fx-volume">Volume des effets sonores</label>
+    <div class="volume-control">
+      <input id="fx-volume" type="range" min="0" max="100" step="1" value="50" />
+      <output id="fx-volume-value" for="fx-volume">50 %</output>
+    </div>
+    <p>Le mute conserve votre réglage de volume.</p>
+    <button id="b-options-close" class="btn primary">Fermer</button>
+  </dialog>
   <section id="aide" class="help">
     <h2>Description</h2>
     <p>Un jeu de réflexion en temps réel : des vagues d'ennemis traversent le plateau, et vos tours doivent les arrêter avant qu'ils n'atteignent l'autre côté. Achetez des tours, placez-les sur le plateau et obligez les ennemis à faire de longs détours.</p>

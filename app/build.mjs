@@ -3,6 +3,7 @@ import { mkdirSync, rmSync, readFileSync, writeFileSync, copyFileSync } from "no
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadContent } from "./content.mjs";
+import { FX_NAMES } from "./src/audio.js";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const src = join(root, "src");
@@ -15,7 +16,10 @@ const towerKeys = keys.length > 1 && keys.every((key, i) => Number(key) === i + 
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
 
-for (const f of ["style.css", "game.js"]) copyFileSync(join(src, f), join(dist, f));
+for (const f of ["style.css", "game.js", "audio.js"]) copyFileSync(join(src, f), join(dist, f));
+mkdirSync(join(dist, "assets/fx"), { recursive: true });
+for (const name of FX_NAMES)
+  copyFileSync(join(root, "../assets/fx", `${name}.mp3`), join(dist, "assets/fx", `${name}.mp3`));
 writeFileSync(join(dist, "content.js"), `export const CONTENT = ${JSON.stringify(content)};\n`);
 for (const image of new Set([...content.towers, ...Object.values(content.enemies)].map((d) => d.sprite.image))) {
   mkdirSync(dirname(join(dist, image)), { recursive: true });
