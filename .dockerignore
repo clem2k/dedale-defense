@@ -1,0 +1,12 @@
+.git
+node_modules
+target
+apps/web/dist
+.android-sdk
+.android
+agent-session.jsonl
+inbox
+*.keystore
+*.jks
+local.properties
+.cache

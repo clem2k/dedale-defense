@@ -81,7 +81,7 @@ export function validateContent(data) {
   return data;
 }
 
-export function loadContent(root = new URL("../", import.meta.url)) {
+export function loadContent(root = new URL("../../", import.meta.url)) {
   const data = JSON.parse(readFileSync(new URL("game-content.json", root), "utf8"));
   if ("towers" in data || "enemies" in data)
     throw new Error("game-content.json: towers and enemies must be defined only in towers.csv and ennemies.csv");

@@ -15,8 +15,16 @@ Icon?
 
 # Dépendances et builds
 node_modules/
-app/dist/
-rust/target/
+apps/web/dist/
+target/
+.android-sdk/
+.android/
+*.apk
+*.keystore
+*.jks
+__cargo_apk_*.tmp
+local.properties
+.cache/
 
 # Logs
 *.log

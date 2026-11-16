@@ -15,11 +15,21 @@ Tenez toutes les vagues du mode choisi sans perdre toutes vos vies. Chaque ennem
 | Ruée         | 20     | 10 s         | 15   | 60           | PV ×1,1 |
 | Marathon     | 70     | 30 s         | 30   | 80           | PV ×0,85, croissance plus lente |
 
-Votre record est enregistré par mode dans ce navigateur.
+Sur le web, votre record est enregistré par mode dans ce navigateur.
+
+## Android
+
+L'application Android est native, fonctionne hors ligne et se joue en paysage.
+Choisir un mode, toucher une tour dans le panneau, puis le plateau pour la poser.
+Toucher une tour posée ouvre ses commandes d'amélioration et de vente.
+Les boutons sous le plateau permettent d'envoyer une vague, de mettre en pause,
+de changer la vitesse, d'annuler le placement et de revenir au menu.
+Après la fin d'une partie, **Rejouer** relance le même mode.
+Les mêmes modes, règles, sprites et sons que sur ordinateur sont utilisés.
 
 ## Son et options
 
-Dans les versions web et native, **Options** ouvre le réglage du volume des effets
+Dans les versions web, bureau et Android, **Options** ouvre le réglage du volume des effets
 sonores (0 à 100 %, 50 % au départ). La partie est suspendue pendant les réglages ;
 **Fermer** ou **Échap** revient au jeu, sans annuler une pause déjà activée.
 Dans la version native, le curseur se déplace aussi avec les flèches gauche/droite.

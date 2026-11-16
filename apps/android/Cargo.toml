@@ -1,0 +1,22 @@
+[package]
+name = "dedale-android"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+game-native.workspace = true
+macroquad.workspace = true
+
+[package.metadata.android]
+package_name = "fr.dedale.defense"
+label = "Dedale Defense"
+version_code = 1
+android_version = 35
+target_sdk_version = 35
+min_sdk_version = 26
+build_targets = ["aarch64-linux-android", "x86_64-linux-android"]
+fullscreen = true
+
+[package.metadata.android.activity_attributes]
+"android:screenOrientation" = "sensorLandscape"
+"android:exported" = "true"

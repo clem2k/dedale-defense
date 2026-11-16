@@ -143,16 +143,16 @@ fn sprite(v: &Value, images: &[String], scale: &str) -> String {
 
 fn main() {
     for path in [
-        "../game-content.json",
-        "../towers.csv",
-        "../ennemies.csv",
-        "../app/content.mjs",
-        "../app/csv.mjs",
+        "../../game-content.json",
+        "../../towers.csv",
+        "../../ennemies.csv",
+        "../content/content.mjs",
+        "../content/csv.mjs",
     ] {
         println!("cargo:rerun-if-changed={path}");
     }
     let loaded = Command::new("node")
-        .arg("../app/content.mjs")
+        .arg("../content/content.mjs")
         .output()
         .expect("Node.js is required to load towers.csv and ennemies.csv");
     assert!(
@@ -164,7 +164,7 @@ fn main() {
         serde_json::from_slice(&loaded.stdout).expect("invalid generated CSV content");
     let output_dir = PathBuf::from(env::var_os("OUT_DIR").expect("missing OUT_DIR"));
     for name in ["01", "02", "03", "04", "05", "06", "HIT"] {
-        let path = format!("../assets/fx/{name}.mp3");
+        let path = format!("../../assets/fx/{name}.mp3");
         println!("cargo:rerun-if-changed={path}");
         let mut decoder =
             minimp3::Decoder::new(fs::File::open(&path).unwrap_or_else(|e| panic!("{path}: {e}")));
@@ -285,8 +285,8 @@ fn main() {
     let images: Vec<_> = images.into_iter().collect();
     code += "const SPRITE_IMAGES: &[&[u8]] = &[\n";
     for image in &images {
-        println!("cargo:rerun-if-changed=../{image}");
-        let path = PathBuf::from("..")
+        println!("cargo:rerun-if-changed=../../{image}");
+        let path = PathBuf::from("../..")
             .join(image)
             .canonicalize()
             .expect("missing CSV sprite PNG");

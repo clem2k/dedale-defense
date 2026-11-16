@@ -1,0 +1,8 @@
+[package]
+name = "dedale-desktop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+game-native.workspace = true
+macroquad.workspace = true

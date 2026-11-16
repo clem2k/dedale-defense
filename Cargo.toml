@@ -1,0 +1,8 @@
+[workspace]
+members = ["apps/desktop", "apps/android", "packages/game-native"]
+default-members = ["apps/desktop", "packages/game-native"]
+resolver = "3"
+
+[workspace.dependencies]
+macroquad = { version = "0.4.16", features = ["audio"] }
+game-native = { path = "packages/game-native" }

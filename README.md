@@ -4,9 +4,37 @@ Jeu de tower defense inspiré de *Desktop Tower Defense* : les ennemis traversen
 
 Voir [user.md](user.md) pour le guide du joueur.
 
+## Monorepo et compilation
+
+- [Web](apps/web/) : JavaScript et canvas.
+- [Bureau](apps/desktop/) : application native Rust/Macroquad.
+- [Android](apps/android/README.md) : APK natif Rust/OpenGL ES, sans WebView,
+  avec commandes tactiles en paysage. Il partage le moteur du bureau.
+- [Moteur natif](packages/game-native/) et [lecteur de contenu](packages/content/) :
+  code commun ; CSV, JSON et médias restent à la racine, sans duplication.
+
+**GitHub sert uniquement au stockage des fichiers. Aucun GitHub Actions ni build
+hébergé sur GitHub n'est utilisé.** Compiler en local ou sur votre Jenkins dans
+Docker, avec le [Dockerfile](infra/docker/Dockerfile) et le [Jenkinsfile](Jenkinsfile).
+Les téléchargements de dépendances/outils se font sur la machine de build.
+
+```sh
+npm test
+npm run build
+cargo test --workspace --locked
+cargo run -p dedale-desktop --locked
+# Avec le SDK Android et cargo-quad-apk installés :
+bash scripts/build-android.sh debug
+```
+
+Le guide Android détaille les prérequis, le build Docker, l'installation par ADB
+et la signature de développement. Les anciens chemins `app/` et `rust/` sont
+remplacés par les dossiers ci-dessus ; les sorties deviennent `apps/web/dist/`
+et `target/` à la racine.
+
 ## Effets sonores
 
-Les deux versions utilisent les MP3 de [assets/fx/](assets/fx/) :
+Les trois applications utilisent les MP3 de [assets/fx/](assets/fx/) :
 `01` à `06` correspondent respectivement à Caillou, Éclat, Aiguille, Volée,
 Givre et Onde ; `HIT` accompagne chaque ennemi qui fait perdre des vies,
 y compris la dernière vie. Une salve multicible ne joue qu'un son de tir.
@@ -35,7 +63,7 @@ et une marge transparente contre les débordements entre images.
 Le rendu sur le plateau reste dans une empreinte de 40 × 40 pixels.
 Les boutons, les aperçus de placement et les tours posées utilisent cet atlas,
 sans changer les collisions, les portées ou les cinq indicateurs d'amélioration.
-Le build web copie le PNG dans `app/dist/assets/towers/` et résout son chemin
+Le build web copie le PNG dans `apps/web/dist/assets/towers/` et résout son chemin
 depuis le module JavaScript, y compris sur les pages localisées.
 Le Rust embarque le PNG dans l'exécutable : aucun fichier externe n'est nécessaire.
 
@@ -44,8 +72,8 @@ l'atlas après une modification de cette référence, avec Python et Pillow inst
 
 ```sh
 python3 assets/towers/build_atlas.py
-npm --prefix app run build
-cargo build --release --manifest-path rust/Cargo.toml
+npm run build
+cargo build -p dedale-desktop --release --locked
 ```
 
 L'extraction retire le fond sombre, les cadres et les annotations. Les coordonnées
@@ -64,14 +92,14 @@ le fond sombre, y compris au centre des formes creuses, et ajoute une marge tran
 
 ```sh
 python3 assets/enemies/build_atlas.py
-npm --prefix app run build
-cargo build --release --manifest-path rust/Cargo.toml
+npm run build
+cargo build -p dedale-desktop --release --locked
 ```
 
 Le script nécessite Pillow et les dimensions actuelles de la référence (4128 × 1024).
 La taille d'affichage reste proportionnelle au rayon de chaque ennemi ; les collisions,
 les PV, les indicateurs d'effets et les barres de vie restent indépendants des sprites.
-Le web copie le PNG dans `app/dist/assets/enemies/` avec un chemin relatif au module,
+Le web copie le PNG dans `apps/web/dist/assets/enemies/` avec un chemin relatif au module,
 et le Rust l'embarque dans l'exécutable, comme pour les tours.
 
 Les Brutes et les Intercepteurs sont définis dans le CSV. Les vagues existantes ne
@@ -114,8 +142,8 @@ ou un saut de ligne doivent être entre guillemets (les tableurs le font automat
 Après une modification, reconstruire et recharger la page web ou relancer le natif :
 
 ```sh
-npm --prefix app run build
-cargo run --release --manifest-path rust/Cargo.toml
+npm run build
+cargo run -p dedale-desktop --release --locked
 ```
 
 Il n'y a pas de rechargement à chaud. Une ligne invalide, une référence inconnue,
@@ -123,43 +151,48 @@ un PNG absent ou une case hors de l'image font échouer le build explicitement.
 
 ## Version native Rust
 
-Le dossier `rust/` contient une version graphique native du jeu, écrite en Rust avec Macroquad. Elle s'exécute comme une application de bureau et ne contient ni HTML ni navigateur.
+Le dossier [apps/desktop/](apps/desktop/) lance le moteur graphique natif
+[packages/game-native/](packages/game-native/), écrit en Rust avec Macroquad.
+Le même moteur est compilé pour Android par [apps/android/](apps/android/).
+Ces applications ne contiennent ni HTML ni navigateur.
 
 ```sh
-cd rust
-cargo run --release
+cargo run -p dedale-desktop --release --locked
 ```
 
 Node.js est également requis à la compilation native : le build Rust appelle le même
 lecteur/validateur de CSV que le web, afin d'éviter deux interprétations différentes.
 Le jeu compilé ne dépend ni de Node.js ni des CSV/PNG externes.
-La première compilation télécharge les dépendances Rust. Les tests de logique du plateau et des vagues se lancent avec `cargo test`.
+La première compilation télécharge les dépendances Rust. Les tests de logique du
+plateau et des vagues se lancent à la racine avec `cargo test --workspace --locked`.
 
 ## Structure
 
 ```
-app/
-  build.mjs        # copie le jeu dans app/dist/ et génère les pages (/, en/, es/, de/, fr/, id/)
-  content.mjs      # chargement et validation des données communes
-  csv.mjs          # lecture des CSV et conversion en définitions communes
-  content.test.mjs # tests des données, de la simulation et du build
-  audio.test.mjs   # tests de lecture FX, volume, mute et erreurs
-  package.json
-  src/
-    index.html     # page du jeu ({{BASE}} est remplacé au build)
-    game.js        # logique, rendu canvas, interface
-    audio.js       # chargement et mixage des effets sonores via Web Audio
-    style.css
-rust/
-  Cargo.toml       # application native Rust
-  build.rs         # charge les CSV via Node.js et génère les définitions Rust
-  src/main.rs      # simulation, interface et rendu natif
+apps/
+  web/                 # jeu navigateur, build.mjs, tests et src/
+  desktop/             # point d'entrée natif pour ordinateur
+  android/             # point d'entrée et métadonnées APK, guide Android
+packages/
+  content/
+    content.mjs        # chargement et validation des données communes
+    csv.mjs            # lecture des CSV
+  game-native/
+    build.rs           # génère les définitions Rust et embarque les médias
+    src/lib.rs         # simulation/rendu partagés bureau et Android
+infra/docker/Dockerfile # outils de compilation pour local/Jenkins
+scripts/build-android.sh # compilation et vérification de signature APK
+Jenkinsfile            # tests et builds Docker, archivage local à Jenkins
+Cargo.toml             # workspace Rust
+Cargo.lock             # dépendances Rust communes verrouillées
+package.json           # workspace npm et commandes web à la racine
+assets/                # sprites, références et FX partagés
 game-content.json  # niveaux, vagues, plateau et règles communes uniquement
 towers.csv         # caractéristiques, niveaux et sprites des tours
 ennemies.csv       # caractéristiques et sprites des ennemis
 ```
 
-## Contenu commun aux deux versions
+## Contenu commun aux trois applications
 
 [game-content.json](game-content.json) conserve uniquement la configuration générale :
 
@@ -217,27 +250,27 @@ Avant la première vague, la revente rend les dépenses intégrales ; ensuite, e
 
 Les raccourcis doivent être uniques, de `1` à `9`. De nouvelles tours peuvent réutiliser les apparences de projectile existantes : `pellet`, `shell`, `dart`, `missile`, `ice`, `pulse`. Un comportement entièrement nouveau nécessite encore une implémentation dans chaque moteur : les CSV partagent les données, pas le code de simulation ou de rendu.
 
-Après une modification du JSON ou des CSV, reconstruire les deux versions :
+Après une modification du JSON ou des CSV, reconstruire les applications voulues :
 
 ```sh
-npm --prefix app run build
-cargo build --release --manifest-path rust/Cargo.toml
+npm run build
+cargo build -p dedale-desktop --release --locked
+bash scripts/build-android.sh debug
 ```
 
-Le build web génère `app/dist/content.js`, importé par toutes les pages, sans chargement
+Le build web génère `apps/web/dist/content.js`, importé par toutes les pages, sans chargement
 réseau supplémentaire de JSON ou de CSV. Le build Rust génère des constantes typées
 dans le répertoire Cargo et se relance automatiquement si le JSON, les CSV, leur lecteur
 ou un PNG référencé change. Les deux versions embarquent les données ; le Rust embarque
 aussi les images. Les références inconnues et données invalides font échouer le build explicitement.
 
-## Utilisation
+## Utilisation web
 
-Aucune dépendance : seul Node.js est requis.
+Aucune dépendance npm : seul Node.js est requis.
 
 ```sh
-cd app
-npm run build            # génère app/dist/
-npx serve dist           # ou : python3 -m http.server -d dist
+npm run build            # génère apps/web/dist/
+python3 -m http.server -d apps/web/dist
 ```
 
 Puis ouvrir l'adresse affichée dans le navigateur.
@@ -246,7 +279,7 @@ Puis ouvrir l'adresse affichée dans le navigateur.
 
 - JavaScript natif (modules ES) et `<canvas>`, sans framework.
 - Le record par mode est stocké dans `localStorage` (clé `dd-best-<mode>`).
-- `app/dist/` est ignoré par git.
+- `apps/web/dist/` et `target/` sont ignorés par git.
 - La version Rust est indépendante de la version navigateur et se lance avec Cargo.
 
 ## Vérifications
@@ -254,8 +287,9 @@ Puis ouvrir l'adresse affichée dans le navigateur.
 Les tests couvrent les versions navigateur et native :
 
 ```sh
-npm --prefix app test
-cargo test --manifest-path rust/Cargo.toml
+npm test
+cargo test --workspace --locked
+cargo fmt --all -- --check
 ```
 
 Les tests comparent les niveaux et les vagues au JSON partagé, les tours/ennemis aux

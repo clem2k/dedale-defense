@@ -1,0 +1,9 @@
+{
+  "name": "dedale-defense-monorepo",
+  "private": true,
+  "workspaces": ["apps/web"],
+  "scripts": {
+    "build": "npm run build --workspace apps/web",
+    "test": "npm test --workspace apps/web"
+  }
+}

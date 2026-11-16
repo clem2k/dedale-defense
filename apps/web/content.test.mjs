@@ -6,14 +6,14 @@ import { join } from "node:path";
 import test from "node:test";
 import vm from "node:vm";
 import { pathToFileURL } from "node:url";
-import { loadContent, validateContent } from "./content.mjs";
-import { parseCsv } from "./csv.mjs";
+import { loadContent, validateContent } from "../../packages/content/content.mjs";
+import { parseCsv } from "../../packages/content/csv.mjs";
 import { FX_NAMES, TOWER_FX } from "./src/audio.js";
 
 const content = loadContent();
 const source = readFileSync(new URL("./src/game.js", import.meta.url), "utf8");
-const towerCsv = readFileSync(new URL("../towers.csv", import.meta.url), "utf8");
-const enemyCsv = readFileSync(new URL("../ennemies.csv", import.meta.url), "utf8");
+const towerCsv = readFileSync(new URL("../../towers.csv", import.meta.url), "utf8");
+const enemyCsv = readFileSync(new URL("../../ennemies.csv", import.meta.url), "utf8");
 const csv = parseCsv(towerCsv, "towers.csv").map(Object.values);
 
 test("construction hint expires at five real seconds and dismisses immediately", () => {
@@ -223,20 +223,19 @@ test("offset towers still prevent diagonal corner cutting", () => {
 function withFixture(run) {
   const directory = mkdtempSync(join(tmpdir(), "dedale-csv-"));
   try {
-    const app = join(directory, "app");
-    mkdirSync(app);
-    for (const name of ["content.mjs", "csv.mjs", "build.mjs"]) {
-      copyFileSync(new URL(`./${name}`, import.meta.url), join(app, name));
-    }
+    const app = join(directory, "apps/web");
+    mkdirSync(app, { recursive: true });
+    cpSync(new URL("../../packages/content", import.meta.url), join(directory, "packages/content"), { recursive: true });
+    copyFileSync(new URL("./build.mjs", import.meta.url), join(app, "build.mjs"));
     cpSync(new URL("./src", import.meta.url), join(app, "src"), { recursive: true });
-    cpSync(new URL("../assets/fx", import.meta.url), join(directory, "assets/fx"), { recursive: true });
+    cpSync(new URL("../../assets/fx", import.meta.url), join(directory, "assets/fx"), { recursive: true });
     for (const file of ["towers.csv", "ennemies.csv", "game-content.json"]) {
-      copyFileSync(new URL(`../${file}`, import.meta.url), join(directory, file));
+      copyFileSync(new URL(`../../${file}`, import.meta.url), join(directory, file));
     }
     for (const image of new Set([...content.towers, ...Object.values(content.enemies)].map((d) => d.sprite.image))) {
       const path = join(directory, image);
       mkdirSync(join(path, ".."), { recursive: true });
-      copyFileSync(new URL(`../${image}`, import.meta.url), path);
+      copyFileSync(new URL(`../../${image}`, import.meta.url), path);
     }
     run(directory, pathToFileURL(directory + "/"));
   } finally {
@@ -272,8 +271,8 @@ test("editing only CSV stats, metadata, sprite file and coordinates changes the 
       rows[0]["sprite column"] = "10";
       rows[0]["draw scale"] = "3";
     });
-    execFileSync(process.execPath, [join(directory, "app/build.mjs")]);
-    const module = readFileSync(join(directory, "app/dist/content.js"), "utf8");
+    execFileSync(process.execPath, [join(directory, "apps/web/build.mjs")]);
+    const module = readFileSync(join(directory, "apps/web/dist/content.js"), "utf8");
     const built = JSON.parse(module.slice("export const CONTENT = ".length).trim().replace(/;$/, ""));
     assert.equal(built.towers[0].dmg[0], 123);
     assert.equal(built.towers[0].name, 'Tour "test", modifiée');
@@ -284,7 +283,7 @@ test("editing only CSV stats, metadata, sprite file and coordinates changes the 
     assert.equal(built.enemies.walker.hp, 2.5);
     assert.equal(built.enemies.walker.sprite.column, 9);
     assert.equal(built.enemies.walker.sprite.drawScale, 3);
-    assert.deepEqual(readFileSync(join(directory, "app/dist", alternate)), readFileSync(join(directory, alternate)));
+    assert.deepEqual(readFileSync(join(directory, "apps/web/dist", alternate)), readFileSync(join(directory, alternate)));
     assert.deepEqual(built.board, content.board);
     assert.deepEqual(built.waveSets, content.waveSets);
     assert.equal(readFileSync(join(directory, "game-content.json"), "utf8"), config);
@@ -602,13 +601,13 @@ test("browser build embeds exact shared content and wires every localized page",
   assert.equal(existsSync(new URL("./dist/enemy-atlas.js", import.meta.url)), false);
   for (const name of FX_NAMES) {
     assert.deepEqual(readFileSync(new URL(`./dist/assets/fx/${name}.mp3`, import.meta.url)),
-      readFileSync(new URL(`../assets/fx/${name}.mp3`, import.meta.url)));
+      readFileSync(new URL(`../../assets/fx/${name}.mp3`, import.meta.url)));
   }
   assert.equal(readFileSync(new URL("./dist/audio.js", import.meta.url), "utf8"),
     readFileSync(new URL("./src/audio.js", import.meta.url), "utf8"));
   for (const image of new Set([...content.towers, ...Object.values(content.enemies)].map((d) => d.sprite.image))) {
     assert.deepEqual(readFileSync(new URL(`./dist/${image}`, import.meta.url)),
-      readFileSync(new URL(`../${image}`, import.meta.url)));
+      readFileSync(new URL(`../../${image}`, import.meta.url)));
   }
   for (const prefix of ["", ...["en", "es", "de", "fr", "id"].map((lang) => `${lang}/games/preecep/desktop-tower-defense/`)]) {
     const html = readFileSync(new URL(`./dist/${prefix}index.html`, import.meta.url), "utf8");

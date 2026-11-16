@@ -12,6 +12,95 @@ const BOARD_W: f32 = COLS as f32 * CELL;
 const BOARD_H: f32 = ROWS as f32 * CELL;
 const BOARD_X: f32 = 18.0;
 const BOARD_Y: f32 = 74.0;
+
+fn window_size() -> Vec2 {
+    vec2(
+        BOARD_X + BOARD_W + 382.0,
+        (BOARD_Y + BOARD_H + 126.0)
+            .max(640.0)
+            .max(tower_info_y() + 320.0)
+            .max(308.0 + Mode::ALL.len() as f32 * 46.0),
+    )
+}
+
+pub fn window_conf() -> Conf {
+    let size = window_size();
+    Conf {
+        window_title: "Dedale Defense".to_owned(),
+        window_width: size.x as i32,
+        window_height: size.y as i32,
+        ..Default::default()
+    }
+}
+
+struct Viewport {
+    offset: Vec2,
+    size: Vec2,
+    scale: f32,
+}
+
+impl Viewport {
+    fn fit(screen: Vec2, logical: Vec2) -> Self {
+        let scale = (screen.x / logical.x).min(screen.y / logical.y);
+        let size = logical * scale;
+        Self {
+            offset: (screen - size) / 2.0,
+            size,
+            scale,
+        }
+    }
+
+    fn pointer(&self, position: Vec2) -> Vec2 {
+        (position - self.offset) / self.scale
+    }
+}
+
+fn ui_width() -> f32 {
+    if cfg!(target_os = "android") {
+        window_size().x
+    } else {
+        screen_width()
+    }
+}
+
+fn ui_height() -> f32 {
+    if cfg!(target_os = "android") {
+        window_size().y
+    } else {
+        screen_height()
+    }
+}
+
+fn pointer_position() -> (f32, f32) {
+    let (x, y) = mouse_position();
+    if cfg!(target_os = "android") {
+        let viewport = Viewport::fit(vec2(screen_width(), screen_height()), window_size());
+        let position = viewport.pointer(vec2(x, y));
+        (position.x, position.y)
+    } else {
+        (x, y)
+    }
+}
+
+fn begin_ui() {
+    set_default_camera();
+    clear_background(Color::new(0.035, 0.055, 0.085, 1.0));
+    if cfg!(target_os = "android") {
+        let size = window_size();
+        let framebuffer = vec2(screen_width(), screen_height()) * screen_dpi_scale();
+        let viewport = Viewport::fit(framebuffer, size);
+        set_camera(&Camera2D {
+            viewport: Some((
+                viewport.offset.x.round() as i32,
+                viewport.offset.y.round() as i32,
+                viewport.size.x.round() as i32,
+                viewport.size.y.round() as i32,
+            )),
+            ..Camera2D::from_display_rect(Rect::new(0.0, 0.0, size.x, size.y))
+        });
+    }
+}
+
 const FX_BYTES: [&[u8]; 7] = [
     include_bytes!(concat!(env!("OUT_DIR"), "/01.wav")),
     include_bytes!(concat!(env!("OUT_DIR"), "/02.wav")),
@@ -87,7 +176,16 @@ impl FxAudio {
     fn draw_controls(&mut self) {
         let previous = self.settings.effective_volume();
         if button(
-            Rect::new(screen_width() - 230.0, 18.0, 100.0, 32.0),
+            Rect::new(
+                ui_width() - 230.0,
+                18.0,
+                100.0,
+                if cfg!(target_os = "android") {
+                    44.0
+                } else {
+                    32.0
+                },
+            ),
             "Options",
             false,
             !self.options_open,
@@ -95,7 +193,16 @@ impl FxAudio {
             self.options_open = true;
         }
         if button(
-            Rect::new(screen_width() - 120.0, 18.0, 100.0, 32.0),
+            Rect::new(
+                ui_width() - 120.0,
+                18.0,
+                100.0,
+                if cfg!(target_os = "android") {
+                    44.0
+                } else {
+                    32.0
+                },
+            ),
             if self.settings.muted {
                 "Mute ON"
             } else {
@@ -110,12 +217,12 @@ impl FxAudio {
             draw_rectangle(
                 0.0,
                 0.0,
-                screen_width(),
-                screen_height(),
+                ui_width(),
+                ui_height(),
                 Color::new(0.02, 0.04, 0.07, 0.9),
             );
-            let x = (screen_width() - 400.0) / 2.0;
-            let y = (screen_height() - 250.0) / 2.0;
+            let x = (ui_width() - 400.0) / 2.0;
+            let y = (ui_height() - 250.0) / 2.0;
             draw_rectangle(x, y, 400.0, 250.0, PANEL);
             draw_rectangle_lines(x, y, 400.0, 250.0, 1.0, LINE);
             draw_text("OPTIONS", x + 24.0, y + 36.0, 24.0, TEXT);
@@ -134,7 +241,7 @@ impl FxAudio {
                 TEXT,
             );
             let slider = Rect::new(x + 24.0, y + 118.0, 352.0, 24.0);
-            let mouse = mouse_position();
+            let mouse = pointer_position();
             if is_mouse_button_pressed(MouseButton::Left) {
                 self.dragging = slider.contains(vec2(mouse.0, mouse.1));
             }
@@ -165,7 +272,11 @@ impl FxAudio {
                 GOLD,
             );
             draw_text(
-                "Fleches : volume. Le mute garde ce reglage.",
+                if cfg!(target_os = "android") {
+                    "Glissez pour regler le volume."
+                } else {
+                    "Fleches : volume. Le mute garde ce reglage."
+                },
                 x + 24.0,
                 y + 172.0,
                 15.0,
@@ -1100,7 +1211,7 @@ fn index(x: usize, y: usize) -> usize {
 }
 
 fn button(rect: Rect, label: &str, active: bool, enabled: bool) -> bool {
-    let mouse = mouse_position();
+    let mouse = pointer_position();
     let hovered = rect.contains(vec2(mouse.0, mouse.1));
     let fill = if !enabled {
         Color::new(0.14, 0.17, 0.22, 1.0)
@@ -1452,7 +1563,7 @@ fn tower_info_y() -> f32 {
 fn draw_sidebar(game: &Game, textures: &[Texture2D]) {
     let x = BOARD_X + BOARD_W + 20.0;
     let width = 344.0;
-    let height = screen_height() - 100.0;
+    let height = ui_height() - 100.0;
     draw_rectangle(x, 74.0, width, height, PANEL);
     draw_rectangle_lines(x, 74.0, width, height, 1.0, LINE);
     draw_text("STATISTIQUES", x + 12.0, 94.0, 14.0, MUTED);
@@ -1494,7 +1605,7 @@ fn draw_sidebar(game: &Game, textures: &[Texture2D]) {
         let by = 188.0 + row as f32 * 58.0;
         let def = TOWERS[kind.index()];
         let rect = Rect::new(bx, by, 98.0, 50.0);
-        let mouse = mouse_position();
+        let mouse = pointer_position();
         let hovered = rect.contains(vec2(mouse.0, mouse.1));
         let selected = game.build_kind == Some(*kind);
         draw_rectangle(
@@ -1639,21 +1750,33 @@ fn draw_sidebar(game: &Game, textures: &[Texture2D]) {
     }
     draw_text("CONTROLES", x + 12.0, y + 3.0, 14.0, MUTED);
     draw_text(
-        "N : vague suivante   Espace : pause",
+        if cfg!(target_os = "android") {
+            "Touchez une tour puis le plateau."
+        } else {
+            "N : vague suivante   Espace : pause"
+        },
         x + 12.0,
         y + 23.0,
         13.0,
         TEXT,
     );
     draw_text(
-        "U : ameliorer   S : vendre   F : vitesse",
+        if cfg!(target_os = "android") {
+            "Touchez une tour posee pour la gerer."
+        } else {
+            "U : ameliorer   S : vendre   F : vitesse"
+        },
         x + 12.0,
         y + 42.0,
         13.0,
         TEXT,
     );
     draw_text(
-        "0 / Echap : annuler   Maj : placer plusieurs",
+        if cfg!(target_os = "android") {
+            "Commandes tactiles sous le plateau."
+        } else {
+            "0 / Echap : annuler   Maj : placer plusieurs"
+        },
         x + 12.0,
         y + 61.0,
         12.0,
@@ -1706,30 +1829,24 @@ fn draw_start_screen(enabled: bool) -> Option<Mode> {
     draw_rectangle(
         0.0,
         0.0,
-        screen_width(),
-        screen_height(),
+        ui_width(),
+        ui_height(),
         Color::new(0.02, 0.04, 0.07, 0.94),
     );
     let title = "DEDALE DEFENSE";
     let dims = measure_text(title, None, 42, 1.0);
-    draw_text(
-        title,
-        (screen_width() - dims.width) / 2.0,
-        190.0,
-        42.0,
-        TEXT,
-    );
+    draw_text(title, (ui_width() - dims.width) / 2.0, 190.0, 42.0, TEXT);
     let subtitle = "Tower defense natif en Rust - construisez un labyrinthe de tours";
     let dims = measure_text(subtitle, None, 18, 1.0);
     draw_text(
         subtitle,
-        (screen_width() - dims.width) / 2.0,
+        (ui_width() - dims.width) / 2.0,
         229.0,
         18.0,
         MUTED,
     );
     for (i, mode) in Mode::ALL.iter().enumerate() {
-        let bx = screen_width() / 2.0 - 175.0;
+        let bx = ui_width() / 2.0 - 175.0;
         let rect = Rect::new(bx, 268.0 + i as f32 * 46.0, 350.0, 38.0);
         if button(
             rect,
@@ -1749,8 +1866,57 @@ fn draw_start_screen(enabled: bool) -> Option<Mode> {
     None
 }
 
-#[macroquad::main("Dedale Defense")]
-async fn main() {
+fn draw_touch_controls(game: &mut Game, enabled: bool) -> bool {
+    let y = BOARD_Y + BOARD_H + 16.0;
+    if button(
+        Rect::new(BOARD_X, y, 150.0, 48.0),
+        if game.over {
+            "Rejouer"
+        } else {
+            "Vague suivante"
+        },
+        false,
+        enabled && (game.over || !game.paused),
+    ) {
+        if game.over {
+            *game = Game::new(game.mode);
+        } else {
+            game.send_wave();
+        }
+    }
+    if button(
+        Rect::new(BOARD_X + 158.0, y, 90.0, 48.0),
+        if game.paused { "Reprendre" } else { "Pause" },
+        game.paused,
+        enabled && !game.over,
+    ) {
+        game.paused = !game.paused;
+    }
+    if button(
+        Rect::new(BOARD_X + 256.0, y, 80.0, 48.0),
+        &format!("x{}", game.speed),
+        false,
+        enabled && !game.over,
+    ) {
+        game.handle_key(KeyCode::F);
+    }
+    if button(
+        Rect::new(BOARD_X + 344.0, y, 108.0, 48.0),
+        "Annuler",
+        false,
+        enabled && !game.over,
+    ) {
+        game.handle_key(KeyCode::Escape);
+    }
+    button(
+        Rect::new(BOARD_X + 460.0, y, 100.0, 48.0),
+        "Menu",
+        false,
+        enabled,
+    )
+}
+
+pub async fn run() {
     let mut audio = FxAudio::load().await;
     let textures: Vec<_> = SPRITE_IMAGES
         .iter()
@@ -1760,16 +1926,9 @@ async fn main() {
             texture
         })
         .collect();
-    request_new_screen_size(
-        BOARD_X + BOARD_W + 382.0,
-        (BOARD_Y + BOARD_H + 126.0)
-            .max(640.0)
-            .max(tower_info_y() + 320.0)
-            .max(308.0 + Mode::ALL.len() as f32 * 46.0),
-    );
     let mut game: Option<Game> = None;
     loop {
-        clear_background(Color::new(0.035, 0.055, 0.085, 1.0));
+        begin_ui();
         let input_enabled = !audio.options_open;
         if game.is_none() {
             if let Some(mode) = draw_start_screen(input_enabled) {
@@ -1810,7 +1969,7 @@ async fn main() {
             } else {
                 current.keep_building = false;
             }
-            let mouse = mouse_position();
+            let mouse = pointer_position();
             let mouse_vec = vec2(mouse.0, mouse.1);
             draw_text("DEDALE DEFENSE", 18.0, 42.0, 28.0, TEXT);
             draw_text(
@@ -1871,13 +2030,19 @@ async fn main() {
                     }
                 }
             }
+            let back_to_menu =
+                cfg!(target_os = "android") && draw_touch_controls(current, input_enabled);
             let dt = get_frame_time().min(0.1) * current.speed;
             if input_enabled {
                 current.update(dt);
             }
             audio.play_pending(&mut current.pending_audio);
             if current.over {
-                let label = "N : nouvelle partie";
+                let label = if cfg!(target_os = "android") {
+                    "Touchez Rejouer ou Menu"
+                } else {
+                    "N : nouvelle partie"
+                };
                 let dims = measure_text(label, None, 16, 1.0);
                 draw_text(
                     label,
@@ -1892,6 +2057,8 @@ async fn main() {
             }
             if let Some(mode) = reset_mode {
                 game = Some(Game::new(mode));
+            } else if back_to_menu {
+                game = None;
             }
         }
         audio.draw_controls();
@@ -1902,6 +2069,37 @@ async fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn mobile_viewport_preserves_board_coordinates_on_different_screens() {
+        let logical = window_size();
+        let board_point = vec2(BOARD_X + CELL * 5.5, BOARD_Y + CELL * 7.5);
+        for screen in [
+            vec2(1280.0, 720.0),
+            vec2(2400.0, 1080.0),
+            vec2(1920.0, 1200.0),
+            vec2(800.0, 1280.0),
+        ] {
+            let viewport = Viewport::fit(screen, logical);
+            assert!(viewport.size.x <= screen.x + 0.001);
+            assert!(viewport.size.y <= screen.y + 0.001);
+            let physical = viewport.offset + board_point * viewport.scale;
+            let restored = viewport.pointer(physical);
+            assert!((restored - board_point).length() < 0.001);
+            assert_eq!(
+                placement_anchor(restored - vec2(BOARD_X, BOARD_Y)),
+                placement_anchor(board_point - vec2(BOARD_X, BOARD_Y))
+            );
+            assert!((viewport.pointer(viewport.offset + viewport.size) - logical).length() < 0.001);
+        }
+    }
+
+    #[test]
+    fn touches_in_mobile_letterboxing_do_not_hit_the_board() {
+        let viewport = Viewport::fit(vec2(2400.0, 1080.0), window_size());
+        assert!(viewport.pointer(vec2(0.0, 540.0)).x < 0.0);
+        assert!(viewport.pointer(vec2(2400.0, 540.0)).x > window_size().x);
+    }
 
     #[test]
     fn fx_volume_and_mute_remain_independent() {
@@ -2016,7 +2214,7 @@ mod tests {
         assert_eq!(frame.h, size);
         assert_eq!(sprite.scale, expected[scale].as_f64().unwrap() as f32);
         let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("..")
+            .join("../..")
             .join(expected["image"].as_str().unwrap());
         assert_eq!(SPRITE_IMAGES[sprite.texture], std::fs::read(path).unwrap());
         check_frame(&images[sprite.texture], frame);

@@ -112,13 +112,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c87e182de0887fd5361989c677c4e8f5000cd9491d6d563161a8f3a5519fc7f"
 
 [[package]]
-name = "dedale-defense"
+name = "dedale-android"
 version = "0.1.0"
 dependencies = [
- "hound",
+ "game-native",
  "macroquad",
- "minimp3",
- "serde_json",
+]
+
+[[package]]
+name = "dedale-desktop"
+version = "0.1.0"
+dependencies = [
+ "game-native",
+ "macroquad",
 ]
 
 [[package]]
@@ -167,6 +173,16 @@ checksum = "e796cb6894e6418daacea84b28dd4f98d3b32c74d5bb452ba1ecfbf5ad8e84ca"
 dependencies = [
  "hashbrown",
  "ttf-parser",
+]
+
+[[package]]
+name = "game-native"
+version = "0.1.0"
+dependencies = [
+ "hound",
+ "macroquad",
+ "minimp3",
+ "serde_json",
 ]
 
 [[package]]
