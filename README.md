@@ -157,11 +157,6 @@ rust/
 game-content.json  # niveaux, vagues, plateau et règles communes uniquement
 towers.csv         # caractéristiques, niveaux et sprites des tours
 ennemies.csv       # caractéristiques et sprites des ennemis
-capture/, checks/  # captures et vérifications de la référence (kongregate.com)
-craft.json         # dossier de fabrication : demande, statut, 7 rounds de vérification
-feed.json          # journal chronologique de la construction (étapes, outils, vérifications)
-usage.json         # temps de travail, jetons et coût de la construction
-investigation.cany/# preuves content-addressées (SHA-256), brief, inconnus ouverts
 ```
 
 ## Contenu commun aux deux versions
@@ -256,7 +251,7 @@ Puis ouvrir l'adresse affichée dans le navigateur.
 
 ## Vérifications
 
-`capture/` contient les photos et la lecture de la page de référence ; `checks/round-0` à `round-7` contiennent les photos du jeu reconstruit, comparées à cette référence à 1440, 768 et 390 px (score de similarité dans `craft.json`). Ces 8 rounds ont été produits avant l'ajout des modes Oncle Picsou, Ruée et Marathon : ils ne reflètent pas la build actuelle.
+Les tests couvrent les versions navigateur et native :
 
 ```sh
 npm --prefix app test
